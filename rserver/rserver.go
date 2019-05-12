@@ -1,8 +1,7 @@
 package rserver
 
 import (
-	context "context"
-	"flag"
+	"context"
 	"fmt"
 	"net"
 	"net/http"
@@ -13,14 +12,15 @@ import (
 )
 
 type RServer struct {
-	log     *logrus.Logger
-	version string
-	port    int
+	log      *logrus.Logger
+	version  string
+	port     int
+	endpoint string
 }
 
 // New returns a new republique server
 func New(log *logrus.Logger, version string, port int) *RServer {
-	return &RServer{log, version, port}
+	return &RServer{log, version, port, fmt.Sprintf(":%d", port)}
 }
 
 // Run runs a republique server
@@ -37,19 +37,22 @@ func (s *RServer) Run() {
 	go s.rpcProxy()
 
 	// Load GPPC endpoints
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.port))
+	s.grpcRun()
+}
+
+func (s *RServer) grpcRun() {
+	lis, err := net.Listen("tcp", s.endpoint)
 	if err != nil {
 		s.log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
 	RegisterGameServiceServer(grpcServer, s)
-	s.log.WithField("port", s.port).Println("Serving gRPC")
+	s.log.WithFields(logrus.Fields{
+		"port":     s.port,
+		"endpoint": s.endpoint,
+	}).Println("Serving gRPC")
 	grpcServer.Serve(lis)
 }
-
-var (
-	echoEndpoint = flag.String("echo_endpoint", "localhost:1815", "endpoint of YourService")
-)
 
 func (s *RServer) rpcProxy() error {
 	ctx := context.Background()
@@ -58,7 +61,7 @@ func (s *RServer) rpcProxy() error {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, *echoEndpoint, opts)
+	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, s.endpoint, opts)
 	if err != nil {
 		return err
 	}
