@@ -24,6 +24,374 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type Arm int32
+
+const (
+	Arm_SUPPORT   Arm = 0
+	Arm_INFANTRY  Arm = 1
+	Arm_CAVALRY   Arm = 2
+	Arm_ARTILLERY Arm = 3
+	Arm_COMMAND   Arm = 4
+)
+
+var Arm_name = map[int32]string{
+	0: "SUPPORT",
+	1: "INFANTRY",
+	2: "CAVALRY",
+	3: "ARTILLERY",
+	4: "COMMAND",
+}
+
+var Arm_value = map[string]int32{
+	"SUPPORT":   0,
+	"INFANTRY":  1,
+	"CAVALRY":   2,
+	"ARTILLERY": 3,
+	"COMMAND":   4,
+}
+
+func (x Arm) String() string {
+	return proto.EnumName(Arm_name, int32(x))
+}
+
+func (Arm) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{0}
+}
+
+type UnitType int32
+
+const (
+	UnitType_SUPPORT_UNIT       UnitType = 0
+	UnitType_INFANTRY_LINE      UnitType = 1
+	UnitType_INFANTRY_LIGHT     UnitType = 2
+	UnitType_INFANTRY_GUARD     UnitType = 3
+	UnitType_INFANTRY_MILITIA   UnitType = 4
+	UnitType_CAVALRY_LIGHT      UnitType = 5
+	UnitType_CAVALRY_HUSSAR     UnitType = 6
+	UnitType_CAVALRY_DRAGOON    UnitType = 7
+	UnitType_CAVALRY_CUIRASSIER UnitType = 8
+	UnitType_CAVALRY_COSSACK    UnitType = 9
+	UnitType_ARTILLERY_BN       UnitType = 10
+	UnitType_ARTILLERY_LIGHT    UnitType = 11
+	UnitType_ARTILLERY_MEDIUM   UnitType = 12
+	UnitType_ARTILLERY_HEAVY    UnitType = 13
+	UnitType_ARTILLERY_HORSE    UnitType = 14
+)
+
+var UnitType_name = map[int32]string{
+	0:  "SUPPORT_UNIT",
+	1:  "INFANTRY_LINE",
+	2:  "INFANTRY_LIGHT",
+	3:  "INFANTRY_GUARD",
+	4:  "INFANTRY_MILITIA",
+	5:  "CAVALRY_LIGHT",
+	6:  "CAVALRY_HUSSAR",
+	7:  "CAVALRY_DRAGOON",
+	8:  "CAVALRY_CUIRASSIER",
+	9:  "CAVALRY_COSSACK",
+	10: "ARTILLERY_BN",
+	11: "ARTILLERY_LIGHT",
+	12: "ARTILLERY_MEDIUM",
+	13: "ARTILLERY_HEAVY",
+	14: "ARTILLERY_HORSE",
+}
+
+var UnitType_value = map[string]int32{
+	"SUPPORT_UNIT":       0,
+	"INFANTRY_LINE":      1,
+	"INFANTRY_LIGHT":     2,
+	"INFANTRY_GUARD":     3,
+	"INFANTRY_MILITIA":   4,
+	"CAVALRY_LIGHT":      5,
+	"CAVALRY_HUSSAR":     6,
+	"CAVALRY_DRAGOON":    7,
+	"CAVALRY_CUIRASSIER": 8,
+	"CAVALRY_COSSACK":    9,
+	"ARTILLERY_BN":       10,
+	"ARTILLERY_LIGHT":    11,
+	"ARTILLERY_MEDIUM":   12,
+	"ARTILLERY_HEAVY":    13,
+	"ARTILLERY_HORSE":    14,
+}
+
+func (x UnitType) String() string {
+	return proto.EnumName(UnitType_name, int32(x))
+}
+
+func (UnitType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{1}
+}
+
+type UnitGrade int32
+
+const (
+	UnitGrade_CIVILIAN  UnitGrade = 0
+	UnitGrade_MILITIA   UnitGrade = 1
+	UnitGrade_CONSCRIPT UnitGrade = 2
+	UnitGrade_REGULAR   UnitGrade = 3
+	UnitGrade_VETERAN   UnitGrade = 4
+	UnitGrade_ELITE     UnitGrade = 5
+)
+
+var UnitGrade_name = map[int32]string{
+	0: "CIVILIAN",
+	1: "MILITIA",
+	2: "CONSCRIPT",
+	3: "REGULAR",
+	4: "VETERAN",
+	5: "ELITE",
+}
+
+var UnitGrade_value = map[string]int32{
+	"CIVILIAN":  0,
+	"MILITIA":   1,
+	"CONSCRIPT": 2,
+	"REGULAR":   3,
+	"VETERAN":   4,
+	"ELITE":     5,
+}
+
+func (x UnitGrade) String() string {
+	return proto.EnumName(UnitGrade_name, int32(x))
+}
+
+func (UnitGrade) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{2}
+}
+
+type MoraleState int32
+
+const (
+	MoraleState_RESTING     MoraleState = 0
+	MoraleState_GOOD        MoraleState = 1
+	MoraleState_UNFORMED    MoraleState = 2
+	MoraleState_RATTLED     MoraleState = 3
+	MoraleState_SHAKEN      MoraleState = 4
+	MoraleState_DEMORALISED MoraleState = 5
+)
+
+var MoraleState_name = map[int32]string{
+	0: "RESTING",
+	1: "GOOD",
+	2: "UNFORMED",
+	3: "RATTLED",
+	4: "SHAKEN",
+	5: "DEMORALISED",
+}
+
+var MoraleState_value = map[string]int32{
+	"RESTING":     0,
+	"GOOD":        1,
+	"UNFORMED":    2,
+	"RATTLED":     3,
+	"SHAKEN":      4,
+	"DEMORALISED": 5,
+}
+
+func (x MoraleState) String() string {
+	return proto.EnumName(MoraleState_name, int32(x))
+}
+
+func (MoraleState) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{3}
+}
+
+type Formation int32
+
+const (
+	Formation_RESERVE          Formation = 0
+	Formation_MARCH_COLUMN     Formation = 1
+	Formation_ATTACK_COLUMN    Formation = 2
+	Formation_LINE             Formation = 3
+	Formation_ECHELON          Formation = 4
+	Formation_SUPPORTING_LINES Formation = 5
+	Formation_DEBANDE          Formation = 6
+	Formation_FORTIFIED        Formation = 7
+)
+
+var Formation_name = map[int32]string{
+	0: "RESERVE",
+	1: "MARCH_COLUMN",
+	2: "ATTACK_COLUMN",
+	3: "LINE",
+	4: "ECHELON",
+	5: "SUPPORTING_LINES",
+	6: "DEBANDE",
+	7: "FORTIFIED",
+}
+
+var Formation_value = map[string]int32{
+	"RESERVE":          0,
+	"MARCH_COLUMN":     1,
+	"ATTACK_COLUMN":    2,
+	"LINE":             3,
+	"ECHELON":          4,
+	"SUPPORTING_LINES": 5,
+	"DEBANDE":          6,
+	"FORTIFIED":        7,
+}
+
+func (x Formation) String() string {
+	return proto.EnumName(Formation_name, int32(x))
+}
+
+func (Formation) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{4}
+}
+
+type Rank int32
+
+const (
+	Rank_BATTALION       Rank = 0
+	Rank_BRIGADE         Rank = 1
+	Rank_DIVISION        Rank = 2
+	Rank_CORPS           Rank = 3
+	Rank_WING            Rank = 4
+	Rank_ARMY            Rank = 5
+	Rank_NATIONAL_LEADER Rank = 6
+	Rank_BATTERY         Rank = 7
+	Rank_CAVALRY_BDE     Rank = 8
+	Rank_CAVALRY_DIV     Rank = 9
+)
+
+var Rank_name = map[int32]string{
+	0: "BATTALION",
+	1: "BRIGADE",
+	2: "DIVISION",
+	3: "CORPS",
+	4: "WING",
+	5: "ARMY",
+	6: "NATIONAL_LEADER",
+	7: "BATTERY",
+	8: "CAVALRY_BDE",
+	9: "CAVALRY_DIV",
+}
+
+var Rank_value = map[string]int32{
+	"BATTALION":       0,
+	"BRIGADE":         1,
+	"DIVISION":        2,
+	"CORPS":           3,
+	"WING":            4,
+	"ARMY":            5,
+	"NATIONAL_LEADER": 6,
+	"BATTERY":         7,
+	"CAVALRY_BDE":     8,
+	"CAVALRY_DIV":     9,
+}
+
+func (x Rank) String() string {
+	return proto.EnumName(Rank_name, int32(x))
+}
+
+func (Rank) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{5}
+}
+
+type SkirmishRating int32
+
+const (
+	SkirmishRating_POOR       SkirmishRating = 0
+	SkirmishRating_ADEQUATE   SkirmishRating = 1
+	SkirmishRating_CRACK_SHOT SkirmishRating = 2
+	SkirmishRating_EXCELLENT  SkirmishRating = 3
+)
+
+var SkirmishRating_name = map[int32]string{
+	0: "POOR",
+	1: "ADEQUATE",
+	2: "CRACK_SHOT",
+	3: "EXCELLENT",
+}
+
+var SkirmishRating_value = map[string]int32{
+	"POOR":       0,
+	"ADEQUATE":   1,
+	"CRACK_SHOT": 2,
+	"EXCELLENT":  3,
+}
+
+func (x SkirmishRating) String() string {
+	return proto.EnumName(SkirmishRating_name, int32(x))
+}
+
+func (SkirmishRating) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{6}
+}
+
+type CommandDoctrine int32
+
+const (
+	CommandDoctrine_USELESS    CommandDoctrine = 0
+	CommandDoctrine_CUMBERSOME CommandDoctrine = 1
+	CommandDoctrine_FUNCTIONAL CommandDoctrine = 2
+	CommandDoctrine_EFFICIENT  CommandDoctrine = 3
+)
+
+var CommandDoctrine_name = map[int32]string{
+	0: "USELESS",
+	1: "CUMBERSOME",
+	2: "FUNCTIONAL",
+	3: "EFFICIENT",
+}
+
+var CommandDoctrine_value = map[string]int32{
+	"USELESS":    0,
+	"CUMBERSOME": 1,
+	"FUNCTIONAL": 2,
+	"EFFICIENT":  3,
+}
+
+func (x CommandDoctrine) String() string {
+	return proto.EnumName(CommandDoctrine_name, int32(x))
+}
+
+func (CommandDoctrine) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{7}
+}
+
+type Order int32
+
+const (
+	Order_RESTAGE  Order = 0
+	Order_MARCH    Order = 1
+	Order_MOVE     Order = 2
+	Order_DEFEND   Order = 3
+	Order_WITHDRAW Order = 4
+	Order_ATTACK   Order = 5
+	Order_RALLY    Order = 6
+)
+
+var Order_name = map[int32]string{
+	0: "RESTAGE",
+	1: "MARCH",
+	2: "MOVE",
+	3: "DEFEND",
+	4: "WITHDRAW",
+	5: "ATTACK",
+	6: "RALLY",
+}
+
+var Order_value = map[string]int32{
+	"RESTAGE":  0,
+	"MARCH":    1,
+	"MOVE":     2,
+	"DEFEND":   3,
+	"WITHDRAW": 4,
+	"ATTACK":   5,
+	"RALLY":    6,
+}
+
+func (x Order) String() string {
+	return proto.EnumName(Order_name, int32(x))
+}
+
+func (Order) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{8}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Messages
 type StringMessage struct {
 	Value                string   `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -94,25 +462,973 @@ func (m *EmptyMessage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EmptyMessage proto.InternalMessageInfo
 
+type Grid struct {
+	X                    int64    `protobuf:"varint,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y                    int64    `protobuf:"varint,2,opt,name=y,proto3" json:"y,omitempty"`
+	Cover                bool     `protobuf:"varint,3,opt,name=cover,proto3" json:"cover,omitempty"`
+	Woods                bool     `protobuf:"varint,4,opt,name=woods,proto3" json:"woods,omitempty"`
+	Bua                  bool     `protobuf:"varint,5,opt,name=bua,proto3" json:"bua,omitempty"`
+	Fort                 bool     `protobuf:"varint,6,opt,name=fort,proto3" json:"fort,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Grid) Reset()         { *m = Grid{} }
+func (m *Grid) String() string { return proto.CompactTextString(m) }
+func (*Grid) ProtoMessage()    {}
+func (*Grid) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{2}
+}
+
+func (m *Grid) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Grid.Unmarshal(m, b)
+}
+func (m *Grid) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Grid.Marshal(b, m, deterministic)
+}
+func (m *Grid) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Grid.Merge(m, src)
+}
+func (m *Grid) XXX_Size() int {
+	return xxx_messageInfo_Grid.Size(m)
+}
+func (m *Grid) XXX_DiscardUnknown() {
+	xxx_messageInfo_Grid.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Grid proto.InternalMessageInfo
+
+func (m *Grid) GetX() int64 {
+	if m != nil {
+		return m.X
+	}
+	return 0
+}
+
+func (m *Grid) GetY() int64 {
+	if m != nil {
+		return m.Y
+	}
+	return 0
+}
+
+func (m *Grid) GetCover() bool {
+	if m != nil {
+		return m.Cover
+	}
+	return false
+}
+
+func (m *Grid) GetWoods() bool {
+	if m != nil {
+		return m.Woods
+	}
+	return false
+}
+
+func (m *Grid) GetBua() bool {
+	if m != nil {
+		return m.Bua
+	}
+	return false
+}
+
+func (m *Grid) GetFort() bool {
+	if m != nil {
+		return m.Fort
+	}
+	return false
+}
+
+type Unit struct {
+	Uuid                 string         `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Name                 string         `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Arm                  Arm            `protobuf:"varint,3,opt,name=arm,proto3,enum=rserver.Arm" json:"arm,omitempty"`
+	Type                 UnitType       `protobuf:"varint,4,opt,name=type,proto3,enum=rserver.UnitType" json:"type,omitempty"`
+	Strength             int64          `protobuf:"varint,5,opt,name=strength,proto3" json:"strength,omitempty"`
+	Hits                 int64          `protobuf:"varint,6,opt,name=hits,proto3" json:"hits,omitempty"`
+	Grade                UnitGrade      `protobuf:"varint,7,opt,name=grade,proto3,enum=rserver.UnitGrade" json:"grade,omitempty"`
+	MoraleBase           MoraleState    `protobuf:"varint,8,opt,name=moraleBase,proto3,enum=rserver.MoraleState" json:"moraleBase,omitempty"`
+	MoraleState          MoraleState    `protobuf:"varint,9,opt,name=moraleState,proto3,enum=rserver.MoraleState" json:"moraleState,omitempty"`
+	SkirmishRating       SkirmishRating `protobuf:"varint,10,opt,name=skirmishRating,proto3,enum=rserver.SkirmishRating" json:"skirmishRating,omitempty"`
+	SkirmisherMax        int64          `protobuf:"varint,11,opt,name=skirmisherMax,proto3" json:"skirmisherMax,omitempty"`
+	SkirmishersDeployed  int64          `protobuf:"varint,12,opt,name=skirmishersDeployed,proto3" json:"skirmishersDeployed,omitempty"`
+	Formation            Formation      `protobuf:"varint,13,opt,name=formation,proto3,enum=rserver.Formation" json:"formation,omitempty"`
+	ParentCommand        string         `protobuf:"bytes,14,opt,name=parentCommand,proto3" json:"parentCommand,omitempty"`
+	BnGuns               bool           `protobuf:"varint,15,opt,name=bnGuns,proto3" json:"bnGuns,omitempty"`
+	GunsDamaged          bool           `protobuf:"varint,16,opt,name=gunsDamaged,proto3" json:"gunsDamaged,omitempty"`
+	GunsDeployed         bool           `protobuf:"varint,17,opt,name=gunsDeployed,proto3" json:"gunsDeployed,omitempty"`
+	GunsStocked          bool           `protobuf:"varint,18,opt,name=gunsStocked,proto3" json:"gunsStocked,omitempty"`
+	Hidden               bool           `protobuf:"varint,19,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	HasFired             bool           `protobuf:"varint,20,opt,name=hasFired,proto3" json:"hasFired,omitempty"`
+	Fatigue              int64          `protobuf:"varint,21,opt,name=fatigue,proto3" json:"fatigue,omitempty"`
+	LowAmmo              bool           `protobuf:"varint,22,opt,name=lowAmmo,proto3" json:"lowAmmo,omitempty"`
+	Cover                int64          `protobuf:"varint,23,opt,name=cover,proto3" json:"cover,omitempty"`
+	PinCode              string         `protobuf:"bytes,24,opt,name=pinCode,proto3" json:"pinCode,omitempty"`
+	Grid                 *Grid          `protobuf:"bytes,25,opt,name=grid,proto3" json:"grid,omitempty"`
+	Instructions         string         `protobuf:"bytes,26,opt,name=instructions,proto3" json:"instructions,omitempty"`
+	ActionRequired       bool           `protobuf:"varint,27,opt,name=actionRequired,proto3" json:"actionRequired,omitempty"`
+	Objective            *Grid          `protobuf:"bytes,28,opt,name=objective,proto3" json:"objective,omitempty"`
+	MoveTo               *Grid          `protobuf:"bytes,29,opt,name=moveTo,proto3" json:"moveTo,omitempty"`
+	GunTarget            *Grid          `protobuf:"bytes,30,opt,name=gunTarget,proto3" json:"gunTarget,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *Unit) Reset()         { *m = Unit{} }
+func (m *Unit) String() string { return proto.CompactTextString(m) }
+func (*Unit) ProtoMessage()    {}
+func (*Unit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{3}
+}
+
+func (m *Unit) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Unit.Unmarshal(m, b)
+}
+func (m *Unit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Unit.Marshal(b, m, deterministic)
+}
+func (m *Unit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Unit.Merge(m, src)
+}
+func (m *Unit) XXX_Size() int {
+	return xxx_messageInfo_Unit.Size(m)
+}
+func (m *Unit) XXX_DiscardUnknown() {
+	xxx_messageInfo_Unit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Unit proto.InternalMessageInfo
+
+func (m *Unit) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Unit) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Unit) GetArm() Arm {
+	if m != nil {
+		return m.Arm
+	}
+	return Arm_SUPPORT
+}
+
+func (m *Unit) GetType() UnitType {
+	if m != nil {
+		return m.Type
+	}
+	return UnitType_SUPPORT_UNIT
+}
+
+func (m *Unit) GetStrength() int64 {
+	if m != nil {
+		return m.Strength
+	}
+	return 0
+}
+
+func (m *Unit) GetHits() int64 {
+	if m != nil {
+		return m.Hits
+	}
+	return 0
+}
+
+func (m *Unit) GetGrade() UnitGrade {
+	if m != nil {
+		return m.Grade
+	}
+	return UnitGrade_CIVILIAN
+}
+
+func (m *Unit) GetMoraleBase() MoraleState {
+	if m != nil {
+		return m.MoraleBase
+	}
+	return MoraleState_RESTING
+}
+
+func (m *Unit) GetMoraleState() MoraleState {
+	if m != nil {
+		return m.MoraleState
+	}
+	return MoraleState_RESTING
+}
+
+func (m *Unit) GetSkirmishRating() SkirmishRating {
+	if m != nil {
+		return m.SkirmishRating
+	}
+	return SkirmishRating_POOR
+}
+
+func (m *Unit) GetSkirmisherMax() int64 {
+	if m != nil {
+		return m.SkirmisherMax
+	}
+	return 0
+}
+
+func (m *Unit) GetSkirmishersDeployed() int64 {
+	if m != nil {
+		return m.SkirmishersDeployed
+	}
+	return 0
+}
+
+func (m *Unit) GetFormation() Formation {
+	if m != nil {
+		return m.Formation
+	}
+	return Formation_RESERVE
+}
+
+func (m *Unit) GetParentCommand() string {
+	if m != nil {
+		return m.ParentCommand
+	}
+	return ""
+}
+
+func (m *Unit) GetBnGuns() bool {
+	if m != nil {
+		return m.BnGuns
+	}
+	return false
+}
+
+func (m *Unit) GetGunsDamaged() bool {
+	if m != nil {
+		return m.GunsDamaged
+	}
+	return false
+}
+
+func (m *Unit) GetGunsDeployed() bool {
+	if m != nil {
+		return m.GunsDeployed
+	}
+	return false
+}
+
+func (m *Unit) GetGunsStocked() bool {
+	if m != nil {
+		return m.GunsStocked
+	}
+	return false
+}
+
+func (m *Unit) GetHidden() bool {
+	if m != nil {
+		return m.Hidden
+	}
+	return false
+}
+
+func (m *Unit) GetHasFired() bool {
+	if m != nil {
+		return m.HasFired
+	}
+	return false
+}
+
+func (m *Unit) GetFatigue() int64 {
+	if m != nil {
+		return m.Fatigue
+	}
+	return 0
+}
+
+func (m *Unit) GetLowAmmo() bool {
+	if m != nil {
+		return m.LowAmmo
+	}
+	return false
+}
+
+func (m *Unit) GetCover() int64 {
+	if m != nil {
+		return m.Cover
+	}
+	return 0
+}
+
+func (m *Unit) GetPinCode() string {
+	if m != nil {
+		return m.PinCode
+	}
+	return ""
+}
+
+func (m *Unit) GetGrid() *Grid {
+	if m != nil {
+		return m.Grid
+	}
+	return nil
+}
+
+func (m *Unit) GetInstructions() string {
+	if m != nil {
+		return m.Instructions
+	}
+	return ""
+}
+
+func (m *Unit) GetActionRequired() bool {
+	if m != nil {
+		return m.ActionRequired
+	}
+	return false
+}
+
+func (m *Unit) GetObjective() *Grid {
+	if m != nil {
+		return m.Objective
+	}
+	return nil
+}
+
+func (m *Unit) GetMoveTo() *Grid {
+	if m != nil {
+		return m.MoveTo
+	}
+	return nil
+}
+
+func (m *Unit) GetGunTarget() *Grid {
+	if m != nil {
+		return m.GunTarget
+	}
+	return nil
+}
+
+type Command struct {
+	Uuid                 string   `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Formation            string   `protobuf:"bytes,3,opt,name=formation,proto3" json:"formation,omitempty"`
+	ParentCommand        string   `protobuf:"bytes,4,opt,name=parentCommand,proto3" json:"parentCommand,omitempty"`
+	CommandRating        int64    `protobuf:"varint,5,opt,name=commandRating,proto3" json:"commandRating,omitempty"`
+	PanicState           int64    `protobuf:"varint,6,opt,name=panicState,proto3" json:"panicState,omitempty"`
+	Injured              bool     `protobuf:"varint,7,opt,name=injured,proto3" json:"injured,omitempty"`
+	Rank                 Rank     `protobuf:"varint,8,opt,name=rank,proto3,enum=rserver.Rank" json:"rank,omitempty"`
+	PinCode              string   `protobuf:"bytes,9,opt,name=pinCode,proto3" json:"pinCode,omitempty"`
+	AccessCode           string   `protobuf:"bytes,10,opt,name=accessCode,proto3" json:"accessCode,omitempty"`
+	Grid                 *Grid    `protobuf:"bytes,11,opt,name=grid,proto3" json:"grid,omitempty"`
+	ArmyID               string   `protobuf:"bytes,12,opt,name=armyID,proto3" json:"armyID,omitempty"`
+	Objective            string   `protobuf:"bytes,13,opt,name=objective,proto3" json:"objective,omitempty"`
+	Orders               Order    `protobuf:"varint,14,opt,name=orders,proto3,enum=rserver.Order" json:"orders,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Command) Reset()         { *m = Command{} }
+func (m *Command) String() string { return proto.CompactTextString(m) }
+func (*Command) ProtoMessage()    {}
+func (*Command) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{4}
+}
+
+func (m *Command) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Command.Unmarshal(m, b)
+}
+func (m *Command) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Command.Marshal(b, m, deterministic)
+}
+func (m *Command) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Command.Merge(m, src)
+}
+func (m *Command) XXX_Size() int {
+	return xxx_messageInfo_Command.Size(m)
+}
+func (m *Command) XXX_DiscardUnknown() {
+	xxx_messageInfo_Command.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Command proto.InternalMessageInfo
+
+func (m *Command) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Command) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Command) GetFormation() string {
+	if m != nil {
+		return m.Formation
+	}
+	return ""
+}
+
+func (m *Command) GetParentCommand() string {
+	if m != nil {
+		return m.ParentCommand
+	}
+	return ""
+}
+
+func (m *Command) GetCommandRating() int64 {
+	if m != nil {
+		return m.CommandRating
+	}
+	return 0
+}
+
+func (m *Command) GetPanicState() int64 {
+	if m != nil {
+		return m.PanicState
+	}
+	return 0
+}
+
+func (m *Command) GetInjured() bool {
+	if m != nil {
+		return m.Injured
+	}
+	return false
+}
+
+func (m *Command) GetRank() Rank {
+	if m != nil {
+		return m.Rank
+	}
+	return Rank_BATTALION
+}
+
+func (m *Command) GetPinCode() string {
+	if m != nil {
+		return m.PinCode
+	}
+	return ""
+}
+
+func (m *Command) GetAccessCode() string {
+	if m != nil {
+		return m.AccessCode
+	}
+	return ""
+}
+
+func (m *Command) GetGrid() *Grid {
+	if m != nil {
+		return m.Grid
+	}
+	return nil
+}
+
+func (m *Command) GetArmyID() string {
+	if m != nil {
+		return m.ArmyID
+	}
+	return ""
+}
+
+func (m *Command) GetObjective() string {
+	if m != nil {
+		return m.Objective
+	}
+	return ""
+}
+
+func (m *Command) GetOrders() Order {
+	if m != nil {
+		return m.Orders
+	}
+	return Order_RESTAGE
+}
+
+type Army struct {
+	Uuid                 string          `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Name                 string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Period               string          `protobuf:"bytes,3,opt,name=period,proto3" json:"period,omitempty"`
+	Doctrine             CommandDoctrine `protobuf:"varint,4,opt,name=doctrine,proto3,enum=rserver.CommandDoctrine" json:"doctrine,omitempty"`
+	CommanderID          string          `protobuf:"bytes,5,opt,name=commanderID,proto3" json:"commanderID,omitempty"`
+	AccessCode           string          `protobuf:"bytes,6,opt,name=accessCode,proto3" json:"accessCode,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *Army) Reset()         { *m = Army{} }
+func (m *Army) String() string { return proto.CompactTextString(m) }
+func (*Army) ProtoMessage()    {}
+func (*Army) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{5}
+}
+
+func (m *Army) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Army.Unmarshal(m, b)
+}
+func (m *Army) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Army.Marshal(b, m, deterministic)
+}
+func (m *Army) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Army.Merge(m, src)
+}
+func (m *Army) XXX_Size() int {
+	return xxx_messageInfo_Army.Size(m)
+}
+func (m *Army) XXX_DiscardUnknown() {
+	xxx_messageInfo_Army.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Army proto.InternalMessageInfo
+
+func (m *Army) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Army) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Army) GetPeriod() string {
+	if m != nil {
+		return m.Period
+	}
+	return ""
+}
+
+func (m *Army) GetDoctrine() CommandDoctrine {
+	if m != nil {
+		return m.Doctrine
+	}
+	return CommandDoctrine_USELESS
+}
+
+func (m *Army) GetCommanderID() string {
+	if m != nil {
+		return m.CommanderID
+	}
+	return ""
+}
+
+func (m *Army) GetAccessCode() string {
+	if m != nil {
+		return m.AccessCode
+	}
+	return ""
+}
+
+type ScenarioCommand struct {
+	Uuid                 string   `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	ArmyID               string   `protobuf:"bytes,2,opt,name=armyID,proto3" json:"armyID,omitempty"`
+	CommandID            string   `protobuf:"bytes,3,opt,name=commandID,proto3" json:"commandID,omitempty"`
+	Briefing             string   `protobuf:"bytes,4,opt,name=briefing,proto3" json:"briefing,omitempty"`
+	StartLocation        *Grid    `protobuf:"bytes,5,opt,name=startLocation,proto3" json:"startLocation,omitempty"`
+	Objective            string   `protobuf:"bytes,6,opt,name=objective,proto3" json:"objective,omitempty"`
+	Orders               Order    `protobuf:"varint,7,opt,name=orders,proto3,enum=rserver.Order" json:"orders,omitempty"`
+	PlayerName           string   `protobuf:"bytes,8,opt,name=playerName,proto3" json:"playerName,omitempty"`
+	PlayerEmail          string   `protobuf:"bytes,9,opt,name=playerEmail,proto3" json:"playerEmail,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ScenarioCommand) Reset()         { *m = ScenarioCommand{} }
+func (m *ScenarioCommand) String() string { return proto.CompactTextString(m) }
+func (*ScenarioCommand) ProtoMessage()    {}
+func (*ScenarioCommand) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{6}
+}
+
+func (m *ScenarioCommand) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ScenarioCommand.Unmarshal(m, b)
+}
+func (m *ScenarioCommand) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ScenarioCommand.Marshal(b, m, deterministic)
+}
+func (m *ScenarioCommand) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScenarioCommand.Merge(m, src)
+}
+func (m *ScenarioCommand) XXX_Size() int {
+	return xxx_messageInfo_ScenarioCommand.Size(m)
+}
+func (m *ScenarioCommand) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScenarioCommand.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScenarioCommand proto.InternalMessageInfo
+
+func (m *ScenarioCommand) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetArmyID() string {
+	if m != nil {
+		return m.ArmyID
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetCommandID() string {
+	if m != nil {
+		return m.CommandID
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetBriefing() string {
+	if m != nil {
+		return m.Briefing
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetStartLocation() *Grid {
+	if m != nil {
+		return m.StartLocation
+	}
+	return nil
+}
+
+func (m *ScenarioCommand) GetObjective() string {
+	if m != nil {
+		return m.Objective
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetOrders() Order {
+	if m != nil {
+		return m.Orders
+	}
+	return Order_RESTAGE
+}
+
+func (m *ScenarioCommand) GetPlayerName() string {
+	if m != nil {
+		return m.PlayerName
+	}
+	return ""
+}
+
+func (m *ScenarioCommand) GetPlayerEmail() string {
+	if m != nil {
+		return m.PlayerEmail
+	}
+	return ""
+}
+
+type Scenario struct {
+	Uuid                 string             `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Background           string             `protobuf:"bytes,2,opt,name=background,proto3" json:"background,omitempty"`
+	PlayerCommands       []*ScenarioCommand `protobuf:"bytes,3,rep,name=playerCommands,proto3" json:"playerCommands,omitempty"`
+	Armies               []*Army            `protobuf:"bytes,4,rep,name=armies,proto3" json:"armies,omitempty"`
+	Commands             []*Command         `protobuf:"bytes,5,rep,name=commands,proto3" json:"commands,omitempty"`
+	Units                []*Unit            `protobuf:"bytes,6,rep,name=units,proto3" json:"units,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *Scenario) Reset()         { *m = Scenario{} }
+func (m *Scenario) String() string { return proto.CompactTextString(m) }
+func (*Scenario) ProtoMessage()    {}
+func (*Scenario) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{7}
+}
+
+func (m *Scenario) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Scenario.Unmarshal(m, b)
+}
+func (m *Scenario) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Scenario.Marshal(b, m, deterministic)
+}
+func (m *Scenario) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Scenario.Merge(m, src)
+}
+func (m *Scenario) XXX_Size() int {
+	return xxx_messageInfo_Scenario.Size(m)
+}
+func (m *Scenario) XXX_DiscardUnknown() {
+	xxx_messageInfo_Scenario.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Scenario proto.InternalMessageInfo
+
+func (m *Scenario) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Scenario) GetBackground() string {
+	if m != nil {
+		return m.Background
+	}
+	return ""
+}
+
+func (m *Scenario) GetPlayerCommands() []*ScenarioCommand {
+	if m != nil {
+		return m.PlayerCommands
+	}
+	return nil
+}
+
+func (m *Scenario) GetArmies() []*Army {
+	if m != nil {
+		return m.Armies
+	}
+	return nil
+}
+
+func (m *Scenario) GetCommands() []*Command {
+	if m != nil {
+		return m.Commands
+	}
+	return nil
+}
+
+func (m *Scenario) GetUnits() []*Unit {
+	if m != nil {
+		return m.Units
+	}
+	return nil
+}
+
+type Game struct {
+	Uuid                 string             `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	ScenarioID           string             `protobuf:"bytes,2,opt,name=scenarioID,proto3" json:"scenarioID,omitempty"`
+	PlayerCommands       []*ScenarioCommand `protobuf:"bytes,4,rep,name=playerCommands,proto3" json:"playerCommands,omitempty"`
+	Armies               []*Army            `protobuf:"bytes,5,rep,name=armies,proto3" json:"armies,omitempty"`
+	Commands             []*Command         `protobuf:"bytes,6,rep,name=commands,proto3" json:"commands,omitempty"`
+	Units                []*Unit            `protobuf:"bytes,7,rep,name=units,proto3" json:"units,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *Game) Reset()         { *m = Game{} }
+func (m *Game) String() string { return proto.CompactTextString(m) }
+func (*Game) ProtoMessage()    {}
+func (*Game) Descriptor() ([]byte, []int) {
+	return fileDescriptor_97a17fc4fd0cfe3c, []int{8}
+}
+
+func (m *Game) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Game.Unmarshal(m, b)
+}
+func (m *Game) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Game.Marshal(b, m, deterministic)
+}
+func (m *Game) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Game.Merge(m, src)
+}
+func (m *Game) XXX_Size() int {
+	return xxx_messageInfo_Game.Size(m)
+}
+func (m *Game) XXX_DiscardUnknown() {
+	xxx_messageInfo_Game.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Game proto.InternalMessageInfo
+
+func (m *Game) GetUuid() string {
+	if m != nil {
+		return m.Uuid
+	}
+	return ""
+}
+
+func (m *Game) GetScenarioID() string {
+	if m != nil {
+		return m.ScenarioID
+	}
+	return ""
+}
+
+func (m *Game) GetPlayerCommands() []*ScenarioCommand {
+	if m != nil {
+		return m.PlayerCommands
+	}
+	return nil
+}
+
+func (m *Game) GetArmies() []*Army {
+	if m != nil {
+		return m.Armies
+	}
+	return nil
+}
+
+func (m *Game) GetCommands() []*Command {
+	if m != nil {
+		return m.Commands
+	}
+	return nil
+}
+
+func (m *Game) GetUnits() []*Unit {
+	if m != nil {
+		return m.Units
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterEnum("rserver.Arm", Arm_name, Arm_value)
+	proto.RegisterEnum("rserver.UnitType", UnitType_name, UnitType_value)
+	proto.RegisterEnum("rserver.UnitGrade", UnitGrade_name, UnitGrade_value)
+	proto.RegisterEnum("rserver.MoraleState", MoraleState_name, MoraleState_value)
+	proto.RegisterEnum("rserver.Formation", Formation_name, Formation_value)
+	proto.RegisterEnum("rserver.Rank", Rank_name, Rank_value)
+	proto.RegisterEnum("rserver.SkirmishRating", SkirmishRating_name, SkirmishRating_value)
+	proto.RegisterEnum("rserver.CommandDoctrine", CommandDoctrine_name, CommandDoctrine_value)
+	proto.RegisterEnum("rserver.Order", Order_name, Order_value)
 	proto.RegisterType((*StringMessage)(nil), "rserver.StringMessage")
 	proto.RegisterType((*EmptyMessage)(nil), "rserver.EmptyMessage")
+	proto.RegisterType((*Grid)(nil), "rserver.Grid")
+	proto.RegisterType((*Unit)(nil), "rserver.Unit")
+	proto.RegisterType((*Command)(nil), "rserver.Command")
+	proto.RegisterType((*Army)(nil), "rserver.Army")
+	proto.RegisterType((*ScenarioCommand)(nil), "rserver.ScenarioCommand")
+	proto.RegisterType((*Scenario)(nil), "rserver.Scenario")
+	proto.RegisterType((*Game)(nil), "rserver.Game")
 }
 
 func init() { proto.RegisterFile("rserver.proto", fileDescriptor_97a17fc4fd0cfe3c) }
 
 var fileDescriptor_97a17fc4fd0cfe3c = []byte{
-	// 150 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2d, 0x2a, 0x4e, 0x2d,
-	0x2a, 0x4b, 0x2d, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x87, 0x72, 0x95, 0x54, 0xb9,
-	0x78, 0x83, 0x4b, 0x8a, 0x32, 0xf3, 0xd2, 0x7d, 0x53, 0x8b, 0x8b, 0x13, 0xd3, 0x53, 0x85, 0x44,
-	0xb8, 0x58, 0xcb, 0x12, 0x73, 0x4a, 0x53, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0x20, 0x1c,
-	0x25, 0x3e, 0x2e, 0x1e, 0xd7, 0xdc, 0x82, 0x92, 0x4a, 0xa8, 0x2a, 0xa3, 0x66, 0x46, 0x2e, 0x6e,
-	0xf7, 0xc4, 0xdc, 0xd4, 0xe0, 0xd4, 0xa2, 0xb2, 0xcc, 0xe4, 0x54, 0x21, 0x0b, 0x2e, 0x16, 0xd7,
-	0xe4, 0x8c, 0x7c, 0x21, 0x31, 0x3d, 0x98, 0x3d, 0x28, 0xa6, 0x4a, 0xe1, 0x10, 0x57, 0x62, 0x10,
-	0xb2, 0xe2, 0x62, 0x0f, 0x4b, 0x2d, 0x2a, 0xce, 0xcc, 0xcf, 0x13, 0x12, 0x85, 0x2b, 0x42, 0xb6,
-	0x0b, 0xb7, 0xde, 0x24, 0x36, 0xb0, 0x67, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x51, 0x88,
-	0x1e, 0x97, 0xdd, 0x00, 0x00, 0x00,
+	// 1737 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0xdd, 0x6e, 0xe3, 0xb8,
+	0x15, 0x8e, 0xe3, 0xff, 0xe3, 0xd8, 0xc3, 0xe1, 0x64, 0xb3, 0xea, 0x74, 0x1b, 0xa4, 0xee, 0xce,
+	0x22, 0x48, 0x8b, 0xc5, 0x22, 0xbb, 0x28, 0x8a, 0xde, 0xb4, 0x8a, 0x45, 0x3b, 0xc2, 0xc8, 0x52,
+	0x4a, 0xc9, 0x99, 0x66, 0x51, 0x20, 0x50, 0x6c, 0x8e, 0xa3, 0x4d, 0x24, 0xa5, 0x94, 0x9c, 0x1d,
+	0x5f, 0x17, 0xe8, 0x0b, 0xf4, 0x51, 0x5a, 0xf4, 0xae, 0x7d, 0xac, 0x5e, 0xf4, 0xaa, 0x38, 0xd4,
+	0x8f, 0x7f, 0x90, 0x0c, 0x06, 0xbd, 0xe3, 0xf9, 0xbe, 0xc3, 0xc3, 0xc3, 0xef, 0x1c, 0x52, 0x14,
+	0x74, 0x65, 0x22, 0xe4, 0xa3, 0x90, 0x5f, 0x3f, 0xc8, 0x38, 0x8d, 0x69, 0x33, 0x37, 0xfb, 0x6f,
+	0xa0, 0xeb, 0xa6, 0x32, 0x88, 0xe6, 0x63, 0x91, 0x24, 0xfe, 0x5c, 0xd0, 0x7d, 0xa8, 0x3f, 0xfa,
+	0xf7, 0x0b, 0xa1, 0x55, 0x8e, 0x2a, 0xc7, 0x6d, 0x9e, 0x19, 0xfd, 0x1e, 0xec, 0xb1, 0xf0, 0x21,
+	0x5d, 0xe6, 0x5e, 0xfd, 0x14, 0x6a, 0x23, 0x19, 0xcc, 0xe8, 0x1e, 0x54, 0x3e, 0x28, 0xcf, 0x2a,
+	0xaf, 0x7c, 0x40, 0x6b, 0xa9, 0xed, 0x66, 0xd6, 0x12, 0x23, 0x4d, 0xe3, 0x47, 0x21, 0xb5, 0xea,
+	0x51, 0xe5, 0xb8, 0xc5, 0x33, 0x03, 0xd1, 0x1f, 0xe3, 0x78, 0x96, 0x68, 0xb5, 0x0c, 0x55, 0x06,
+	0x25, 0x50, 0xbd, 0x59, 0xf8, 0x5a, 0x5d, 0x61, 0x38, 0xa4, 0x14, 0x6a, 0xef, 0x63, 0x99, 0x6a,
+	0x0d, 0x05, 0xa9, 0x71, 0xff, 0x9f, 0x2d, 0xa8, 0x4d, 0xa2, 0x20, 0x45, 0x72, 0xb1, 0x08, 0x66,
+	0x79, 0x8e, 0x6a, 0x8c, 0x58, 0xe4, 0x87, 0x42, 0xad, 0xdf, 0xe6, 0x6a, 0x4c, 0x0f, 0xa1, 0xea,
+	0xcb, 0x50, 0x25, 0xd0, 0x3b, 0xdd, 0xfb, 0xba, 0xd0, 0x40, 0x97, 0x21, 0x47, 0x82, 0xbe, 0x81,
+	0x5a, 0xba, 0x7c, 0x10, 0x2a, 0x97, 0xde, 0xe9, 0xcb, 0xd2, 0x01, 0x17, 0xf1, 0x96, 0x0f, 0x82,
+	0x2b, 0x9a, 0xbe, 0x86, 0x56, 0x92, 0x4a, 0x11, 0xcd, 0xd3, 0x5b, 0x95, 0x62, 0x95, 0x97, 0x36,
+	0x2e, 0x7b, 0x1b, 0xa4, 0x89, 0xca, 0xb3, 0xca, 0xd5, 0x98, 0x1e, 0x43, 0x7d, 0x2e, 0xfd, 0x99,
+	0xd0, 0x9a, 0x2a, 0x2e, 0xdd, 0x88, 0x3b, 0x42, 0x86, 0x67, 0x0e, 0xf4, 0x3b, 0x80, 0x30, 0x96,
+	0xfe, 0xbd, 0x38, 0xf3, 0x13, 0xa1, 0xb5, 0x94, 0xfb, 0x7e, 0xe9, 0x3e, 0x56, 0x94, 0x9b, 0xfa,
+	0xa9, 0xe0, 0x6b, 0x7e, 0xf4, 0xd7, 0xd0, 0x09, 0x57, 0x94, 0xd6, 0xfe, 0xc8, 0xb4, 0x75, 0x47,
+	0xfa, 0x3b, 0xe8, 0x25, 0x77, 0x81, 0x0c, 0x83, 0xe4, 0x96, 0xfb, 0x69, 0x10, 0xcd, 0x35, 0x50,
+	0x53, 0x3f, 0x2f, 0xa7, 0xba, 0x1b, 0x34, 0xdf, 0x72, 0xa7, 0x5f, 0x42, 0xb7, 0x40, 0x84, 0x1c,
+	0xfb, 0x1f, 0xb4, 0x8e, 0xda, 0xf5, 0x26, 0x48, 0xbf, 0x81, 0x57, 0x2b, 0x20, 0x31, 0xc4, 0xc3,
+	0x7d, 0xbc, 0x14, 0x33, 0x6d, 0x4f, 0xf9, 0x3e, 0x45, 0xd1, 0x6f, 0xa0, 0xfd, 0x3e, 0x96, 0xa1,
+	0x9f, 0x06, 0x71, 0xa4, 0x75, 0xb7, 0x44, 0x1b, 0x16, 0x0c, 0x5f, 0x39, 0x61, 0x26, 0x0f, 0xbe,
+	0x14, 0x51, 0x3a, 0x88, 0xc3, 0xd0, 0x8f, 0x66, 0x5a, 0x4f, 0x95, 0x7d, 0x13, 0xa4, 0x07, 0xd0,
+	0xb8, 0x89, 0x46, 0x8b, 0x28, 0xd1, 0x5e, 0xa8, 0x36, 0xca, 0x2d, 0x7a, 0x04, 0x9d, 0xf9, 0x22,
+	0x4a, 0x0c, 0x3f, 0xf4, 0xe7, 0x62, 0xa6, 0x11, 0x45, 0xae, 0x43, 0xb4, 0x0f, 0x7b, 0xca, 0x2c,
+	0x92, 0x7f, 0xa9, 0x5c, 0x36, 0xb0, 0x22, 0x8a, 0x9b, 0xc6, 0xd3, 0x3b, 0x31, 0xd3, 0xe8, 0x2a,
+	0x4a, 0x0e, 0xe1, 0xfa, 0xb7, 0xc1, 0x6c, 0x26, 0x22, 0xed, 0x55, 0xb6, 0x7e, 0x66, 0x61, 0x43,
+	0xdd, 0xfa, 0xc9, 0x30, 0x90, 0x62, 0xa6, 0xed, 0x2b, 0xa6, 0xb4, 0xa9, 0x06, 0xcd, 0xf7, 0x7e,
+	0x1a, 0xcc, 0x17, 0x42, 0xfb, 0x4c, 0x29, 0x56, 0x98, 0xc8, 0xdc, 0xc7, 0x3f, 0xea, 0x61, 0x18,
+	0x6b, 0x07, 0x6a, 0x52, 0x61, 0xae, 0x8e, 0xda, 0xe7, 0x6a, 0x46, 0x7e, 0xd4, 0x34, 0x68, 0x3e,
+	0x04, 0xd1, 0x20, 0x9e, 0x09, 0x4d, 0x53, 0xea, 0x14, 0x26, 0xfd, 0x39, 0xd4, 0xe6, 0x32, 0x98,
+	0x69, 0x3f, 0x39, 0xaa, 0x1c, 0x77, 0x4e, 0xbb, 0xa5, 0xd4, 0x78, 0xa6, 0xb9, 0xa2, 0x50, 0x80,
+	0x20, 0x4a, 0x52, 0xb9, 0x98, 0xa2, 0xde, 0x89, 0xf6, 0x5a, 0x45, 0xd8, 0xc0, 0xe8, 0x57, 0xd0,
+	0xf3, 0xd5, 0x90, 0x8b, 0x3f, 0x2f, 0xd4, 0x66, 0x7e, 0xaa, 0xf2, 0xda, 0x42, 0xe9, 0x2f, 0xa1,
+	0x1d, 0xdf, 0xfc, 0x20, 0xa6, 0x69, 0xf0, 0x28, 0xb4, 0x2f, 0x9e, 0x5a, 0x73, 0xc5, 0xd3, 0x37,
+	0xd0, 0x08, 0xe3, 0x47, 0xe1, 0xc5, 0xda, 0xcf, 0x9e, 0xf2, 0xcc, 0x49, 0x8c, 0x39, 0x5f, 0x44,
+	0x9e, 0x2f, 0xe7, 0x22, 0xd5, 0x0e, 0x9f, 0x8c, 0x59, 0xf2, 0xfd, 0xbf, 0x57, 0xa1, 0x59, 0xf4,
+	0xc4, 0xa7, 0xde, 0x1d, 0x5f, 0xac, 0xf7, 0x64, 0x55, 0x11, 0x1f, 0xeb, 0xbf, 0xda, 0x53, 0xfd,
+	0xf7, 0x25, 0x74, 0xa7, 0xd9, 0x30, 0x3f, 0x6f, 0xd9, 0xed, 0xb1, 0x09, 0xd2, 0x43, 0x80, 0x07,
+	0x3f, 0x0a, 0xa6, 0xd9, 0x69, 0xce, 0x2e, 0x92, 0x35, 0x04, 0xeb, 0x18, 0x44, 0x3f, 0x2c, 0x50,
+	0xdf, 0x66, 0x56, 0xf7, 0xdc, 0xc4, 0x3a, 0x4a, 0x3f, 0xba, 0xcb, 0x2f, 0x8e, 0xd5, 0xfe, 0xb9,
+	0x1f, 0xdd, 0x71, 0x45, 0xad, 0x37, 0x41, 0x7b, 0xb3, 0x09, 0x0e, 0x01, 0xfc, 0xe9, 0x54, 0x24,
+	0x89, 0x22, 0x41, 0x91, 0x6b, 0x48, 0xd9, 0x24, 0x9d, 0xe7, 0x9b, 0xe4, 0x00, 0x1a, 0xbe, 0x0c,
+	0x97, 0xa6, 0xa1, 0x0e, 0x77, 0x9b, 0xe7, 0x16, 0x6a, 0xb7, 0x2a, 0x78, 0x37, 0xd3, 0x6e, 0x55,
+	0xe1, 0xaf, 0xa0, 0x11, 0xcb, 0x99, 0x90, 0x89, 0x3a, 0xb4, 0xbd, 0xd3, 0x5e, 0x19, 0xda, 0x41,
+	0x98, 0xe7, 0x6c, 0xff, 0xdf, 0x15, 0xa8, 0xe9, 0x32, 0x5c, 0x7e, 0x72, 0xc9, 0x0e, 0xa0, 0xf1,
+	0x20, 0x64, 0x10, 0xcf, 0xf2, 0x7a, 0xe5, 0x16, 0xfd, 0x0e, 0x5a, 0xb3, 0x78, 0x8a, 0x9f, 0xb9,
+	0xe2, 0xaa, 0xd7, 0xca, 0x25, 0xf3, 0x52, 0x19, 0x39, 0xcf, 0x4b, 0x4f, 0x3c, 0xde, 0x79, 0x9d,
+	0x84, 0x34, 0x0d, 0x55, 0xba, 0x36, 0x5f, 0x87, 0xb6, 0x14, 0x6c, 0x6c, 0x2b, 0xd8, 0xff, 0xc7,
+	0x2e, 0xbc, 0x70, 0xa7, 0x22, 0xf2, 0x65, 0x10, 0x7f, 0xac, 0xfd, 0x56, 0x32, 0xee, 0x6e, 0xcb,
+	0x98, 0x2f, 0x67, 0x1a, 0x45, 0x0b, 0x96, 0x00, 0x5e, 0x22, 0x37, 0x32, 0x10, 0xef, 0xb1, 0xaf,
+	0xb2, 0xee, 0x2b, 0x6d, 0xfa, 0x2d, 0x74, 0x93, 0xd4, 0x97, 0xa9, 0x15, 0x4f, 0xb3, 0x06, 0xae,
+	0x3f, 0x55, 0xc4, 0x4d, 0x9f, 0xcd, 0xaa, 0x35, 0x9e, 0xaf, 0x5a, 0xf3, 0x63, 0x55, 0x53, 0xdd,
+	0x7c, 0xef, 0x2f, 0x85, 0xb4, 0xb1, 0x3c, 0xad, 0x4c, 0x94, 0x15, 0x82, 0xb2, 0x66, 0x16, 0x0b,
+	0xfd, 0xe0, 0x3e, 0x6f, 0xca, 0x75, 0xa8, 0xff, 0xdf, 0x0a, 0xb4, 0x0a, 0xd9, 0x9e, 0xd4, 0xeb,
+	0x10, 0xe0, 0xc6, 0x9f, 0xde, 0xcd, 0x65, 0xbc, 0x88, 0x66, 0xb9, 0x66, 0x6b, 0x08, 0xfd, 0x3d,
+	0xf4, 0xb2, 0x78, 0xb9, 0xe8, 0x89, 0x56, 0x3d, 0xaa, 0x1e, 0x77, 0xd6, 0xaa, 0xbe, 0x55, 0x15,
+	0xbe, 0xe5, 0x8f, 0x97, 0x90, 0x2f, 0xc3, 0x40, 0xe0, 0x33, 0xa5, 0xba, 0x21, 0x1c, 0x36, 0x24,
+	0xcf, 0x49, 0xfa, 0x2b, 0x68, 0x4d, 0x8b, 0x25, 0xea, 0xca, 0x91, 0x6c, 0x37, 0x16, 0x2f, 0x3d,
+	0xe8, 0x2f, 0xa0, 0xbe, 0x88, 0xb2, 0xb7, 0xc2, 0x66, 0x4c, 0x7c, 0x16, 0xf0, 0x8c, 0xeb, 0xff,
+	0xa7, 0x02, 0xb5, 0x11, 0xea, 0xf4, 0xcc, 0xc6, 0x93, 0x3c, 0xf3, 0xb2, 0x59, 0xd6, 0x90, 0x27,
+	0x36, 0x5e, 0xfb, 0xbf, 0x37, 0x5e, 0xff, 0xd4, 0x8d, 0x37, 0x3e, 0x7d, 0xe3, 0xcd, 0xe7, 0x37,
+	0x7e, 0x62, 0x42, 0x55, 0x97, 0x21, 0xed, 0x40, 0xd3, 0x9d, 0x5c, 0x5c, 0x38, 0xdc, 0x23, 0x3b,
+	0x74, 0x0f, 0x5a, 0xa6, 0x3d, 0xd4, 0x6d, 0x8f, 0x5f, 0x91, 0x0a, 0x52, 0x03, 0xfd, 0x52, 0xb7,
+	0xf8, 0x15, 0xd9, 0xa5, 0x5d, 0x68, 0xeb, 0xdc, 0x33, 0x2d, 0x8b, 0xf1, 0x2b, 0x52, 0x55, 0x9c,
+	0x33, 0x1e, 0xeb, 0xb6, 0x41, 0x6a, 0x27, 0xff, 0xda, 0x85, 0x56, 0xf1, 0x84, 0xa3, 0x04, 0xf6,
+	0xf2, 0x80, 0xd7, 0x13, 0xdb, 0xc4, 0xa8, 0x2f, 0xa1, 0x5b, 0x44, 0xbd, 0xb6, 0x4c, 0x9b, 0x91,
+	0x0a, 0xa5, 0xd0, 0x5b, 0x83, 0x46, 0xe7, 0x1e, 0xd9, 0xdd, 0xc0, 0x46, 0x13, 0x9d, 0x1b, 0xa4,
+	0x4a, 0xf7, 0x81, 0x94, 0xd8, 0xd8, 0xb4, 0x4c, 0xcf, 0xd4, 0x49, 0x0d, 0x03, 0xe6, 0x89, 0xe5,
+	0x93, 0xeb, 0x38, 0xb9, 0x80, 0xce, 0x27, 0xae, 0xab, 0x73, 0xd2, 0xa0, 0xaf, 0xe0, 0x45, 0x81,
+	0x19, 0x5c, 0x1f, 0x39, 0x8e, 0x4d, 0x9a, 0xf4, 0x00, 0x68, 0x01, 0x0e, 0x26, 0x26, 0xd7, 0x5d,
+	0xd7, 0x64, 0x9c, 0xb4, 0xd6, 0x9d, 0x07, 0x8e, 0xeb, 0xea, 0x83, 0xb7, 0xa4, 0x8d, 0x7b, 0x29,
+	0x37, 0x7d, 0x7d, 0x66, 0x13, 0x40, 0xb7, 0x15, 0x92, 0x2d, 0xde, 0xc1, 0x2c, 0x57, 0xe0, 0x98,
+	0x19, 0xe6, 0x64, 0x4c, 0xf6, 0x36, 0x5d, 0xcf, 0x99, 0x7e, 0x79, 0x45, 0xba, 0x5b, 0xa0, 0xc3,
+	0x5d, 0x46, 0x7a, 0x27, 0xdf, 0x43, 0xbb, 0x7c, 0xa9, 0x62, 0x0d, 0x06, 0xe6, 0xa5, 0x69, 0x99,
+	0xba, 0x4d, 0x76, 0x50, 0xe7, 0x62, 0xdf, 0x15, 0xac, 0xc1, 0xc0, 0xb1, 0xdd, 0x01, 0x37, 0x2f,
+	0x50, 0xb0, 0x0e, 0x34, 0x39, 0x1b, 0x4d, 0x2c, 0x9d, 0x67, 0x05, 0xb9, 0x64, 0x1e, 0xe3, 0xba,
+	0x4d, 0x6a, 0xb4, 0x0d, 0x75, 0x66, 0x99, 0x1e, 0x23, 0xf5, 0x93, 0x3f, 0x41, 0x67, 0xed, 0x7d,
+	0x9a, 0xcd, 0x71, 0x3d, 0xd3, 0x1e, 0x91, 0x1d, 0xda, 0x82, 0xda, 0xc8, 0x71, 0x0c, 0x52, 0xc1,
+	0x45, 0x27, 0xf6, 0xd0, 0xe1, 0x63, 0x66, 0xe4, 0x81, 0x75, 0xcf, 0xb3, 0x18, 0x96, 0x00, 0xa0,
+	0xe1, 0x9e, 0xeb, 0x6f, 0x19, 0xc6, 0x7d, 0x01, 0x1d, 0x83, 0x8d, 0x1d, 0xae, 0x5b, 0xa6, 0xcb,
+	0x0c, 0x52, 0x3f, 0xf9, 0x6b, 0x05, 0xda, 0xe5, 0x7b, 0x31, 0x0f, 0xce, 0xf8, 0x25, 0x23, 0x3b,
+	0xa8, 0xdd, 0x58, 0xe7, 0x83, 0xf3, 0xeb, 0x81, 0x63, 0x4d, 0xc6, 0x36, 0xa9, 0x60, 0xd9, 0x74,
+	0xcf, 0xd3, 0x07, 0x6f, 0x0b, 0x68, 0x17, 0x33, 0x50, 0x1d, 0xa1, 0xf2, 0x67, 0x83, 0x73, 0x66,
+	0x39, 0xb8, 0xce, 0x3e, 0x90, 0xbc, 0x87, 0x4c, 0x7b, 0xa4, 0x7a, 0xc6, 0x25, 0x75, 0x74, 0x31,
+	0xd8, 0x99, 0x6e, 0x1b, 0x8c, 0x34, 0x50, 0x8b, 0x21, 0xf2, 0x43, 0x93, 0x19, 0xa4, 0x79, 0xf2,
+	0xb7, 0x0a, 0xd4, 0xf0, 0x2b, 0x8c, 0xf8, 0x19, 0xae, 0x62, 0x99, 0x4e, 0xae, 0xdf, 0x19, 0x37,
+	0x47, 0xba, 0xc1, 0xb2, 0x5d, 0x1a, 0xe6, 0xa5, 0xe9, 0x22, 0xb5, 0x8b, 0x22, 0x0d, 0x1c, 0x7e,
+	0xe1, 0x92, 0x2a, 0xa6, 0xf1, 0x0e, 0x25, 0xa9, 0xe1, 0x48, 0xe7, 0xe3, 0x2b, 0x52, 0xc7, 0x4a,
+	0xd9, 0xba, 0x67, 0x3a, 0xb6, 0x6e, 0x5d, 0x5b, 0x4c, 0x37, 0x18, 0xb6, 0x14, 0x86, 0xd3, 0x3d,
+	0x0f, 0xcf, 0x40, 0x13, 0xd5, 0x28, 0x5a, 0xe6, 0xcc, 0x60, 0xa4, 0xb5, 0x0e, 0x18, 0xe6, 0x25,
+	0x69, 0x9f, 0x8c, 0xa0, 0xb7, 0xf9, 0xc2, 0xc7, 0xf8, 0x17, 0x8e, 0xc3, 0xb3, 0xb3, 0xa6, 0x1b,
+	0xec, 0x0f, 0x13, 0xdd, 0xc3, 0xd4, 0x7a, 0x00, 0x03, 0x8e, 0xd2, 0xb8, 0xe7, 0x8e, 0x97, 0x1d,
+	0x37, 0xf6, 0xc7, 0x01, 0xb3, 0x2c, 0x66, 0x7b, 0xa4, 0x7a, 0x32, 0x86, 0x17, 0x5b, 0x1f, 0x4e,
+	0x4c, 0x65, 0xe2, 0x32, 0x8b, 0xb9, 0x2e, 0xd9, 0x51, 0xd3, 0x27, 0xe3, 0x33, 0xc6, 0x5d, 0x67,
+	0x9c, 0x87, 0x1b, 0x4e, 0xec, 0x41, 0x96, 0x7e, 0x1e, 0x6e, 0x38, 0x34, 0x07, 0x66, 0x16, 0xee,
+	0x7b, 0xa8, 0xab, 0x8f, 0x48, 0xd1, 0x0e, 0xfa, 0x08, 0x2b, 0xd6, 0x86, 0xba, 0xaa, 0x18, 0xa9,
+	0x60, 0x9a, 0x63, 0xe7, 0x92, 0x91, 0x5d, 0x2c, 0xbf, 0xc1, 0x86, 0xcc, 0xc6, 0x56, 0xd8, 0x83,
+	0xd6, 0x3b, 0xd3, 0x3b, 0x37, 0xb8, 0xfe, 0x8e, 0xd4, 0x90, 0xc9, 0xca, 0x49, 0xea, 0x38, 0x95,
+	0xeb, 0x96, 0x75, 0x45, 0x1a, 0xa7, 0x7f, 0xa9, 0x40, 0x07, 0x2f, 0x54, 0x57, 0xc8, 0xc7, 0x60,
+	0x2a, 0xe8, 0x6f, 0xa0, 0xc6, 0xa6, 0xb7, 0x31, 0x3d, 0x58, 0xdd, 0x89, 0xeb, 0x3f, 0xc0, 0xaf,
+	0x9f, 0xc1, 0xfb, 0x3b, 0xf4, 0xb7, 0xd0, 0xbc, 0x14, 0x32, 0xc1, 0xce, 0xfa, 0xac, 0x74, 0x5a,
+	0xff, 0x2d, 0x7e, 0x7e, 0xee, 0x4d, 0x43, 0xfd, 0x77, 0x7f, 0xfb, 0xbf, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x16, 0x2e, 0x41, 0x41, 0x88, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

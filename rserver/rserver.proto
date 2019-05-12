@@ -1,6 +1,15 @@
 syntax = "proto3";
 package rserver;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RPCs
+service GameService {
+  rpc Echo(StringMessage) returns (StringMessage) {}
+  rpc Version(EmptyMessage) returns (StringMessage) {}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Messages
 message StringMessage {
   string value = 1;
 }
@@ -9,7 +18,198 @@ message EmptyMessage {
   // empty
 }
 
-service GameService {
-  rpc Echo(StringMessage) returns (StringMessage) {}
-  rpc Version(EmptyMessage) returns (StringMessage) {}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Types
+
+message Grid {
+  int64 x = 1;
+  int64 y = 2;
+  bool cover = 3;
+  bool woods = 4;
+  bool bua = 5;
+  bool fort = 6;
+}
+
+message Unit {
+  string uuid = 1;
+  string name = 2;
+  Arm arm = 3;
+  UnitType type = 4;
+  int64 strength = 5;
+  int64 hits = 6;
+  UnitGrade grade = 7;
+  MoraleState moraleBase = 8;
+  MoraleState moraleState = 9;
+  SkirmishRating skirmishRating = 10;
+  int64 skirmisherMax = 11;
+  int64 skirmishersDeployed = 12;
+  Formation formation = 13;
+  string parentCommand = 14;
+  bool bnGuns = 15;
+  bool gunsDamaged = 16;
+  bool gunsDeployed = 17;
+  bool gunsStocked = 18;
+  bool hidden = 19;
+  bool hasFired = 20;
+  int64 fatigue = 21;
+  bool lowAmmo = 22;
+  int64 cover = 23;
+  string pinCode = 24;
+  Grid grid = 25;
+  string instructions = 26;
+  bool actionRequired = 27;
+  Grid objective = 28;
+  Grid moveTo = 29;
+  Grid gunTarget = 30;
+}
+
+message Command {
+  string uuid = 1;
+  string name = 2;
+  string formation = 3;
+  string parentCommand = 4;
+  int64 commandRating = 5;
+  int64 panicState = 6;
+  bool injured = 7;
+  Rank rank = 8;
+  string pinCode = 9;
+  string accessCode = 10;
+  Grid grid = 11;
+  string armyID = 12;
+  string objective = 13;
+  Order orders = 14;
+}
+
+message Army {
+  string uuid = 1;
+  string name = 2;
+  string period = 3;
+  CommandDoctrine doctrine = 4;
+  string commanderID = 5;
+  string accessCode = 6;
+}
+
+message ScenarioCommand {
+  string uuid = 1;
+  string armyID = 2;
+  string commandID = 3;
+  string briefing = 4;
+  Grid startLocation = 5;
+  string objective = 6;
+  Order orders = 7;
+  string playerName = 8;
+  string playerEmail = 9;
+}
+
+message Scenario {
+  string uuid = 1;
+  string background = 2;
+  repeated ScenarioCommand playerCommands = 3;
+  repeated Army armies = 4;
+  repeated Command commands = 5;
+  repeated Unit units = 6;
+}
+
+message Game {
+  string uuid = 1;
+  string scenarioID = 2;
+  repeated ScenarioCommand playerCommands = 4;
+  repeated Army armies = 5;
+  repeated Command commands = 6;
+  repeated Unit units = 7;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Types
+
+enum Arm {
+  SUPPORT = 0;
+  INFANTRY = 1;
+  CAVALRY = 2;
+  ARTILLERY = 3;
+  COMMAND = 4;
+}
+
+enum UnitType {
+  SUPPORT_UNIT = 0;
+  INFANTRY_LINE = 1;
+  INFANTRY_LIGHT = 2;
+  INFANTRY_GUARD = 3;
+  INFANTRY_MILITIA = 4;
+  CAVALRY_LIGHT = 5;
+  CAVALRY_HUSSAR = 6;
+  CAVALRY_DRAGOON = 7;
+  CAVALRY_CUIRASSIER = 8;
+  CAVALRY_COSSACK = 9;
+  ARTILLERY_BN = 10;
+  ARTILLERY_LIGHT = 11;
+  ARTILLERY_MEDIUM = 12;
+  ARTILLERY_HEAVY = 13;
+  ARTILLERY_HORSE = 14;
+}
+
+enum UnitGrade {
+  CIVILIAN = 0;
+  MILITIA = 1;
+  CONSCRIPT = 2;
+  REGULAR = 3;
+  VETERAN = 4;
+  ELITE = 5;
+}
+
+enum MoraleState {
+  RESTING = 0;
+  GOOD = 1;
+  UNFORMED = 2;
+  RATTLED = 3;
+  SHAKEN = 4;
+  DEMORALISED = 5;
+}
+
+enum Formation {
+  RESERVE = 0;
+  MARCH_COLUMN = 1;
+  ATTACK_COLUMN = 2;
+  LINE = 3;
+  ECHELON = 4;
+  SUPPORTING_LINES = 5;
+  DEBANDE = 6;
+  FORTIFIED = 7;
+}
+
+enum Rank {
+  BATTALION = 0;
+  BRIGADE = 1;
+  DIVISION = 2;
+  CORPS = 3;
+  WING = 4;
+  ARMY = 5;
+  NATIONAL_LEADER = 6;
+  BATTERY = 7;
+  CAVALRY_BDE = 8;
+  CAVALRY_DIV = 9;
+}
+
+enum SkirmishRating {
+  POOR = 0;
+  ADEQUATE = 1;
+  CRACK_SHOT = 2;
+  EXCELLENT = 3;
+}
+
+enum CommandDoctrine {
+  USELESS = 0;
+  CUMBERSOME = 1;
+  FUNCTIONAL = 2;
+  EFFICIENT = 3;
+}
+
+enum Order {
+  RESTAGE = 0;
+  MARCH = 1;
+  MOVE = 2;
+  DEFEND = 3;
+  WITHDRAW = 4;
+  ATTACK = 5;
+  RALLY = 6;
 }
