@@ -87,7 +87,9 @@ message Command {
   string objective = 13;
   Order orders = 14;
   string attachedTo = 15;
-  bool doneOrders = 16;
+  bool hasOrdered = 16;
+  bool hasMoved = 17;
+  bool hasRallied = 18;
 }
 
 message Army {
