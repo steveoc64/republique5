@@ -1,7 +1,7 @@
-all: rserver
+all: build
 
-rserver:
-	cd cmd/rserver && go build ./...
+build:
+	go build cmd/rserver/...
 
 run:
 	cd cmd/rserver
