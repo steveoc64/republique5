@@ -1,6 +1,9 @@
 syntax = "proto3";
 package rserver;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RPCs
 service GameService {
@@ -61,6 +64,11 @@ message Unit {
   Grid objective = 28;
   Grid moveTo = 29;
   Grid gunTarget = 30;
+  bool hasCharged = 31;
+  string supportingUnit = 32;
+  string engagedUnit = 33;
+  bool canAssault = 34;
+  bool hasAssaulted = 35;
 }
 
 message Command {
@@ -78,6 +86,8 @@ message Command {
   string armyID = 12;
   string objective = 13;
   Order orders = 14;
+  string attachedTo = 15;
+  bool doneOrders = 16;
 }
 
 message Army {
@@ -108,6 +118,7 @@ message Scenario {
   repeated Army armies = 4;
   repeated Command commands = 5;
   repeated Unit units = 6;
+  google.protobuf.Timestamp startTime = 7;
 }
 
 message Game {
@@ -117,6 +128,9 @@ message Game {
   repeated Army armies = 5;
   repeated Command commands = 6;
   repeated Unit units = 7;
+  int64 turnNumber = 8;
+  google.protobuf.Timestamp startTime = 9;
+  google.protobuf.Timestamp gameTime = 10;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
