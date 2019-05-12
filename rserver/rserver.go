@@ -12,15 +12,15 @@ import (
 )
 
 type RServer struct {
-	log      *logrus.Logger
-	version  string
-	port     int
-	endpoint string
+	log     *logrus.Logger
+	version string
+	port    int
+	webport int
 }
 
 // New returns a new republique server
-func New(log *logrus.Logger, version string, port int) *RServer {
-	return &RServer{log, version, port, fmt.Sprintf(":%d", port)}
+func New(log *logrus.Logger, version string, port int, webport int) *RServer {
+	return &RServer{log, version, port, webport}
 }
 
 // Run runs a republique server
@@ -41,7 +41,8 @@ func (s *RServer) Run() {
 }
 
 func (s *RServer) grpcRun() {
-	lis, err := net.Listen("tcp", s.endpoint)
+	endpoint := fmt.Sprintf(":%d", s.port)
+	lis, err := net.Listen("tcp", endpoint)
 	if err != nil {
 		s.log.Fatalf("failed to listen: %v", err)
 	}
@@ -49,7 +50,7 @@ func (s *RServer) grpcRun() {
 	RegisterGameServiceServer(grpcServer, s)
 	s.log.WithFields(logrus.Fields{
 		"port":     s.port,
-		"endpoint": s.endpoint,
+		"endpoint": endpoint,
 	}).Println("Serving gRPC")
 	grpcServer.Serve(lis)
 }
@@ -61,11 +62,16 @@ func (s *RServer) rpcProxy() error {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, s.endpoint, opts)
+	rpcendpoint := fmt.Sprintf(":%d", s.port)
+	webendpoint := fmt.Sprintf(":%d", s.webport)
+	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, rpcendpoint, opts)
 	if err != nil {
 		return err
 	}
 
-	s.log.WithField("port", "8080").Println("Starting gRPC Proxy Server")
-	return http.ListenAndServe(":8080", mux)
+	s.log.WithFields(logrus.Fields{
+		"port":     s.webport,
+		"endpoint": webendpoint,
+	}).Println("Serving REST Proxy")
+	return http.ListenAndServe(webendpoint, mux)
 }
