@@ -1,0 +1,15 @@
+syntax = "proto3";
+package rserver;
+
+message StringMessage {
+  string value = 1;
+}
+
+message EmptyMessage {
+  // empty
+}
+
+service GameService {
+  rpc Echo(StringMessage) returns (StringMessage) {}
+  rpc Version(EmptyMessage) returns (StringMessage) {}
+}

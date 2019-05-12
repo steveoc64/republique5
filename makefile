@@ -1,7 +1,7 @@
-all: build
+SUBDIRS := rserver cmd/rserver
 
-build:
-	go build cmd/rserver/...
+all: $(SUBDIRS)
+$(SUBDIRS):
+	$(MAKE) -C $@
 
-run:
-	cd cmd/rserver
+.PHONY: all $(SUBDIRS)

@@ -10,12 +10,8 @@ import (
 const version = "0.1"
 
 func main() {
-	println("here 1")
-	log := logrus.New()
-	println("here 1")
-	s := rserver.New(log, version)
-	println("here 1")
 	port := flag.Int("port", 1815, "port number to run on")
-	println("here 1")
-	s.Run(*port)
+	log := logrus.New()
+	s := rserver.New(log, version, *port)
+	s.Run()
 }
