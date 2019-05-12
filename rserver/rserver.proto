@@ -90,6 +90,7 @@ message Command {
   bool hasOrdered = 16;
   bool hasMoved = 17;
   bool hasRallied = 18;
+  repeated Unit units = 19;
 }
 
 message Army {
@@ -99,6 +100,7 @@ message Army {
   CommandDoctrine doctrine = 4;
   string commanderID = 5;
   string accessCode = 6;
+  repeated Command commands = 7;
 }
 
 message ScenarioCommand {
