@@ -5,24 +5,35 @@ Cmdline program for running a game server.
 ## Usage
 
 ```
-$ rserver [ command ] [ options ] [ -port=NNN -webport=NNN]
-
-port : sets the port to run on, default = 1815
-
-webport : sets the port to run REST services on, default = 8080
-
+republique init (dbname)
 ```
 
-## Sheets API 
+```
+republique use (dbname)
+```
 
-Using google sheets API
-https://developers.google.com/sheets/api/quickstart/go
+```
+republique compile (filename)
+```
 
-- Create OOB from google sheet
+Types of files to compile:
 
-- Create Scenario from google sheet
+- filename.unit
+- filename.battery
+- filename.brigade
+- filename.division
+- filename.corps
+- filename.army
+- filename.scenario
+- filename.game
 
-- Create Game from Scenario via google sheet
+
+```
+republique serve gamename -port 
+```
+
+Will serve / resume a game on the given port. Default port = 8080
+
 
 ## Game Runner API
 
