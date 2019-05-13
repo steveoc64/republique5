@@ -1,0 +1,52 @@
+name: Imperial Guard Corps
+  commandRating: excellent
+  - Corps Artillery:
+    arm: artillery
+    rank: artillery_div
+    grade: elite
+    unitType: artillery_medium
+    units:
+      - 1 Bty:
+      - 2 Bty:
+      - 3 Bty:
+      - H Bty:
+        unitType: artillery_horse
+  - Infantry Division
+    name: LeFebvre
+    arm: infantry
+    units:
+      - Grenadiers:
+        type: infantry_guard
+        strength: 4
+        grade: elite
+        skirmishRating: excellent
+        skirmisherMax: 4
+      - Chasseurs:
+        type: infantry_guard
+        strength: 4
+        grade: elite
+        skirmishRating: excellent
+        skirmisherMax: 8
+      - Foot Dragoons:
+        type: infantry_guard
+        strength: 4
+        grade: elite
+        skirmishRating: excellent
+        skirmisherMax: 8
+  - Cavalry Division
+
+Corps artillery
+3 Elite medium foot artillery, 1 Elite light horse artillery
+
+Infantry Division - Lefebvre
+1st & 2nd Grenadiers à pied - 4 bases
+1st & 2nd Chasseurs à pied - 4 bases
+Foot Dragoons - 4 bases
+
+Cavalry Division - Bessieres
+Chasseurs a'Cheval - 3 bases
+Grenadiers a'Cheval - 2 bases
+
+Army Artillery Park - de Lamartiniére
+2 heavy foot artillery
+

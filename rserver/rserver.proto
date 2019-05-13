@@ -37,7 +37,7 @@ message Unit {
   string uuid = 1;
   string name = 2;
   Arm arm = 3;
-  UnitType type = 4;
+  UnitType unitType = 4;
   int64 strength = 5;
   int64 hits = 6;
   UnitGrade grade = 7;
@@ -203,7 +203,7 @@ enum Rank {
   WING = 4;
   ARMY = 5;
   NATIONAL_LEADER = 6;
-  BATTERY = 7;
+  ARTILLERY_DIV = 7;
   CAVALRY_BDE = 8;
   CAVALRY_DIV = 9;
 }
