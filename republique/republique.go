@@ -1,4 +1,4 @@
-package rserver
+package republique
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func (s *RServer) Run() {
 	s.log.WithFields(logrus.Fields{
 		"version": s.version,
 		"port":    s.port,
-	}).Println("Starting RServer")
+	}).Println("Starting Republique 5.0 Server")
 	s.log.SetFormatter(&logrus.JSONFormatter{})
 
 	// Load DB

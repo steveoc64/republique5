@@ -3,8 +3,8 @@ config_version: 3
 
 http:
   rules:
-  - selector: rserver.GameService.Echo
+  - selector: republique.GameService.Echo
     post: /v1/echo
     body: "*"
-  - selector: rserver.GameService.Version
+  - selector: republique.GameService.Version
     get: /v1/version

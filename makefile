@@ -1,4 +1,4 @@
-SUBDIRS := rserver cmd/rserver
+SUBDIRS := republique cmd/rserver
 
 all: $(SUBDIRS)
 $(SUBDIRS):

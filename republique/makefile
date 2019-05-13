@@ -7,5 +7,5 @@ proto:
   	-I${GOPATH}/src/github.com/protocolbuffers/protobuf/src \
   	--go_out=plugins=grpc:. \
   	--grpc-gateway_out=logtostderr=true:. \
-  	--grpc-gateway_out=logtostderr=true,grpc_api_configuration=rserver-rest.yaml:. \
-  	rserver.proto
+  	--grpc-gateway_out=logtostderr=true,grpc_api_configuration=rest.yaml:. \
+  	republique.proto

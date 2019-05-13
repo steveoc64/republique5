@@ -1,11 +1,11 @@
-## rserver
+## Republique
 
 Cmdline program for running a game server.
 
 ## Usage
 
 ```
-$ rserver [ -port=NNN -webport=NNN]
+$ rserver [ command ] [ options ] [ -port=NNN -webport=NNN]
 
 port : sets the port to run on, default = 1815
 
