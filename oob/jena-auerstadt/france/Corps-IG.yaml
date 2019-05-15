@@ -14,25 +14,21 @@ name: Imperial Guard Corps
   - Infantry Division
     name: LeFebvre
     arm: infantry
+    grade: elite
     units:
       - Grenadiers:
         type: infantry_guard
         strength: 4
-        grade: elite
-        skirmishRating: excellent
-        skirmisherMax: 4
+        skirmish: 4 excellent
       - Chasseurs:
         type: infantry_guard
         strength: 4
-        grade: elite
-        skirmishRating: excellent
-        skirmisherMax: 8
+        skirmish: 8 excellent
       - Foot Dragoons:
         type: infantry_guard
         strength: 4
         grade: elite
-        skirmishRating: excellent
-        skirmisherMax: 8
+        skirmish: 4 excellent
   - Cavalry Division
 
 Corps artillery
