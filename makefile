@@ -5,3 +5,9 @@ $(SUBDIRS):
 	$(MAKE) -C $@
 
 .PHONY: all $(SUBDIRS)
+
+compile:
+	republique compile oob/jena*/fr*/*.oob
+
+dump:
+	jq oob/jena*/fr*/*.json

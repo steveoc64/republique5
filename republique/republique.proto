@@ -72,7 +72,7 @@ message Unit {
 }
 
 message Command {
-  string uuid = 1;
+  string commanderName = 1;
   string name = 2;
   string formation = 3;
   string parentCommand = 4;
@@ -90,7 +90,8 @@ message Command {
   bool hasOrdered = 16;
   bool hasMoved = 17;
   bool hasRallied = 18;
-  repeated Unit units = 19;
+  repeated Command subcommands = 19;
+  repeated Unit units = 20;
 }
 
 message Army {

@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+*.json
 main
 rsheet
 
