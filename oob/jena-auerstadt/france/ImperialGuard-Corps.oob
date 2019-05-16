@@ -1,0 +1,20 @@
+!French 1806
+!Guards
+!Indent 2
+Imperial Guard Corps - Napoleon
+  Corps Artillery
+    !artillery
+    1eme Bty - MdF elite
+    2eme Bty - MdF elite
+    3eme Bty - MdF elite
+    Horse Bty - LtH elite
+
+  Infantry Division - LeFebvre
+    1eme & 2eme Grenadiers à pied - 4 bases guard grenadier
+    1emest & 2eme Chasseurs à pied - 4 bases guard light
+    Foot Dragoons - 4 bases guard line
+
+  Cavalry Division - Bessieres
+    !cavalry
+    Chasseurs a'Cheval - 3 bases guard light
+    Grenadiers a'Cheval - 2 bases guard light
