@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -81,14 +82,7 @@ func (c *Compiler) Compile(filename string) error {
 	marshaler := &jsonpb.Marshaler{}
 	marshaler.Marshal(j, c.command)
 	spew.Dump("As JSON", j)
-
-	f, err := os.Create(c.outfile)
-	if err != nil {
-		c.log.WithField("filename", c.outfile).WithError(err).Error("Cannot create file")
-	}
-	w := bufio.NewWriter(f)
-	marshaler.Marshal(w, c.command)
-	f.Close()
+	ioutil.WriteFile(c.outfile, j.Bytes(), 0644)
 
 	return nil
 }
