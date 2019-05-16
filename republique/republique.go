@@ -12,22 +12,31 @@ import (
 )
 
 type RServer struct {
-	log     *logrus.Logger
-	version string
-	port    int
-	webport int
+	log      *logrus.Logger
+	version  string
+	filename string
+	port     int
+	web      int
 }
 
 // New returns a new republique server
-func New(log *logrus.Logger, version string, port int, webport int) *RServer {
-	return &RServer{log, version, port, webport}
+func NewRServer(log *logrus.Logger, version string, filename string, port int, web int) *RServer {
+	return &RServer{
+		log:      log,
+		version:  version,
+		filename: filename,
+		port:     port,
+		web:      web,
+	}
 }
 
 // Run runs a republique server
-func (s *RServer) Run() {
+func (s *RServer) Serve() {
 	s.log.WithFields(logrus.Fields{
-		"version": s.version,
-		"port":    s.port,
+		"version":  s.version,
+		"port":     s.port,
+		"web":      s.web,
+		"filename": s.filename,
 	}).Println("Starting Republique 5.0 Server")
 	s.log.SetFormatter(&logrus.JSONFormatter{})
 
@@ -63,14 +72,14 @@ func (s *RServer) rpcProxy() error {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	rpcendpoint := fmt.Sprintf(":%d", s.port)
-	webendpoint := fmt.Sprintf(":%d", s.webport)
+	webendpoint := fmt.Sprintf(":%d", s.web)
 	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, rpcendpoint, opts)
 	if err != nil {
 		return err
 	}
 
 	s.log.WithFields(logrus.Fields{
-		"port":     s.webport,
+		"port":     s.web,
 		"endpoint": webendpoint,
 	}).Println("Serving REST Proxy")
 	return http.ListenAndServe(webendpoint, mux)

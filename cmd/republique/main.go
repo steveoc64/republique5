@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/steveoc64/republique5/republique"
+	"fmt"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -10,22 +10,40 @@ import (
 
 const version = "0.1"
 
+func usage() {
+	fmt.Println(`
+Usage: republique command
+
+commands:
+	compile [filenames]
+	serve -port RPCPort -web WebPort -game FileName
+`)
+}
+
 func main() {
 	// get the command verb and process
 	if len(os.Args) < 2 {
 		usage()
 		os.Exit(1)
 	}
+	log := logrus.New()
 	switch os.Args[1] {
 	case "compile":
-		compile(os.Args[2:])
+		compile(log, os.Args[2:])
 	case "serve":
-		serve(os.Args[2:])
+		gamename := ""
+		port := 1815
+		web := 8080
+		flag.IntVar(&port, "port", 1815, "port number to run RPC server on")
+		flag.IntVar(&web, "web", 8080, "port number to run web app on")
+		flag.StringVar(&gamename, "game", "game.game", "filename of the game to run")
+		flag.Parse()
+
+		println("set gamename to", gamename)
+		println("set port to", port)
+		println("set web to", web)
+		serve(log, gamename, port, web)
+	default:
+		usage()
 	}
-	port := flag.Int("port", 1815, "port number to run on")
-	webport := flag.Int("webport", 8080, "port number to run on")
-	flag.Parse()
-	log := logrus.New()
-	s := republique.New(log, version, *port, *webport)
-	s.Run()
 }
