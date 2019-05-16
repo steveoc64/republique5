@@ -69,6 +69,7 @@ message Unit {
   string engagedUnit = 33;
   bool canAssault = 34;
   bool hasAssaulted = 35;
+  Nationality nationality = 36;
 }
 
 message Command {
@@ -76,7 +77,7 @@ message Command {
   string name = 2;
   string formation = 3;
   string parentCommand = 4;
-  int64 commandRating = 5;
+  CommandRating commandRating = 5;
   int64 panicState = 6;
   bool injured = 7;
   Rank rank = 8;
@@ -92,16 +93,21 @@ message Command {
   bool hasRallied = 18;
   repeated Command subcommands = 19;
   repeated Unit units = 20;
+  int64 commanderBonus = 21;
+  Arm arm = 22;
+  Nationality nationality = 23;
+  UnitGrade grade = 24;
 }
 
 message Army {
   string uuid = 1;
   string name = 2;
   string period = 3;
-  CommandDoctrine doctrine = 4;
+  CommandRating commandRating = 4;
   string commanderID = 5;
   string accessCode = 6;
   repeated Command commands = 7;
+  Nationality nationality = 8;
 }
 
 message ScenarioCommand {
@@ -174,6 +180,7 @@ enum UnitGrade {
   REGULAR = 3;
   VETERAN = 4;
   ELITE = 5;
+  GUARD = 6;
 }
 
 enum MoraleState {
@@ -207,6 +214,8 @@ enum Rank {
   ARTILLERY_DIV = 7;
   CAVALRY_BDE = 8;
   CAVALRY_DIV = 9;
+  BATTERY = 10;
+  GUN_PARK = 11;
 }
 
 enum SkirmishRating {
@@ -216,7 +225,7 @@ enum SkirmishRating {
   EXCELLENT = 3;
 }
 
-enum CommandDoctrine {
+enum CommandRating {
   USELESS = 0;
   CUMBERSOME = 1;
   FUNCTIONAL = 2;
@@ -231,4 +240,28 @@ enum Order {
   WITHDRAW = 4;
   ATTACK = 5;
   RALLY = 6;
+}
+
+enum Nationality {
+  ANY_NATION = 0;
+  FRENCH = 1;
+  BRITISH = 2;
+  RUSSIAN = 3;
+  PRUSSIAN = 4;
+  SPANISH = 6;
+  OTTOMAN = 7;
+  PERSIAN = 8;
+  AUSTRIAN = 9;
+  AMERICAN = 10;
+  INDIAN = 11;
+  ITALIAN = 12;
+  BAVARIAN = 13;
+  DUTCH = 14;
+  BELGIAN = 15;
+  NASSAU = 16;
+  SWISS = 17;
+  PAPAL_STATES = 18;
+  AFRICAN = 19;
+  NATIVE = 20;
+  COLONIAL = 21;
 }

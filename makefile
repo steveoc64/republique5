@@ -10,4 +10,4 @@ compile:
 	republique compile oob/jena*/fr*/*.oob
 
 dump:
-	jq oob/jena*/fr*/*.json
+	cat oob/jena*/fr*/*.json | jq

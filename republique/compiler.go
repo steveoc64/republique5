@@ -21,11 +21,7 @@ type Compiler struct {
 	filename       string
 	outfile        string
 	lines          []string
-	basedFrom      string
 	indents        int
-	grade          string
-	arm            string
-	cmdDoctrine    string
 	command        *Command
 	mode           int
 	lastSubCommand *Command
@@ -68,14 +64,10 @@ func (c *Compiler) Compile(filename string) error {
 	}
 
 	c.log.WithFields(logrus.Fields{
-		"filename":    c.filename,
-		"outputfile":  c.outfile,
-		"numlines":    len(c.lines),
-		"indents":     c.indents,
-		"basedFrom":   c.basedFrom,
-		"cmdDoctrine": c.cmdDoctrine,
-		"grade":       c.grade,
-		"arm":         c.arm,
+		"filename":   c.filename,
+		"outputfile": c.outfile,
+		"numlines":   len(c.lines),
+		"indents":    c.indents,
 	}).Debug("Loaded")
 
 	j := &bytes.Buffer{}
@@ -102,11 +94,15 @@ func (c *Compiler) load() error {
 }
 
 func (c *Compiler) parseOOB() (int, error) {
-	c.grade = "Regular"
-	c.arm = "Infantry"
-	c.cmdDoctrine = "Functional"
-	c.command = &Command{}
+	year := 1800
+	c.command = &Command{
+		Arm:           Arm_INFANTRY,
+		CommandRating: CommandRating_FUNCTIONAL,
+		Nationality:   Nationality_ANY_NATION,
+		Grade:         UnitGrade_REGULAR,
+	}
 	c.indents = 1
+	var err error
 	// scan for !commands
 	for k, v := range c.lines {
 		words := strings.Split(v, " ")
@@ -134,73 +130,43 @@ func (c *Compiler) parseOOB() (int, error) {
 				}
 				c.indents = i
 			case "cavalry":
-				c.arm = "Cavalry"
+				c.command.Arm = Arm_CAVALRY
 			case "infantry":
-				c.arm = "Infantry"
+				c.command.Arm = Arm_INFANTRY
 			case "guards", "guard":
-				c.grade = "Guard"
+				c.command.Grade = UnitGrade_GUARD
 			case "artillery":
-				c.arm = "Artillery"
+				c.command.Arm = Arm_ARTILLERY
 			case "elite":
-				c.grade = "Elite"
+				c.command.Grade = UnitGrade_ELITE
 			case "veteran":
-				c.grade = "Veteran"
+				c.command.Grade = UnitGrade_VETERAN
 			case "regular":
-				c.grade = "Regular"
+				c.command.Grade = UnitGrade_REGULAR
 			case "green", "conscript":
-				c.grade = "Conscript"
+				c.command.Grade = UnitGrade_CONSCRIPT
 			case "militia", "landwehr":
-				c.grade = "Militia"
+				c.command.Grade = UnitGrade_MILITIA
 			case "rabble":
-				c.grade = "Rabble"
+				c.command.Grade = UnitGrade_CIVILIAN
 			case "efficient":
-				c.cmdDoctrine = "Efficient"
+				c.command.CommandRating = CommandRating_EFFICIENT
 			case "functional":
-				c.cmdDoctrine = "Functional"
+				c.command.CommandRating = CommandRating_FUNCTIONAL
 			case "cumbersome":
-				c.cmdDoctrine = "Cumbersome"
+				c.command.CommandRating = CommandRating_CUMBERSOME
+			case "useless":
+				c.command.CommandRating = CommandRating_USELESS
 			case "french", "france":
 				// TODO - turn this into a lambda function
 				if ww != 2 {
 					return k + 1, fmt.Errorf("!%s - missing year", w)
 				}
-				year, err := strconv.Atoi(words[1])
+				year, err = strconv.Atoi(words[1])
 				if err != nil || year == 0 {
 					return k + 1, fmt.Errorf("!%s - invalid year '%v'", w, words[1])
 				}
-				c.basedFrom = fmt.Sprintf("French-%d", year)
-			case "austrian", "austria":
-				c.basedFrom = fmt.Sprintf("Austrian-%d", 0)
-			case "russian", "russia":
-				c.basedFrom = fmt.Sprintf("Russian-%d", 0)
-			case "prussian", "prussia":
-				c.basedFrom = fmt.Sprintf("Prussian-%d", 0)
-			case "british", "britain":
-				c.basedFrom = fmt.Sprintf("British-%d", 0)
-			case "spanish", "spain":
-				c.basedFrom = fmt.Sprintf("Spanish-%d", 0)
-			case "portuguese", "portugal":
-				c.basedFrom = fmt.Sprintf("Spanish-%d", 0)
-			case "ottoman", "turkish":
-				c.basedFrom = fmt.Sprintf("Ottoman-%d", 0)
-			case "dutch", "belgian":
-				c.basedFrom = fmt.Sprintf("DutchBelgian-%d", 0)
-			case "italian", "italy":
-				c.basedFrom = fmt.Sprintf("Italian-%d", 0)
-			case "persian", "persia":
-				c.basedFrom = fmt.Sprintf("Persian-%d", 0)
-			case "bavarian", "bavaria":
-				c.basedFrom = fmt.Sprintf("Bavarian-%d", 0)
-			case "american", "america":
-				c.basedFrom = fmt.Sprintf("American-%d", 0)
-			case "irregular":
-				c.basedFrom = fmt.Sprintf("Irregular-%d", 0)
-			case "native":
-				c.basedFrom = fmt.Sprintf("Native-%d", 0)
-			case "german":
-				c.basedFrom = fmt.Sprintf("German-%d", 0)
-			case "nassau":
-				c.basedFrom = fmt.Sprintf("Nassau-%d", 0)
+				c.command.Nationality = Nationality_FRENCH
 			default:
 				return k + 1, fmt.Errorf("Invalid Command '%s'", v)
 			}
@@ -230,14 +196,42 @@ func (c *Compiler) parseOOB() (int, error) {
 				spew.Dump(ll, words)
 				return k + 1, fmt.Errorf("Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')")
 			}
-			cc := &Command{}
+			cc := &Command{
+				CommandRating: c.command.CommandRating,
+				Arm:           c.command.Arm,
+				Nationality:   c.command.Nationality,
+				Grade:         c.command.Grade,
+			}
 			cc.Name = strings.TrimSpace(words[0])
 			if ll == 2 {
 				cc.CommanderName = strings.TrimSpace(words[1])
-				cc.CommandRating = c.getLeaderRating()
+				cc.CommanderBonus = c.getLeaderRating(cc.CommanderName)
 			}
+
+			// Scan the title for rank strings
 			cc.Rank = Rank_DIVISION
-			cc.Subcommands = []*Command{}
+			lname := strings.ToLower(cc.Name)
+			switch {
+			case strings.Contains(lname, "cavalry div"),
+				strings.Contains(lname, "cuirassier div"),
+				strings.Contains(lname, "dragoon div"):
+				cc.Arm = Arm_CAVALRY
+				cc.Rank = Rank_CAVALRY_DIV
+			case strings.Contains(lname, "cavalry brigade"):
+				cc.Arm = Arm_CAVALRY
+				cc.Rank = Rank_CAVALRY_BDE
+			case strings.Contains(lname, "cavalry bde"),
+				strings.Contains(lname, "hussar bde"),
+				strings.Contains(lname, "chasseur bde"):
+				cc.Arm = Arm_CAVALRY
+				cc.Rank = Rank_CAVALRY_BDE
+			case strings.Contains(lname, "artillery"):
+				cc.Arm = Arm_ARTILLERY
+				cc.Rank = Rank_GUN_PARK
+			case strings.Contains(lname, "brigade"),
+				strings.Contains(lname, "bde"):
+				cc.Rank = Rank_BRIGADE
+			}
 			cc.Units = []*Unit{}
 			c.lastSubCommand = cc
 			c.command.Subcommands = append(c.command.Subcommands, cc)
@@ -259,7 +253,7 @@ func (c *Compiler) parseOOB() (int, error) {
 		c.command.Rank = Rank_CORPS
 		c.command.Subcommands = []*Command{}
 		c.command.Units = []*Unit{}
-		c.command.CommandRating = c.getLeaderRating()
+		c.command.CommanderBonus = c.getLeaderRating(c.command.CommanderName)
 		c.lastSubCommand = nil
 	}
 	return 0, nil
