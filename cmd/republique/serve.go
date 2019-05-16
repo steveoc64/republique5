@@ -6,7 +6,6 @@ import (
 )
 
 func serve(log *logrus.Logger, gamename string, port int, web int) {
-
 	s := republique.NewRServer(log, version, gamename, port, web)
 	s.Serve()
 }
