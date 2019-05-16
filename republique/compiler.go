@@ -17,17 +17,18 @@ import (
 )
 
 type Compiler struct {
-	log         *logrus.Logger
-	filename    string
-	outfile     string
-	lines       []string
-	basedFrom   string
-	indents     int
-	grade       string
-	arm         string
-	cmdDoctrine string
-	command     *Command
-	mode        int
+	log            *logrus.Logger
+	filename       string
+	outfile        string
+	lines          []string
+	basedFrom      string
+	indents        int
+	grade          string
+	arm            string
+	cmdDoctrine    string
+	command        *Command
+	mode           int
+	lastSubCommand *Command
 }
 
 func NewCompiler(log *logrus.Logger) *Compiler {
@@ -38,7 +39,7 @@ func NewCompiler(log *logrus.Logger) *Compiler {
 }
 
 func (c *Compiler) Compile(filename string) error {
-	c.log.WithField("filename", filename).Info("Compiling")
+	c.log.WithField("filename", filename).Debug("Compiling")
 	c.filename = filename
 	ext := filepath.Ext(filename)
 	c.outfile = filename[:len(filename)-len(ext)] + ".json"
@@ -75,13 +76,11 @@ func (c *Compiler) Compile(filename string) error {
 		"cmdDoctrine": c.cmdDoctrine,
 		"grade":       c.grade,
 		"arm":         c.arm,
-	}).Info("Loaded")
+	}).Debug("Loaded")
 
-	spew.Dump(c.command)
 	j := &bytes.Buffer{}
 	marshaler := &jsonpb.Marshaler{}
 	marshaler.Marshal(j, c.command)
-	spew.Dump("As JSON", j)
 	ioutil.WriteFile(c.outfile, j.Bytes(), 0644)
 
 	return nil
@@ -170,7 +169,6 @@ func (c *Compiler) parseOOB() (int, error) {
 					return k + 1, fmt.Errorf("!%s - invalid year '%v'", w, words[1])
 				}
 				c.basedFrom = fmt.Sprintf("French-%d", year)
-				println(v, "based from", c.basedFrom)
 			case "austrian", "austria":
 				c.basedFrom = fmt.Sprintf("Austrian-%d", 0)
 			case "russian", "russia":
@@ -211,11 +209,14 @@ func (c *Compiler) parseOOB() (int, error) {
 			continue
 		}
 		ii := 0
+		ioffset := 0
 		if strings.HasPrefix(v, " ") {
-			ii = countLeadingRune(v, ' ') / c.indents
+			ioffset = countLeadingRune(v, ' ')
+			ii = ioffset / c.indents
 		}
 		if strings.HasPrefix(v, "\t") {
-			ii = countLeadingRune(v, '\t') / c.indents
+			ioffset = countLeadingRune(v, '\t') / c.indents
+			ii = ioffset
 		}
 		switch ii {
 		case 0:
@@ -223,6 +224,23 @@ func (c *Compiler) parseOOB() (int, error) {
 			c.mode = 1
 		case 1:
 			//println(k+1, "SubCommand:", v)
+			words = strings.Split(v[ioffset:], "-")
+			ll := len(words)
+			if ll != 2 && ll != 1 {
+				spew.Dump(ll, words)
+				return k + 1, fmt.Errorf("Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')")
+			}
+			cc := &Command{}
+			cc.Name = strings.TrimSpace(words[0])
+			if ll == 2 {
+				cc.CommanderName = strings.TrimSpace(words[1])
+				cc.CommandRating = c.getLeaderRating()
+			}
+			cc.Rank = Rank_DIVISION
+			cc.Subcommands = []*Command{}
+			cc.Units = []*Unit{}
+			c.lastSubCommand = cc
+			c.command.Subcommands = append(c.command.Subcommands, cc)
 			c.mode = 2
 			continue
 		case 2:
@@ -234,7 +252,7 @@ func (c *Compiler) parseOOB() (int, error) {
 		}
 		words = strings.Split(v, "-")
 		if len(words) != 2 {
-			return k + 1, fmt.Errorf("Invalid Corps Definition - needs 'Corps Name' - 'Commander Name")
+			return k + 1, fmt.Errorf("Invalid Corps Definition - needs 'Corps Name' - 'Commander Name'")
 		}
 		c.command.Name = strings.TrimSpace(words[0])
 		c.command.CommanderName = strings.TrimSpace(words[1])
@@ -242,6 +260,7 @@ func (c *Compiler) parseOOB() (int, error) {
 		c.command.Subcommands = []*Command{}
 		c.command.Units = []*Unit{}
 		c.command.CommandRating = c.getLeaderRating()
+		c.lastSubCommand = nil
 	}
 	return 0, nil
 }
