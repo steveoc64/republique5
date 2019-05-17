@@ -47,7 +47,7 @@ message Unit {
   int64 skirmisherMax = 11;
   int64 skirmishersDeployed = 12;
   Formation formation = 13;
-  string parentCommand = 14;
+  string notes = 14;
   bool bnGuns = 15;
   bool gunsDamaged = 16;
   bool gunsDeployed = 17;
@@ -77,7 +77,6 @@ message Command {
   string commanderName = 1;
   string name = 2;
   string formation = 3;
-  string parentCommand = 4;
   CommandRating commandRating = 5;
   int64 panicState = 6;
   bool injured = 7;
@@ -161,8 +160,8 @@ enum UnitType {
   SUPPORT_UNIT = 0;
   INFANTRY_LINE = 1;
   INFANTRY_LIGHT = 2;
-  INFANTRY_GUARD = 3;
-  INFANTRY_MILITIA = 4;
+  INFANTRY_GRENADIER = 3;
+  INFANTRY_IRREGULAR = 4;
   CAVALRY_LIGHT = 5;
   CAVALRY_HUSSAR = 6;
   CAVALRY_DRAGOON = 7;
@@ -173,6 +172,9 @@ enum UnitType {
   ARTILLERY_MEDIUM = 12;
   ARTILLERY_HEAVY = 13;
   ARTILLERY_HORSE = 14;
+  CAVALRY_HEAVY = 15;
+  CAVALRY_MEDIUM = 16;
+  INFANTRY_RIFLES = 17;
 }
 
 enum UnitGrade {

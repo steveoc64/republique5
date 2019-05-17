@@ -95,6 +95,8 @@ func (c *Compiler) load() error {
 
 func (c *Compiler) parseOOB() (int, error) {
 	year := 1800
+	skRating := SkirmishRating_POOR
+	skMax := "one"
 	c.command = &Command{
 		Arm:           Arm_INFANTRY,
 		CommandRating: CommandRating_CUMBERSOME,
@@ -175,6 +177,8 @@ func (c *Compiler) parseOOB() (int, error) {
 				c.command.CommandRating = CommandRating_USELESS
 			case "linear":
 				c.command.Drill = Drill_LINEAR
+			case "Massed":
+				c.command.Drill = Drill_MASSED
 			case "Rapid":
 				c.command.Drill = Drill_RAPID
 			case "french", "france":
@@ -188,10 +192,18 @@ func (c *Compiler) parseOOB() (int, error) {
 					c.command.Drill = Drill_RAPID
 					c.command.CommandRating = CommandRating_FUNCTIONAL
 					c.command.Grade = UnitGrade_CONSCRIPT
+					skRating = SkirmishRating_ADEQUATE
 				case year >= 1805:
 					c.command.Drill = Drill_RAPID
 					c.command.CommandRating = CommandRating_EFFICIENT
 					c.command.Grade = UnitGrade_VETERAN
+					skMax = "all"
+					skRating = SkirmishRating_CRACK_SHOT
+				case year >= 1796:
+					c.command.Drill = Drill_MASSED
+					c.command.CommandRating = CommandRating_FUNCTIONAL
+					c.command.Grade = UnitGrade_VETERAN
+					skRating = SkirmishRating_CRACK_SHOT
 				case year >= 1791:
 					c.command.Drill = Drill_MASSED
 				}
@@ -205,10 +217,12 @@ func (c *Compiler) parseOOB() (int, error) {
 				case year >= 1814:
 					c.command.Drill = Drill_RAPID
 					c.command.CommandRating = CommandRating_EFFICIENT
+					skRating = SkirmishRating_ADEQUATE
 				case year >= 1812:
 					c.command.Drill = Drill_MASSED
 					c.command.CommandRating = CommandRating_FUNCTIONAL
 					c.command.Grade = UnitGrade_CONSCRIPT
+					skRating = SkirmishRating_ADEQUATE
 				}
 			case "austria", "austrian":
 				year, err = getYear(k, words)
@@ -252,10 +266,20 @@ func (c *Compiler) parseOOB() (int, error) {
 			ii = ioffset
 		}
 		switch ii {
-		case 0:
-			//println(k+1, "looks like a corps definition line", v)
-		case 1:
-			//println(k+1, "SubCommand:", v)
+		case 0: // Corps Definition
+			words = strings.Split(v, "-")
+			if len(words) != 2 {
+				return k + 1, fmt.Errorf("Invalid Corps Definition - needs 'Corps Name' - 'Commander Name'")
+			}
+			c.command.Name = strings.TrimSpace(words[0])
+			c.command.CommanderName = strings.TrimSpace(words[1])
+			c.command.Rank = Rank_CORPS
+			c.command.Subcommands = []*Command{}
+			c.command.Units = []*Unit{}
+			c.command.CommanderBonus = c.getLeaderRating(c.command.CommanderName)
+			c.lastSubCommand = nil
+			continue
+		case 1: // Division SubCommand
 			words = strings.Split(v[ioffset:], "-")
 			ll := len(words)
 			if ll != 2 && ll != 1 {
@@ -267,6 +291,7 @@ func (c *Compiler) parseOOB() (int, error) {
 				Arm:           c.command.Arm,
 				Nationality:   c.command.Nationality,
 				Grade:         c.command.Grade,
+				Drill:         c.command.Drill,
 			}
 			cc.Name = strings.TrimSpace(words[0])
 			if ll == 2 {
@@ -302,23 +327,157 @@ func (c *Compiler) parseOOB() (int, error) {
 			c.lastSubCommand = cc
 			c.command.Subcommands = append(c.command.Subcommands, cc)
 			continue
-		case 2:
-			//println(k+1, "Unit:", v)
+		case 2: // Unit Definiition
+			v = strings.TrimSpace(v)
+			words = strings.Split(v, " - ")
+			if len(words) != 2 {
+				return k + 1, fmt.Errorf("Invalid Unit Definition - needs 'Unit Name' - N bases [Unit Paramaters]")
+			}
+			unit := &Unit{
+				Name:        strings.TrimSpace(words[0]),
+				Arm:         c.lastSubCommand.Arm,
+				UnitType:    UnitType_INFANTRY_LINE,
+				Grade:       c.lastSubCommand.Grade,
+				Nationality: c.lastSubCommand.Nationality,
+				Drill:       c.lastSubCommand.Drill,
+			}
+			// max inherited grade is regular, except for guard formations which are all guard by default
+			if unit.Grade > UnitGrade_REGULAR && unit.Grade != UnitGrade_GUARD {
+				unit.Grade = UnitGrade_REGULAR
+			}
+
+			params := words[1]
+			pwords := strings.Split(params, " ")
+			numBases, err := strconv.Atoi(pwords[0])
+			if err != nil || numBases == 0 {
+				numBases = 1
+			} else {
+				pwords = pwords[1:]
+				// burn the next word if its bases
+				switch pwords[0] {
+				case "base", "bases":
+					pwords = pwords[1:]
+				}
+			}
+			unit.Strength = int64(numBases)
+			// now join whats left back together
+			params = strings.Join(pwords, " ")
+			// extract notes if there are any
+			ib1 := strings.Index(params, "(")
+			ib2 := strings.Index(params, ")")
+			if ib1 != -1 && ib2 != -1 {
+				unit.Notes = params[ib1+1 : ib2]
+				params = params[:ib1]
+			}
+			// now look for containing strings
+			params = strings.ToLower(params)
+			useSK := skRating
+			useMax := skMax
+
+			// gradings
+			switch {
+			case strings.Contains(params, "militia"),
+				strings.Contains(params, "landwehr"):
+				unit.Grade = UnitGrade_MILITIA
+				useSK = useSK.Decrement()
+				useSK = useSK.Decrement()
+			case strings.Contains(params, "green"),
+				strings.Contains(params, "conscript"):
+				unit.Grade = UnitGrade_CONSCRIPT
+				useSK = useSK.Decrement()
+			case strings.Contains(params, "regular"):
+				unit.Grade = UnitGrade_REGULAR
+			case strings.Contains(params, "veteran"):
+				unit.Grade = UnitGrade_VETERAN
+			case strings.Contains(params, "elite"):
+				unit.Grade = UnitGrade_ELITE
+				useSK = useSK.Increment()
+			case strings.Contains(params, "guard"):
+				unit.Grade = UnitGrade_GUARD
+				useSK = useSK.Increment()
+				useSK = useSK.Increment()
+			}
+
+			//  types
+			switch {
+			case strings.Contains(params, "rifle"):
+				unit.Arm = Arm_INFANTRY
+				unit.UnitType = UnitType_INFANTRY_RIFLES
+				useSK = SkirmishRating_EXCELLENT
+			case strings.Contains(params, "grenadier"):
+				unit.Arm = Arm_INFANTRY
+				unit.UnitType = UnitType_INFANTRY_GRENADIER
+			case strings.Contains(params, "dragoon"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_DRAGOON
+				useMax = "all"
+			case strings.Contains(params, "medium cav"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_MEDIUM
+			case strings.Contains(params, "light cav"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_LIGHT
+				useMax = "all"
+			case strings.Contains(params, "heavy cav"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_HEAVY
+			case strings.Contains(params, "hussar"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_HUSSAR
+			case strings.Contains(params, "chas chev"),
+				strings.Contains(params, "chaschev"),
+				strings.Contains(params, "chasseur cheval"),
+				strings.Contains(params, "chasseurs a'cheval"),
+				strings.Contains(params, "chasseurs cheval"),
+				strings.Contains(params, "horse jager"),
+				strings.Contains(params, "mounted jager"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_LIGHT
+			case strings.Contains(params, "cuirassier"),
+				strings.Contains(params, "carabinier"),
+				strings.Contains(params, "karabinier"),
+				strings.Contains(params, "kuirassier"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_CUIRASSIER
+			case strings.Contains(params, "mdf"):
+				unit.Arm = Arm_ARTILLERY
+				unit.UnitType = UnitType_ARTILLERY_MEDIUM
+			case strings.Contains(params, "ltf"):
+				unit.Arm = Arm_ARTILLERY
+				unit.UnitType = UnitType_ARTILLERY_LIGHT
+			case strings.Contains(params, "hvf"):
+				unit.Arm = Arm_ARTILLERY
+				unit.UnitType = UnitType_ARTILLERY_HEAVY
+			case strings.Contains(params, "mdh"):
+				unit.Arm = Arm_ARTILLERY
+				unit.UnitType = UnitType_ARTILLERY_HORSE
+			case strings.Contains(params, "light"),
+				strings.Contains(params, "jager"):
+				unit.Arm = Arm_INFANTRY
+				unit.UnitType = UnitType_INFANTRY_LIGHT
+				useMax = "all"
+			case strings.Contains(params, "line"):
+				unit.Arm = Arm_INFANTRY
+				unit.UnitType = UnitType_INFANTRY_LINE
+			}
+			if unit.Arm == Arm_INFANTRY || unit.UnitType == UnitType_CAVALRY_DRAGOON || unit.UnitType == UnitType_CAVALRY_LIGHT {
+				unit.SkirmishRating = useSK
+				if unit.Grade < UnitGrade_VETERAN {
+					useMax = "one"
+				}
+				switch useMax {
+				case "one":
+					unit.SkirmisherMax = 1
+				case "all":
+					unit.SkirmisherMax = unit.Strength
+				}
+				println("sk rating", unit.Name, unit.Grade.String(), unit.SkirmishRating.String())
+			}
+			c.lastSubCommand.Units = append(c.lastSubCommand.Units, unit)
 			continue
 		default:
 			return k + 1, fmt.Errorf("Dont know what to do with a unit at indent level %d", ii)
 		}
-		words = strings.Split(v, "-")
-		if len(words) != 2 {
-			return k + 1, fmt.Errorf("Invalid Corps Definition - needs 'Corps Name' - 'Commander Name'")
-		}
-		c.command.Name = strings.TrimSpace(words[0])
-		c.command.CommanderName = strings.TrimSpace(words[1])
-		c.command.Rank = Rank_CORPS
-		c.command.Subcommands = []*Command{}
-		c.command.Units = []*Unit{}
-		c.command.CommanderBonus = c.getLeaderRating(c.command.CommanderName)
-		c.lastSubCommand = nil
 	}
 	return 0, nil
 }
