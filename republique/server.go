@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type RServer struct {
+type Server struct {
 	log      *logrus.Logger
 	version  string
 	filename string
@@ -20,8 +20,8 @@ type RServer struct {
 }
 
 // New returns a new republique server
-func NewRServer(log *logrus.Logger, version string, filename string, port int, web int) *RServer {
-	return &RServer{
+func NewServer(log *logrus.Logger, version string, filename string, port int, web int) *Server {
+	return &Server{
 		log:      log,
 		version:  version,
 		filename: filename,
@@ -31,7 +31,7 @@ func NewRServer(log *logrus.Logger, version string, filename string, port int, w
 }
 
 // Run runs a republique server
-func (s *RServer) Serve() {
+func (s *Server) Serve() {
 	s.log.WithFields(logrus.Fields{
 		"version":  s.version,
 		"port":     s.port,
@@ -49,7 +49,7 @@ func (s *RServer) Serve() {
 	s.grpcRun()
 }
 
-func (s *RServer) grpcRun() {
+func (s *Server) grpcRun() {
 	endpoint := fmt.Sprintf(":%d", s.port)
 	lis, err := net.Listen("tcp", endpoint)
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *RServer) grpcRun() {
 	grpcServer.Serve(lis)
 }
 
-func (s *RServer) rpcProxy() error {
+func (s *Server) rpcProxy() error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
