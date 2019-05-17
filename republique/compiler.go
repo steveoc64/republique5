@@ -471,7 +471,6 @@ func (c *Compiler) parseOOB() (int, error) {
 				case "all":
 					unit.SkirmisherMax = unit.Strength
 				}
-				println("sk rating", unit.Name, unit.Grade.String(), unit.SkirmishRating.String())
 			}
 			c.lastSubCommand.Units = append(c.lastSubCommand.Units, unit)
 			continue
