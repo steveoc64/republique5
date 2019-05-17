@@ -70,6 +70,7 @@ message Unit {
   bool canAssault = 34;
   bool hasAssaulted = 35;
   Nationality nationality = 36;
+  Drill drill = 37;
 }
 
 message Command {
@@ -97,6 +98,7 @@ message Command {
   Arm arm = 22;
   Nationality nationality = 23;
   UnitGrade grade = 24;
+  Drill drill = 25;
 }
 
 message Army {
@@ -264,4 +266,10 @@ enum Nationality {
   AFRICAN = 19;
   NATIVE = 20;
   COLONIAL = 21;
+}
+
+enum Drill {
+  LINEAR = 0;
+  MASSED = 1;
+  RAPID = 2;
 }

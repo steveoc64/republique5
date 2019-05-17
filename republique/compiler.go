@@ -3,6 +3,7 @@ package republique
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -23,7 +24,6 @@ type Compiler struct {
 	lines          []string
 	indents        int
 	command        *Command
-	mode           int
 	lastSubCommand *Command
 }
 
@@ -97,12 +97,28 @@ func (c *Compiler) parseOOB() (int, error) {
 	year := 1800
 	c.command = &Command{
 		Arm:           Arm_INFANTRY,
-		CommandRating: CommandRating_FUNCTIONAL,
+		CommandRating: CommandRating_CUMBERSOME,
 		Nationality:   Nationality_ANY_NATION,
 		Grade:         UnitGrade_REGULAR,
+		Drill:         Drill_LINEAR,
 	}
 	c.indents = 1
 	var err error
+
+	getYear := func(k int, w []string) (int, error) {
+		if k != 0 {
+			return 0, errors.New("Nationality and Year must only be added on line 1")
+		}
+		if len(w) != 2 {
+			return 0, fmt.Errorf("!%s - missing year", strings.Join(w, " "))
+		}
+		year, err = strconv.Atoi(w[1])
+		if err != nil || year == 0 {
+			return 0, fmt.Errorf("!%s - invalid year '%v'", strings.Join(w, " "), w[1])
+		}
+		return year, nil
+	}
+
 	// scan for !commands
 	for k, v := range c.lines {
 		words := strings.Split(v, " ")
@@ -157,16 +173,67 @@ func (c *Compiler) parseOOB() (int, error) {
 				c.command.CommandRating = CommandRating_CUMBERSOME
 			case "useless":
 				c.command.CommandRating = CommandRating_USELESS
+			case "linear":
+				c.command.Drill = Drill_LINEAR
+			case "Rapid":
+				c.command.Drill = Drill_RAPID
 			case "french", "france":
-				// TODO - turn this into a lambda function
-				if ww != 2 {
-					return k + 1, fmt.Errorf("!%s - missing year", w)
-				}
-				year, err = strconv.Atoi(words[1])
-				if err != nil || year == 0 {
-					return k + 1, fmt.Errorf("!%s - invalid year '%v'", w, words[1])
+				year, err = getYear(k, words)
+				if err != nil {
+					return k + 1, err
 				}
 				c.command.Nationality = Nationality_FRENCH
+				switch {
+				case year >= 1813:
+					c.command.Drill = Drill_RAPID
+					c.command.CommandRating = CommandRating_FUNCTIONAL
+					c.command.Grade = UnitGrade_CONSCRIPT
+				case year >= 1805:
+					c.command.Drill = Drill_RAPID
+					c.command.CommandRating = CommandRating_EFFICIENT
+					c.command.Grade = UnitGrade_VETERAN
+				case year >= 1791:
+					c.command.Drill = Drill_MASSED
+				}
+			case "prussia", "prussian":
+				year, err = getYear(k, words)
+				if err != nil {
+					return k + 1, err
+				}
+				c.command.Nationality = Nationality_PRUSSIAN
+				switch {
+				case year >= 1814:
+					c.command.Drill = Drill_RAPID
+					c.command.CommandRating = CommandRating_EFFICIENT
+				case year >= 1812:
+					c.command.Drill = Drill_MASSED
+					c.command.CommandRating = CommandRating_FUNCTIONAL
+					c.command.Grade = UnitGrade_CONSCRIPT
+				}
+			case "austria", "austrian":
+				year, err = getYear(k, words)
+				if err != nil {
+					return k + 1, err
+				}
+				c.command.Nationality = Nationality_AUSTRIAN
+				switch {
+				case year >= 1809:
+					c.command.Drill = Drill_MASSED
+				case year >= 1813:
+					c.command.Drill = Drill_RAPID
+					c.command.CommandRating = CommandRating_FUNCTIONAL
+				}
+			case "russia", "russian":
+				year, err = getYear(k, words)
+				if err != nil {
+					return k + 1, err
+				}
+				c.command.Nationality = Nationality_RUSSIAN
+				switch {
+				case year >= 1813:
+					c.command.Drill = Drill_MASSED
+					c.command.Grade = UnitGrade_VETERAN
+				}
 			default:
 				return k + 1, fmt.Errorf("Invalid Command '%s'", v)
 			}
@@ -187,7 +254,6 @@ func (c *Compiler) parseOOB() (int, error) {
 		switch ii {
 		case 0:
 			//println(k+1, "looks like a corps definition line", v)
-			c.mode = 1
 		case 1:
 			//println(k+1, "SubCommand:", v)
 			words = strings.Split(v[ioffset:], "-")
@@ -235,11 +301,9 @@ func (c *Compiler) parseOOB() (int, error) {
 			cc.Units = []*Unit{}
 			c.lastSubCommand = cc
 			c.command.Subcommands = append(c.command.Subcommands, cc)
-			c.mode = 2
 			continue
 		case 2:
 			//println(k+1, "Unit:", v)
-			c.mode = 2
 			continue
 		default:
 			return k + 1, fmt.Errorf("Dont know what to do with a unit at indent level %d", ii)
