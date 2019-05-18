@@ -13,7 +13,6 @@ func (c *Compiler) parseOOB() (int, error) {
 	skRating := SkirmishRating_POOR
 	skMax := "one"
 	bnGuns := false
-	grade := UnitGrade_REGULAR
 	c.command = &Command{
 		Arm:           Arm_INFANTRY,
 		CommandRating: CommandRating_CUMBERSOME,
@@ -177,10 +176,8 @@ func (c *Compiler) parseOOB() (int, error) {
 					return k + 1, err
 				}
 				c.command.Nationality = Nationality_RUSSIAN
+				skMax = "none"
 				switch {
-				case year >= 1813:
-					c.command.Drill = Drill_MASSED
-					c.command.Grade = UnitGrade_VETERAN
 				case year <= 1808:
 					bnGuns = true
 				}
@@ -236,6 +233,11 @@ func (c *Compiler) parseOOB() (int, error) {
 				Drill:         c.command.Drill,
 			}
 			cc.Name = strings.TrimSpace(words[0])
+			if strings.HasPrefix(strings.ToLower(cc.Name), "reserve") ||
+				strings.HasPrefix(strings.ToLower(cc.Name), "bde reserve") ||
+				strings.HasPrefix(strings.ToLower(cc.Name), "div reserve") {
+				cc.Reserve = true
+			}
 			params := ""
 			if ll == 2 {
 				params = words[1]
@@ -286,12 +288,13 @@ func (c *Compiler) parseOOB() (int, error) {
 				return k + 1, fmt.Errorf("Invalid Unit Definition - needs 'Unit Name' - N bases [Unit Paramaters]")
 			}
 			unit := &Unit{
-				Name:        strings.TrimSpace(words[0]),
-				Arm:         c.lastSubCommand.Arm,
-				UnitType:    UnitType_INFANTRY_LINE,
-				Grade:       c.lastSubCommand.Grade,
-				Nationality: c.lastSubCommand.Nationality,
-				Drill:       c.lastSubCommand.Drill,
+				Name:           strings.TrimSpace(words[0]),
+				Arm:            c.lastSubCommand.Arm,
+				UnitType:       UnitType_INFANTRY_LINE,
+				Grade:          c.lastSubCommand.Grade,
+				Nationality:    c.lastSubCommand.Nationality,
+				Drill:          c.lastSubCommand.Drill,
+				CommandReserve: c.lastSubCommand.Reserve,
 			}
 			// max inherited grade is regular, except for guard formations which are all guard by default
 			if unit.Grade > UnitGrade_REGULAR && unit.Grade != UnitGrade_GUARD {
@@ -398,6 +401,14 @@ func (c *Compiler) parseOOB() (int, error) {
 				strings.Contains(params, "kuirassier"):
 				unit.Arm = Arm_CAVALRY
 				unit.UnitType = UnitType_CAVALRY_CUIRASSIER
+			case strings.Contains(params, "lancer"),
+				strings.Contains(params, "uhlan"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_LANCER
+			case strings.Contains(params, "cossack"),
+				strings.Contains(params, "landwehr cav"):
+				unit.Arm = Arm_CAVALRY
+				unit.UnitType = UnitType_CAVALRY_COSSACK
 			case strings.Contains(params, "mdf"):
 				unit.Arm = Arm_ARTILLERY
 				unit.UnitType = UnitType_ARTILLERY_MEDIUM
@@ -436,7 +447,9 @@ func (c *Compiler) parseOOB() (int, error) {
 					useSK = useSK.Decrement()
 				}
 				unit.SkirmishRating = useSK
-				if unit.UnitType != UnitType_INFANTRY_LIGHT && unit.Grade < UnitGrade_VETERAN {
+				if unit.UnitType != UnitType_INFANTRY_LIGHT &&
+					unit.Grade < UnitGrade_VETERAN &&
+					useMax == "all" {
 					useMax = "one"
 				}
 				switch useMax {

@@ -71,6 +71,7 @@ message Unit {
   bool hasAssaulted = 35;
   Nationality nationality = 36;
   Drill drill = 37;
+  bool commandReserve = 38;
 }
 
 message Command {
@@ -98,7 +99,8 @@ message Command {
   Nationality nationality = 23;
   UnitGrade grade = 24;
   Drill drill = 25;
-  string Notes = 26;
+  string notes = 26;
+  bool reserve = 27;
 }
 
 message Army {
@@ -171,12 +173,13 @@ enum UnitType {
   CAVALRY_COSSACK = 10;
   CAVALRY_HEAVY = 11;
   CAVALRY_MEDIUM = 12;
-  ARTILLERY_BN = 13;
-  ARTILLERY_LIGHT = 14;
-  ARTILLERY_MEDIUM = 15;
-  ARTILLERY_HEAVY = 16;
-  ARTILLERY_HORSE = 17;
-  ARTILLERY_LIGHT_HORSE = 18;
+  CAVALRY_LANCER = 13;
+  ARTILLERY_BN = 14;
+  ARTILLERY_LIGHT = 15;
+  ARTILLERY_MEDIUM = 16;
+  ARTILLERY_HEAVY = 17;
+  ARTILLERY_HORSE = 18;
+  ARTILLERY_LIGHT_HORSE = 19;
 }
 
 enum UnitGrade {
