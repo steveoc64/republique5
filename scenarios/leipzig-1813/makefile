@@ -1,6 +1,6 @@
 all:
 	republique compile *.oob
-	ls -ltra
+	ls -l *.json
 
 
 

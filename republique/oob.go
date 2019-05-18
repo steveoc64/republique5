@@ -181,6 +181,16 @@ func (c *Compiler) parseOOB() (int, error) {
 				case year <= 1808:
 					bnGuns = true
 				}
+			case "sweden":
+				year, err = getYear(k, words)
+				if err != nil {
+					return k + 1, err
+				}
+				c.command.Nationality = Nationality_SWEDEN
+				skMax = "one"
+				skRating = SkirmishRating_ADEQUATE
+				c.command.Drill = Drill_LINEAR
+				c.command.CommandRating = CommandRating_FUNCTIONAL
 			default:
 				return k + 1, fmt.Errorf("Invalid Command '%s'", v)
 			}
@@ -235,6 +245,7 @@ func (c *Compiler) parseOOB() (int, error) {
 			cc.Name = strings.TrimSpace(words[0])
 			if strings.HasPrefix(strings.ToLower(cc.Name), "reserve") ||
 				strings.HasPrefix(strings.ToLower(cc.Name), "bde reserve") ||
+				strings.HasPrefix(strings.ToLower(cc.Name), "cavalry reserve") ||
 				strings.HasPrefix(strings.ToLower(cc.Name), "div reserve") {
 				cc.Reserve = true
 			}
@@ -279,6 +290,9 @@ func (c *Compiler) parseOOB() (int, error) {
 			switch {
 			case strings.Contains(lname, "cavalry div"),
 				strings.Contains(lname, "cuirassier div"),
+				strings.Contains(lname, "cossack div"),
+				strings.Contains(lname, "corps cav"),
+				strings.Contains(lname, "cavalry reserve"),
 				strings.Contains(lname, "dragoon div"):
 				cc.Arm = Arm_CAVALRY
 				cc.Rank = Rank_CAVALRY_DIV
@@ -302,6 +316,9 @@ func (c *Compiler) parseOOB() (int, error) {
 			c.command.Subcommands = append(c.command.Subcommands, cc)
 			continue
 		case 2: // Unit Definiition
+			if c.lastSubCommand == nil {
+				return k + 1, fmt.Errorf("Indentation error - unit has no parent sub-command '%v'", v)
+			}
 			hasGrade := false
 			isGrenz := false
 			v = strings.TrimSpace(v)
@@ -411,8 +428,10 @@ func (c *Compiler) parseOOB() (int, error) {
 				strings.Contains(params, "chaschev"),
 				strings.Contains(params, "chev legere"),
 				strings.Contains(params, "chasseur cheval"),
+				strings.Contains(params, "chasseur a cheval"),
 				strings.Contains(params, "chasseurs a'cheval"),
 				strings.Contains(params, "chasseurs cheval"),
+				strings.Contains(params, "chasseurs a cheval"),
 				strings.Contains(params, "horse jager"),
 				strings.Contains(params, "mounted jager"):
 				unit.Arm = Arm_CAVALRY
@@ -424,11 +443,11 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.Arm = Arm_CAVALRY
 				unit.UnitType = UnitType_CAVALRY_CUIRASSIER
 			case strings.Contains(params, "lancer"),
+				strings.Contains(params, "landwehr cav"),
 				strings.Contains(params, "uhlan"):
 				unit.Arm = Arm_CAVALRY
 				unit.UnitType = UnitType_CAVALRY_LANCER
-			case strings.Contains(params, "cossack"),
-				strings.Contains(params, "landwehr cav"):
+			case strings.Contains(params, "cossack"):
 				unit.Arm = Arm_CAVALRY
 				unit.UnitType = UnitType_CAVALRY_COSSACK
 			case strings.Contains(params, "mdf"):

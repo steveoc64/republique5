@@ -273,6 +273,7 @@ enum Nationality {
   AFRICAN = 19;
   NATIVE = 20;
   COLONIAL = 21;
+  SWEDEN = 22;
 }
 
 enum Drill {
