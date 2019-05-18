@@ -247,6 +247,28 @@ func (c *Compiler) parseOOB() (int, error) {
 					cc.Notes = params[ib1+1 : ib2]
 					params = params[:ib1]
 				}
+				ib1 = strings.Index(params, "[")
+				ib2 = strings.Index(params, "]")
+				if ib1 != -1 && ib2 != -1 {
+					nation := strings.ToLower(params[ib1+1 : ib2])
+					switch nation {
+					case "french":
+						cc.Nationality = Nationality_FRENCH
+						skMax = "all"
+					case "prussian", "saxon":
+						cc.Nationality = Nationality_PRUSSIAN
+						skMax = "one"
+					case "austrian":
+						cc.Nationality = Nationality_AUSTRIAN
+						skMax = "one"
+					case "russian":
+						cc.Nationality = Nationality_RUSSIAN
+						skMax = "none"
+					}
+					params = params[:ib1]
+				}
+				ib1 = strings.Index(params, "[")
+
 				cc.CommanderName = strings.TrimSpace(params)
 				cc.CommanderBonus = c.getLeaderRating(cc.CommanderName)
 			}
@@ -457,6 +479,8 @@ func (c *Compiler) parseOOB() (int, error) {
 					unit.SkirmisherMax = 1
 				case "all":
 					unit.SkirmisherMax = unit.Strength
+				case "none":
+					unit.SkirmishRating = SkirmishRating_POOR
 				}
 			}
 			// Minimum default grading for cav and artillery
