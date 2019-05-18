@@ -13,6 +13,7 @@ func (c *Compiler) parseOOB() (int, error) {
 	skRating := SkirmishRating_POOR
 	skMax := "one"
 	bnGuns := false
+	grade := UnitGrade_REGULAR
 	c.command = &Command{
 		Arm:           Arm_INFANTRY,
 		CommandRating: CommandRating_CUMBERSOME,
@@ -160,11 +161,13 @@ func (c *Compiler) parseOOB() (int, error) {
 				}
 				c.command.Nationality = Nationality_AUSTRIAN
 				switch {
+				case year >= 1813:
+					c.command.Drill = Drill_MASSED
+					c.command.CommandRating = CommandRating_FUNCTIONAL
+					skRating = SkirmishRating_ADEQUATE
 				case year >= 1809:
 					c.command.Drill = Drill_MASSED
-				case year >= 1813:
-					c.command.Drill = Drill_RAPID
-					c.command.CommandRating = CommandRating_FUNCTIONAL
+					skRating = SkirmishRating_ADEQUATE
 				case year <= 1802:
 					bnGuns = true
 				}
@@ -275,6 +278,8 @@ func (c *Compiler) parseOOB() (int, error) {
 			c.command.Subcommands = append(c.command.Subcommands, cc)
 			continue
 		case 2: // Unit Definiition
+			hasGrade := false
+			isGrenz := false
 			v = strings.TrimSpace(v)
 			words = strings.Split(v, " - ")
 			if len(words) != 2 {
@@ -328,24 +333,30 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.Grade = UnitGrade_MILITIA
 				useSK = useSK.Decrement()
 				useSK = useSK.Decrement()
+				hasGrade = true
 			case strings.Contains(params, "green"),
 				strings.Contains(params, "conscript"):
 				unit.Grade = UnitGrade_CONSCRIPT
 				useSK = useSK.Decrement()
+				hasGrade = true
 			case strings.Contains(params, "regular"):
 				unit.Grade = UnitGrade_REGULAR
+				hasGrade = true
 			case strings.Contains(params, "veteran"):
 				unit.Grade = UnitGrade_VETERAN
+				hasGrade = true
 			case strings.Contains(params, "elite"):
 				unit.Grade = UnitGrade_ELITE
 				useSK = useSK.Increment()
+				hasGrade = true
 			case strings.Contains(params, "guard"):
 				unit.Grade = UnitGrade_GUARD
 				useSK = useSK.Increment()
 				useSK = useSK.Increment()
+				hasGrade = true
 			}
 
-			//  types
+			// troop types
 			switch {
 			case strings.Contains(params, "rifle"):
 				unit.Arm = Arm_INFANTRY
@@ -373,6 +384,7 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.UnitType = UnitType_CAVALRY_HUSSAR
 			case strings.Contains(params, "chas chev"),
 				strings.Contains(params, "chaschev"),
+				strings.Contains(params, "chev legere"),
 				strings.Contains(params, "chasseur cheval"),
 				strings.Contains(params, "chasseurs a'cheval"),
 				strings.Contains(params, "chasseurs cheval"),
@@ -407,15 +419,24 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.Arm = Arm_INFANTRY
 				unit.UnitType = UnitType_INFANTRY_LIGHT
 				useMax = "all"
+			case strings.Contains(params, "grenz"):
+				unit.Arm = Arm_INFANTRY
+				unit.UnitType = UnitType_INFANTRY_LIGHT
+				useMax = "all"
+				isGrenz = true
 			case strings.Contains(params, "line"):
 				unit.Arm = Arm_INFANTRY
 				unit.UnitType = UnitType_INFANTRY_LINE
 			}
+			// set skirmisher ratings
 			if unit.Arm == Arm_INFANTRY ||
 				unit.UnitType == UnitType_CAVALRY_DRAGOON ||
 				unit.UnitType == UnitType_CAVALRY_LIGHT {
+				if !hasGrade && unit.Grade < UnitGrade_REGULAR {
+					useSK = useSK.Decrement()
+				}
 				unit.SkirmishRating = useSK
-				if unit.Grade < UnitGrade_VETERAN {
+				if unit.UnitType != UnitType_INFANTRY_LIGHT && unit.Grade < UnitGrade_VETERAN {
 					useMax = "one"
 				}
 				switch useMax {
@@ -425,10 +446,22 @@ func (c *Compiler) parseOOB() (int, error) {
 					unit.SkirmisherMax = unit.Strength
 				}
 			}
+			// Minimum default grading for cav and artillery
+			if !hasGrade && (unit.Arm == Arm_CAVALRY || unit.Arm == Arm_ARTILLERY) {
+				if unit.Grade < UnitGrade_REGULAR {
+					unit.Grade = UnitGrade_REGULAR
+				}
+			}
+			// default bnGuns for line troops by nationality
 			if bnGuns &&
 				(unit.UnitType == UnitType_INFANTRY_LINE ||
 					unit.UnitType == UnitType_INFANTRY_GRENADIER) {
 				unit.BnGuns = true
+			}
+			// grenzer rule
+			if isGrenz && !hasGrade {
+				unit.Grade = UnitGrade_REGULAR
+				unit.SkirmishRating = SkirmishRating_POOR
 			}
 			c.lastSubCommand.Units = append(c.lastSubCommand.Units, unit)
 			continue

@@ -41,7 +41,7 @@ func (c *Compiler) Compile(filename string) error {
 	}
 
 	switch ext {
-	case ".scenarios":
+	case ".oob":
 		if i, err := c.parseOOB(); err != nil {
 			c.log.WithFields(logrus.Fields{
 				"filename":   c.filename,
@@ -50,11 +50,11 @@ func (c *Compiler) Compile(filename string) error {
 			}).WithError(err).Error("Failed to parse file")
 			return err
 		}
-	case "scenario":
+	case ".scenario":
 		// TODO
-	case "army":
+	case ".army":
 		// TODO
-	case "game":
+	case ".game":
 		// TODO
 	}
 
