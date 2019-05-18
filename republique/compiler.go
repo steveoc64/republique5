@@ -41,7 +41,7 @@ func (c *Compiler) Compile(filename string) error {
 	}
 
 	switch ext {
-	case ".oob":
+	case ".scenarios":
 		if i, err := c.parseOOB(); err != nil {
 			c.log.WithFields(logrus.Fields{
 				"filename":   c.filename,

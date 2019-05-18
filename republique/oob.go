@@ -3,6 +3,7 @@ package republique
 import (
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -11,6 +12,7 @@ func (c *Compiler) parseOOB() (int, error) {
 	year := 1800
 	skRating := SkirmishRating_POOR
 	skMax := "one"
+	bnGuns := false
 	c.command = &Command{
 		Arm:           Arm_INFANTRY,
 		CommandRating: CommandRating_CUMBERSOME,
@@ -20,6 +22,17 @@ func (c *Compiler) parseOOB() (int, error) {
 	}
 	c.indents = 1
 	var err error
+
+	var k int
+	var v string
+
+	// catch panics
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("ERROR:", r, "line", k, "file", c.filename, "\n->", v)
+			debug.PrintStack()
+		}
+	}()
 
 	getYear := func(k int, w []string) (int, error) {
 		if k != 0 {
@@ -36,7 +49,7 @@ func (c *Compiler) parseOOB() (int, error) {
 	}
 
 	// scan for !commands
-	for k, v := range c.lines {
+	for k, v = range c.lines {
 		words := strings.Split(v, " ")
 		ww := len(words)
 		w := strings.ToLower(words[0])
@@ -137,6 +150,8 @@ func (c *Compiler) parseOOB() (int, error) {
 					c.command.CommandRating = CommandRating_FUNCTIONAL
 					c.command.Grade = UnitGrade_CONSCRIPT
 					skRating = SkirmishRating_ADEQUATE
+				case year <= 1806:
+					bnGuns = true
 				}
 			case "austria", "austrian":
 				year, err = getYear(k, words)
@@ -150,6 +165,8 @@ func (c *Compiler) parseOOB() (int, error) {
 				case year >= 1813:
 					c.command.Drill = Drill_RAPID
 					c.command.CommandRating = CommandRating_FUNCTIONAL
+				case year <= 1802:
+					bnGuns = true
 				}
 			case "russia", "russian":
 				year, err = getYear(k, words)
@@ -161,6 +178,8 @@ func (c *Compiler) parseOOB() (int, error) {
 				case year >= 1813:
 					c.command.Drill = Drill_MASSED
 					c.command.Grade = UnitGrade_VETERAN
+				case year <= 1808:
+					bnGuns = true
 				}
 			default:
 				return k + 1, fmt.Errorf("Invalid Command '%s'", v)
@@ -181,9 +200,16 @@ func (c *Compiler) parseOOB() (int, error) {
 		}
 		switch ii {
 		case 0: // Corps Definition
-			words = strings.Split(v, "-")
+			words = strings.Split(v, " - ")
 			if len(words) != 2 {
 				return k + 1, fmt.Errorf("Invalid Corps Definition - needs 'Corps Name' - 'Commander Name'")
+			}
+			params := words[1]
+			ib1 := strings.Index(params, "(")
+			ib2 := strings.Index(params, ")")
+			if ib1 != -1 && ib2 != -1 {
+				c.command.Notes = params[ib1+1 : ib2]
+				params = params[:ib1]
 			}
 			c.command.Name = strings.TrimSpace(words[0])
 			c.command.CommanderName = strings.TrimSpace(words[1])
@@ -194,7 +220,7 @@ func (c *Compiler) parseOOB() (int, error) {
 			c.lastSubCommand = nil
 			continue
 		case 1: // Division SubCommand
-			words = strings.Split(v[ioffset:], "-")
+			words = strings.Split(v[ioffset:], " - ")
 			ll := len(words)
 			if ll != 2 && ll != 1 {
 				return k + 1, fmt.Errorf("Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')")
@@ -207,8 +233,16 @@ func (c *Compiler) parseOOB() (int, error) {
 				Drill:         c.command.Drill,
 			}
 			cc.Name = strings.TrimSpace(words[0])
+			params := ""
 			if ll == 2 {
-				cc.CommanderName = strings.TrimSpace(words[1])
+				params = words[1]
+				ib1 := strings.Index(params, "(")
+				ib2 := strings.Index(params, ")")
+				if ib1 != -1 && ib2 != -1 {
+					cc.Notes = params[ib1+1 : ib2]
+					params = params[:ib1]
+				}
+				cc.CommanderName = strings.TrimSpace(params)
 				cc.CommanderBonus = c.getLeaderRating(cc.CommanderName)
 			}
 
@@ -358,6 +392,9 @@ func (c *Compiler) parseOOB() (int, error) {
 			case strings.Contains(params, "ltf"):
 				unit.Arm = Arm_ARTILLERY
 				unit.UnitType = UnitType_ARTILLERY_LIGHT
+			case strings.Contains(params, "lth"):
+				unit.Arm = Arm_ARTILLERY
+				unit.UnitType = UnitType_ARTILLERY_LIGHT_HORSE
 			case strings.Contains(params, "hvf"):
 				unit.Arm = Arm_ARTILLERY
 				unit.UnitType = UnitType_ARTILLERY_HEAVY
@@ -365,6 +402,7 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.Arm = Arm_ARTILLERY
 				unit.UnitType = UnitType_ARTILLERY_HORSE
 			case strings.Contains(params, "light"),
+				strings.Contains(params, "fusiliers"),
 				strings.Contains(params, "jager"):
 				unit.Arm = Arm_INFANTRY
 				unit.UnitType = UnitType_INFANTRY_LIGHT
@@ -373,7 +411,9 @@ func (c *Compiler) parseOOB() (int, error) {
 				unit.Arm = Arm_INFANTRY
 				unit.UnitType = UnitType_INFANTRY_LINE
 			}
-			if unit.Arm == Arm_INFANTRY || unit.UnitType == UnitType_CAVALRY_DRAGOON || unit.UnitType == UnitType_CAVALRY_LIGHT {
+			if unit.Arm == Arm_INFANTRY ||
+				unit.UnitType == UnitType_CAVALRY_DRAGOON ||
+				unit.UnitType == UnitType_CAVALRY_LIGHT {
 				unit.SkirmishRating = useSK
 				if unit.Grade < UnitGrade_VETERAN {
 					useMax = "one"
@@ -384,6 +424,11 @@ func (c *Compiler) parseOOB() (int, error) {
 				case "all":
 					unit.SkirmisherMax = unit.Strength
 				}
+			}
+			if bnGuns &&
+				(unit.UnitType == UnitType_INFANTRY_LINE ||
+					unit.UnitType == UnitType_INFANTRY_GRENADIER) {
+				unit.BnGuns = true
 			}
 			c.lastSubCommand.Units = append(c.lastSubCommand.Units, unit)
 			continue
