@@ -3,14 +3,24 @@ package republique
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/gogo/protobuf/jsonpb"
-
 	"github.com/sirupsen/logrus"
 )
+
+type CompilerError struct {
+	line     int
+	filename string
+	msg      string
+}
+
+func (e CompilerError) Error() string {
+	return fmt.Sprintf("ERROR: Line %d: %s - %s", e.line, e.filename, e.msg)
+}
 
 type Compiler struct {
 	log            *logrus.Logger
@@ -37,19 +47,24 @@ func (c *Compiler) Compile(filename string) error {
 
 	if err := c.load(); err != nil {
 		c.log.WithError(err).WithField("filename", c.filename).Error("Failed to load file")
-		return err
+		return CompilerError{0, filename, "Loading: " + err.Error()}
 	}
 
 	switch ext {
 	case ".oob":
-		if i, err := c.parseOOB(); err != nil {
+		cmd, err := c.parseOOB()
+		if err != nil {
 			c.log.WithFields(logrus.Fields{
-				"filename":   c.filename,
-				"numlines":   len(c.lines),
-				"LineNumber": i,
-			}).WithError(err).Error("Failed to parse file")
+				"filename": c.filename,
+				"numlines": len(c.lines),
+			}).WithError(err).Debug("Failed to parse file")
+			println(err.Error())
 			return err
 		}
+		j := &bytes.Buffer{}
+		marshaler := &jsonpb.Marshaler{}
+		marshaler.Marshal(j, cmd)
+		ioutil.WriteFile(c.outfile, j.Bytes(), 0644)
 	case ".scenario":
 		// TODO
 	case ".army":
@@ -64,11 +79,6 @@ func (c *Compiler) Compile(filename string) error {
 		"numlines":   len(c.lines),
 		"indents":    c.indents,
 	}).Debug("Loaded")
-
-	j := &bytes.Buffer{}
-	marshaler := &jsonpb.Marshaler{}
-	marshaler.Marshal(j, c.command)
-	ioutil.WriteFile(c.outfile, j.Bytes(), 0644)
 
 	return nil
 }

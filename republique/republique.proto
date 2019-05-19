@@ -2,7 +2,7 @@ syntax = "proto3";
 package republique;
 
 import "google/protobuf/timestamp.proto";
-//import "google/protobuf/empty.proto";
+import "google/protobuf/empty.proto";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RPCs
@@ -33,119 +33,117 @@ message Grid {
   bool fort = 6;
 }
 
+// Unit details that are static for a game
 message Unit {
-  string uuid = 1;
-  string name = 2;
-  Arm arm = 3;
-  UnitType unitType = 4;
-  int64 strength = 5;
-  int64 hits = 6;
-  UnitGrade grade = 7;
-  MoraleState moraleBase = 8;
-  MoraleState moraleState = 9;
-  SkirmishRating skirmishRating = 10;
-  int64 skirmisherMax = 11;
-  int64 skirmishersDeployed = 12;
-  Formation formation = 13;
-  string notes = 14;
-  bool bnGuns = 15;
-  bool gunsDamaged = 16;
-  bool gunsDeployed = 17;
-  bool gunsStocked = 18;
-  bool hidden = 19;
-  bool hasFired = 20;
-  int64 fatigue = 21;
-  bool lowAmmo = 22;
-  int64 cover = 23;
-  string pinCode = 24;
-  Grid grid = 25;
-  string instructions = 26;
-  bool actionRequired = 27;
-  Grid objective = 28;
-  Grid moveTo = 29;
-  Grid gunTarget = 30;
-  bool hasCharged = 31;
-  string supportingUnit = 32;
-  string engagedUnit = 33;
-  bool canAssault = 34;
-  bool hasAssaulted = 35;
-  Nationality nationality = 36;
-  Drill drill = 37;
-  bool commandReserve = 38;
+  string name = 1;
+  Arm arm = 2;
+  UnitType unitType = 3;
+  int64 strength = 4;
+  UnitGrade grade = 5;
+  SkirmishRating skirmishRating = 6;
+  int64 skirmisherMax = 7;
+  string notes = 8;
+  bool bnGuns = 9;
+  Nationality nationality = 10;
+  Drill drill = 11;
+  bool commandReserve = 12;
+  UnitGameState gameState = 13;
+  repeated UnitGameState history = 14;
 }
 
+// Unit details that can change from turn to turn
+message UnitGameState {
+  int64 hits = 1;
+  int64 skirmishersDeployed = 2;
+  Formation formation = 3;
+  MoraleState moraleState = 4;
+  bool gunsDamaged = 5;
+  bool gunsDeployed = 6;
+  bool gunsStocked = 7;
+  bool hidden = 8;
+  bool hasFired = 9;
+  int64 fatigue = 10;
+  bool lowAmmo = 11;
+  int64 cover = 12;
+  Grid grid = 13;
+  string playerInstructions = 14;
+  bool actionRequired = 15;
+  Grid objective = 16;
+  Grid moveTo = 17;
+  Grid gunTarget = 18;
+  bool hasCharged = 19;
+  string supportingUnit = 20;
+  string engagedUnit = 21;
+  bool canAssault = 22;
+  bool hasAssaulted = 23;
+}
+
+// Command details that are static for a game
 message Command {
-  string commanderName = 1;
-  string name = 2;
-  string formation = 3;
-  CommandRating commandRating = 5;
-  int64 panicState = 6;
-  bool injured = 7;
-  Rank rank = 8;
-  string pinCode = 9;
-  string accessCode = 10;
-  Grid grid = 11;
-  string armyID = 12;
-  string objective = 13;
-  Order orders = 14;
-  string attachedTo = 15;
-  bool hasOrdered = 16;
-  bool hasMoved = 17;
-  bool hasRallied = 18;
-  repeated Command subcommands = 19;
-  repeated Unit units = 20;
-  int64 commanderBonus = 21;
-  Arm arm = 22;
-  Nationality nationality = 23;
-  UnitGrade grade = 24;
-  Drill drill = 25;
-  string notes = 26;
-  bool reserve = 27;
+  string name = 1;
+  string commanderName = 2;
+  CommandRating commandRating = 3;
+  Rank rank = 4;
+  repeated Command subcommands = 5;
+  repeated Unit units = 6;
+  int64 commanderBonus = 7;
+  Arm arm = 8;
+  Nationality nationality = 9;
+  UnitGrade grade = 10;
+  Drill drill = 11;
+  string notes = 12;
+  Arrival arrival = 13;
+  CommandGameState gameState = 14;
+  repeated CommandGameState history = 15;
+  bool reserve = 16;
 }
 
-message Army {
-  string uuid = 1;
-  string name = 2;
-  string period = 3;
-  CommandRating commandRating = 4;
-  string commanderID = 5;
-  string accessCode = 6;
-  repeated Command commands = 7;
-  Nationality nationality = 8;
+// Command details that can change from turn to turn
+message CommandGameState {
+  int64 turn = 1;
+  Grid grid = 2;
+  BattlefieldPosition position = 3;
+  string formation = 4;
+  int64 panicState = 5;
+  bool injured = 6;
+  string objectiveName = 7;
+  Order orders = 8;
+  string attachedTo = 9;
+  bool hasOrdered = 10;
+  bool hasMoved = 11;
+  bool hasRallied = 12;
+  google.protobuf.Timestamp timestamp = 13;
+  Grid objective = 14;
 }
 
-message ScenarioCommand {
-  string uuid = 1;
-  string armyID = 2;
-  string commandID = 3;
-  string briefing = 4;
-  Grid startLocation = 5;
-  string objective = 6;
-  Order orders = 7;
-  string playerName = 8;
-  string playerEmail = 9;
+message Arrival {
+  int64 from = 1;
+  int64 to = 2;
+  int64 percent = 3;
+  int64 computedTurn = 4;
+  google.protobuf.Timestamp actualArrival = 5;
+  BattlefieldPosition position = 6;
+}
+
+message Player {
+  string name = 1;
+  string briefing = 2;
+  repeated Command commands = 3;
+  string accessCode = 4;
 }
 
 message Scenario {
-  string uuid = 1;
-  string background = 2;
-  repeated ScenarioCommand playerCommands = 3;
-  repeated Army armies = 4;
-  repeated Command commands = 5;
-  repeated Unit units = 6;
-  google.protobuf.Timestamp startTime = 7;
+  string name = 1;
+  google.protobuf.Timestamp startTime = 2;
+  map <string, Player> players = 3;
 }
 
 message Game {
-  string uuid = 1;
-  string scenarioID = 2;
-  repeated ScenarioCommand playerCommands = 4;
-  repeated Army armies = 5;
-  repeated Command commands = 6;
-  repeated Unit units = 7;
-  int64 turnNumber = 8;
-  google.protobuf.Timestamp startTime = 9;
-  google.protobuf.Timestamp gameTime = 10;
+  Scenario scenario = 1;
+  string accessCode = 2;
+  int64 turnNumber = 3;
+  google.protobuf.Timestamp startTime = 4;
+  google.protobuf.Timestamp gameTime = 5;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,4 +278,11 @@ enum Drill {
   LINEAR = 0;
   MASSED = 1;
   RAPID = 2;
+}
+
+enum BattlefieldPosition {
+  REAR = 0;
+  LEFT = 1;
+  CENTRE = 2;
+  RIGHT = 3;
 }
