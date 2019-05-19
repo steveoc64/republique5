@@ -2,9 +2,7 @@ package republique
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -61,10 +59,18 @@ func (c *Compiler) Compile(filename string) error {
 			println(err.Error())
 			return err
 		}
-		j := &bytes.Buffer{}
+		f, err := os.Create(c.outfile)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 		marshaler := &jsonpb.Marshaler{}
-		marshaler.Marshal(j, cmd)
-		ioutil.WriteFile(c.outfile, j.Bytes(), 0644)
+		marshaler.Marshal(f, cmd)
+		err = f.Close()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 	case ".scenario":
 		// TODO
 	case ".army":
