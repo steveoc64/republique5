@@ -123,6 +123,7 @@ message Arrival {
   int64 computedTurn = 4;
   google.protobuf.Timestamp actualArrival = 5;
   BattlefieldPosition position = 6;
+  bool contact = 7;
 }
 
 message Player {
@@ -133,9 +134,8 @@ message Player {
 }
 
 message Scenario {
-  string name = 1;
-  google.protobuf.Timestamp startTime = 2;
-  map <string, Player> players = 3;
+  google.protobuf.Timestamp startTime = 1;
+  map <string, Player> players = 2;
 }
 
 message Game {

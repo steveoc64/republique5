@@ -1,6 +1,6 @@
 SUBDIRS := republique cmd/republique
 
-all: $(SUBDIRS)
+all: $(SUBDIRS) test
 $(SUBDIRS):
 	$(MAKE) -C $@
 
@@ -11,3 +11,6 @@ compile:
 
 dump:
 	cat oob/jena*/fr*/*.json | jq
+
+test:
+	republique compile scenarios/jena-auerstadt-1806/Jena.scenario

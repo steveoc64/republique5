@@ -101,10 +101,6 @@ var leaders = map[string]int64{
 }
 
 func (c *Compiler) getLeaderRating(name string) int64 {
-	if c.command == nil {
-		c.log.Warn("No Commander, assigning -1 rating")
-		return -1
-	}
 	m, ok := leaders[strings.ToLower(name)]
 	if !ok {
 		c.log.WithField("CommanderName", name).Debug("Cannot find leader rating, assigning 0")

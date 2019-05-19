@@ -21,45 +21,27 @@ func (e CompilerError) Error() string {
 }
 
 type Compiler struct {
-	log            *logrus.Logger
-	filename       string
-	outfile        string
-	lines          []string
-	indents        int
-	command        *Command
-	lastSubCommand *Command
+	log *logrus.Logger
 }
 
 func NewCompiler(log *logrus.Logger) *Compiler {
 	return &Compiler{
-		log:   log,
-		lines: []string{},
+		log: log,
 	}
 }
 
 func (c *Compiler) Compile(filename string) error {
-	c.log.WithField("filename", filename).Debug("Compiling")
-	c.filename = filename
 	ext := filepath.Ext(filename)
-	c.outfile = filename[:len(filename)-len(ext)] + ".json"
-
-	if err := c.load(); err != nil {
-		c.log.WithError(err).WithField("filename", c.filename).Error("Failed to load file")
-		return CompilerError{0, filename, "Loading: " + err.Error()}
-	}
+	shortName := filename[:len(filename)-len(ext)]
 
 	switch ext {
 	case ".oob":
-		cmd, err := c.parseOOB()
+		cmd, err := c.compileOOB(filename)
 		if err != nil {
-			c.log.WithFields(logrus.Fields{
-				"filename": c.filename,
-				"numlines": len(c.lines),
-			}).WithError(err).Debug("Failed to parse file")
 			println(err.Error())
 			return err
 		}
-		f, err := os.Create(c.outfile)
+		f, err := os.Create(shortName + ".json")
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -72,36 +54,45 @@ func (c *Compiler) Compile(filename string) error {
 			return err
 		}
 	case ".scenario":
-		// TODO
+		scn, err := c.compileScenario(filename)
+		if err != nil {
+			println(err.Error())
+			return err
+		}
+		f, err := os.Create(shortName + ".json")
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		marshaler := &jsonpb.Marshaler{}
+		marshaler.Marshal(f, scn)
+		err = f.Close()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 	case ".army":
 		// TODO
 	case ".game":
 		// TODO
 	}
 
-	c.log.WithFields(logrus.Fields{
-		"filename":   c.filename,
-		"outputfile": c.outfile,
-		"numlines":   len(c.lines),
-		"indents":    c.indents,
-	}).Debug("Loaded")
-
 	return nil
 }
 
-func (c *Compiler) load() error {
-	file, err := os.Open(c.filename)
+func (c *Compiler) load(filename string) ([]string, error) {
+	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close()
 
-	c.lines = []string{}
+	lines := []string{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		c.lines = append(c.lines, scanner.Text())
+		lines = append(lines, scanner.Text())
 	}
-	return scanner.Err()
+	return lines, scanner.Err()
 }
 
 func countLeadingRune(line string, r rune) int {

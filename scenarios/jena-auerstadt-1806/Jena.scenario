@@ -1,34 +1,34 @@
-StartTime 1806-10-14 06:00
-Briefing
-  Prussia
-    Briefing notes go in here
-  France
-    Briefing notes go in here
+!Start 14 Oct 1806 06:00
+!Indent 2
 Prussia
+  Briefing
+    Defender briefing notes go in here
+  Left
+    Hohenlohe - 1st Division (contact)
   Centre
     Hohenlohe - Advance Guard Division (contact)
   Right
     Hohenlohe - 3rd Division (1-3 hrs)
-    Ruchel (6-12 hrs)
-  Left
-    Hohenlohe - 1st Division (contact)
+    Ruchel (6-12 hrs) 40%
   Reserve
-    Hohenlohe - 2nd Division (2-4 hrs)
-    Kalkreuth (3-6 hrs)
+    Hohenlohe - 2nd Division (2-4 hrs) 80%
+    Kalkreuth (3-6 hrs) 80%
 France
-  Centre
-    V-Corps (contact)
+  Briefing
+    Attacker briefing notes go in here
   Left
     VII-Corps (1-3 hrs)
+  Centre
+    V-Corps (contact)
   Right
-    VI-Corps (1-3 hrs)
-    IV-Corps (2-4 hrs)
-    I-Corps (50% 8-12 hrs)
+    VI-Corps (1-3 hrs) 70%
+    IV-Corps (2-4 hrs) 80%
+    I-Corps (8-12 hrs) 40%
   Reserve
-    Imperial-Guard-Corps (1-2 hrs)
-    Murat - 1eme Cuirassier Division (2-8 hrs)
-    Murat - 2eme Cuirassier Division (2-8 hrs)
-    Murat - 1eme Dragoon Division (2-8 hrs)
-    Murat - 2eme Dragoon Division (2-8 hrs)
-    Murat - 3eme Dragoon Division (2-8 hrs)
-    Murat - 4eme Dragoon Division (2-8 hrs)
+    Imperial-Guard-Corps (1-2 hrs) 40%
+    Murat - 1eme Cuirassier Division (2-8 hrs) 60%
+    Murat - 2eme Cuirassier Division (2-8 hrs) 30%
+    Murat - 1eme Dragoon Division (2-8 hrs) 60%
+    Murat - 2eme Dragoon Division (2-8 hrs) 40%
+    Murat - 3eme Dragoon Division (2-8 hrs) 30%
+    Murat - 4eme Dragoon Division (2-8 hrs) 20%
