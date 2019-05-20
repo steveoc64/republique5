@@ -18,9 +18,9 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 	}
 
 	scn := &Scenario{
-		Players: map[string]*Player{},
+		Teams: map[string]*Team{},
 	}
-	var currentPlayer *Player
+	var currentTeam *Team
 	indents := 1
 	isBriefing := false
 	position := BattlefieldPosition_REAR
@@ -93,12 +93,12 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 		}
 		switch ii {
 		case 0: // Side Definition
-			currentPlayer = &Player{
+			currentTeam = &Team{
 				Name: strings.TrimSpace(v),
 			}
-			scn.Players[currentPlayer.Name] = currentPlayer
+			scn.Teams[currentTeam.Name] = currentTeam
 		case 1: // Player command
-			if currentPlayer == nil {
+			if currentTeam == nil {
 				return nil, CompilerError{k + 1, filename, "No player side defined at 1 indent above this line"}
 			}
 			command := strings.TrimSpace(v)
@@ -122,14 +122,14 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 			}
 			continue
 		case 2: // unit or briefing
-			if currentPlayer == nil {
+			if currentTeam == nil {
 				return nil, CompilerError{k + 1, filename, "No player side defined at 1 indent above this line"}
 			}
 			if isBriefing {
-				if currentPlayer.Briefing != "" {
-					currentPlayer.Briefing = currentPlayer.Briefing + "\n"
+				if currentTeam.Briefing != "" {
+					currentTeam.Briefing = currentTeam.Briefing + "\n"
 				}
-				currentPlayer.Briefing = currentPlayer.Briefing + strings.TrimSpace(v)
+				currentTeam.Briefing = currentTeam.Briefing + strings.TrimSpace(v)
 				continue
 			}
 			// if we are still here, its a unit to be added to current player
@@ -199,7 +199,7 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 				Position: position,
 				Contact:  contact,
 			}
-			currentPlayer.Commands = append(currentPlayer.Commands, cmd)
+			currentTeam.Commands = append(currentTeam.Commands, cmd)
 
 			continue
 		default:

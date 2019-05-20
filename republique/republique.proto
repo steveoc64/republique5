@@ -126,7 +126,7 @@ message Arrival {
   bool contact = 7;
 }
 
-message Player {
+message Team {
   string name = 1;
   string briefing = 2;
   repeated Command commands = 3;
@@ -135,7 +135,7 @@ message Player {
 
 message Scenario {
   google.protobuf.Timestamp startTime = 1;
-  map <string, Player> players = 2;
+  map <string, Team> teams = 2;
 }
 
 message Game {
