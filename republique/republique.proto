@@ -25,8 +25,8 @@ message EmptyMessage {
 // Types
 
 message Grid {
-  int64 x = 1;
-  int64 y = 2;
+  int32 x = 1;
+  int32 y = 2;
   bool cover = 3;
   bool woods = 4;
   bool bua = 5;
@@ -38,10 +38,10 @@ message Unit {
   string name = 1;
   Arm arm = 2;
   UnitType unitType = 3;
-  int64 strength = 4;
+  int32 strength = 4;
   UnitGrade grade = 5;
   SkirmishRating skirmishRating = 6;
-  int64 skirmisherMax = 7;
+  int32 skirmisherMax = 7;
   string notes = 8;
   bool bnGuns = 9;
   Nationality nationality = 10;
@@ -53,8 +53,8 @@ message Unit {
 
 // Unit details that can change from turn to turn
 message UnitGameState {
-  int64 hits = 1;
-  int64 skirmishersDeployed = 2;
+  int32 hits = 1;
+  int32 skirmishersDeployed = 2;
   Formation formation = 3;
   MoraleState moraleState = 4;
   bool gunsDamaged = 5;
@@ -62,9 +62,9 @@ message UnitGameState {
   bool gunsStocked = 7;
   bool hidden = 8;
   bool hasFired = 9;
-  int64 fatigue = 10;
+  int32 fatigue = 10;
   bool lowAmmo = 11;
-  int64 cover = 12;
+  int32 cover = 12;
   Grid grid = 13;
   string playerInstructions = 14;
   bool actionRequired = 15;
@@ -86,7 +86,7 @@ message Command {
   Rank rank = 4;
   repeated Command subcommands = 5;
   repeated Unit units = 6;
-  int64 commanderBonus = 7;
+  int32 commanderBonus = 7;
   Arm arm = 8;
   Nationality nationality = 9;
   UnitGrade grade = 10;
@@ -100,11 +100,11 @@ message Command {
 
 // Command details that can change from turn to turn
 message CommandGameState {
-  int64 turn = 1;
+  int32 turn = 1;
   Grid grid = 2;
   BattlefieldPosition position = 3;
   string formation = 4;
-  int64 panicState = 5;
+  int32 panicState = 5;
   bool injured = 6;
   string objectiveName = 7;
   Order orders = 8;
@@ -117,10 +117,10 @@ message CommandGameState {
 }
 
 message Arrival {
-  int64 from = 1;
-  int64 to = 2;
-  int64 percent = 3;
-  int64 computedTurn = 4;
+  int32 from = 1;
+  int32 to = 2;
+  int32 percent = 3;
+  int32 computedTurn = 4;
   google.protobuf.Timestamp actualArrival = 5;
   BattlefieldPosition position = 6;
   bool contact = 7;
@@ -131,6 +131,13 @@ message Team {
   string briefing = 2;
   repeated Command commands = 3;
   string accessCode = 4;
+  repeated Player players = 5;
+}
+
+message Player {
+  string accessCode = 1;
+  repeated Command commands = 2;
+  int32 points = 3;
 }
 
 message Scenario {
@@ -141,9 +148,10 @@ message Scenario {
 message Game {
   Scenario scenario = 1;
   string accessCode = 2;
-  int64 turnNumber = 3;
-  google.protobuf.Timestamp startTime = 4;
-  google.protobuf.Timestamp gameTime = 5;
+  int32 turnNumber = 3;
+  int32 tableX = 4;
+  int32 tableY = 5;
+  google.protobuf.Timestamp gameTime = 6;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

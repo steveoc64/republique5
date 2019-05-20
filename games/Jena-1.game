@@ -1,10 +1,11 @@
-Scenario Jena
-Game 4352
-Prussia 3092
-  0221 - Grawert
-  3999 - Hohenlohe, Ferdinand, Tauentzein, Ruchel
-  3920 - Zechwitz, Kalkreuth
-France 0921
-  9271 - Napoleon, Lannes
-  2017 - Soult, Ney
-  9811 - Augeraeu, Murat, Bernadotte
+!Indent 2
+Scenario jena-auerstadt-1806/Jena
+Table 6x4
+Prussia
+  Grawert
+  Hohenlohe, Ferdinand, Tauentzein, Ruchel
+  Zechwitz, Kalkreuth
+France
+  Napoleon, Lannes
+  Soult, Ney
+  Augeraeu, Murat, Bernadotte

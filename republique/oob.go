@@ -359,7 +359,7 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 					pwords = pwords[1:]
 				}
 			}
-			unit.Strength = int64(numBases)
+			unit.Strength = int32(numBases)
 			// now join whats left back together
 			params = strings.Join(pwords, " ")
 			// extract notes if there are any

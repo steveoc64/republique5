@@ -71,10 +71,25 @@ func (c *Compiler) Compile(filename string) error {
 			fmt.Println(err)
 			return err
 		}
-	case ".army":
-		// TODO
 	case ".game":
-		// TODO
+		game, err := c.compileGame(filename)
+		if err != nil {
+			println(err.Error())
+			return err
+		}
+		f, err := os.Create(shortName + ".json")
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		db := NewDB(c.log, filepath.Base(shortName+".db"))
+		db.Save(game)
+		err = f.Close()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 	}
 
 	return nil

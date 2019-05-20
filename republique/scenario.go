@@ -193,9 +193,9 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 				}
 			}
 			cmd.Arrival = &Arrival{
-				From:     int64(fromHour),
-				To:       int64(toHour),
-				Percent:  int64(chance),
+				From:     int32(fromHour),
+				To:       int32(toHour),
+				Percent:  int32(chance),
 				Position: position,
 				Contact:  contact,
 			}

@@ -2,7 +2,7 @@ package republique
 
 import "strings"
 
-var leaders = map[string]int64{
+var leaders = map[string]int32{
 	// French Commanders
 	"augereau":        2,
 	"bernadotte":      1,
@@ -100,7 +100,7 @@ var leaders = map[string]int64{
 	"yermolov":         1,
 }
 
-func (c *Compiler) getLeaderRating(name string) int64 {
+func (c *Compiler) getLeaderRating(name string) int32 {
 	m, ok := leaders[strings.ToLower(name)]
 	if !ok {
 		c.log.WithField("CommanderName", name).Debug("Cannot find leader rating, assigning 0")
