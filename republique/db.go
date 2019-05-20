@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type DB struct {
@@ -27,8 +28,8 @@ func NewDB(log *logrus.Logger, name string) *DB {
 
 	// Create the dir to store it all
 	err := os.Mkdir(filepath.Dir(filename), 0744)
-	if err != nil {
-		panic(err)
+	if err != nil && !strings.HasSuffix(err.Error(), "file exists") {
+		log.WithError(err).WithField("filename", filename).Warn("mkdir")
 	}
 
 	// Create the DB
