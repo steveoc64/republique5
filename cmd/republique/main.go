@@ -16,6 +16,7 @@ Usage: republique command
 commands:
 	compile [filenames]
 	serve -port RPCPort -web WebPort -game FileName
+	info GameName
 `)
 }
 
@@ -33,6 +34,13 @@ func main() {
 		err := serve(log, os.Args[2:])
 		if err != nil {
 			log.WithError(err).Println("Incorrect Server Args", os.Args[2:])
+			usage()
+			os.Exit(1)
+		}
+	case "info":
+		err := info(log, os.Args[2])
+		if err != nil {
+			println("Error:", err.Error())
 			usage()
 			os.Exit(1)
 		}

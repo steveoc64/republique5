@@ -15,4 +15,7 @@ dump:
 test:
 	#republique compile scenarios/jena-auerstadt-1806/Jena.scenario
 	republique compile games/Jena-1.game
-	cat games/*.json | jq
+	republique info Jena-1
+
+info:
+	republique info Jena-1

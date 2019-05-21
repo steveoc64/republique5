@@ -2,6 +2,7 @@ package republique
 
 import (
 	"errors"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
@@ -11,17 +12,36 @@ import (
 )
 
 type DB struct {
-	log        *logrus.Logger
-	db         *bolt.DB
-	gameBucket []byte
-	filename   string
+	log      *logrus.Logger
+	db       *bolt.DB
+	filename string
 }
 
 var (
 	ErrNoGameBucket = errors.New("No game bucket")
 	ErrPutData      = errors.New("Put data")
 	ErrProtoMarshal = errors.New("Marshal data")
+	gameBucket      = []byte("game")
+	gameState       = []byte("state")
 )
+
+func OpenDB(log *logrus.Logger, name string) (*DB, error) {
+	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
+	if _, err := os.Stat(filename); err == os.ErrExist {
+		return nil, err
+	}
+
+	// open the DB
+	db, err := bolt.Open(filename, 0644, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &DB{
+		log:      log,
+		db:       db,
+		filename: filename,
+	}, nil
+}
 
 func NewDB(log *logrus.Logger, name string) *DB {
 	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
@@ -51,16 +71,15 @@ func NewDB(log *logrus.Logger, name string) *DB {
 	}
 
 	return &DB{
-		log:        log,
-		db:         db,
-		gameBucket: []byte("game"),
-		filename:   filename,
+		log:      log,
+		db:       db,
+		filename: filename,
 	}
 }
 
 func (store *DB) Save(data proto.Message) error {
 	err := store.db.Update(func(tx *bolt.Tx) error {
-		game := tx.Bucket(store.gameBucket)
+		game := tx.Bucket(gameBucket)
 		if game == nil {
 			store.log.Error(ErrNoGameBucket)
 			return ErrNoGameBucket
@@ -70,7 +89,7 @@ func (store *DB) Save(data proto.Message) error {
 			store.log.WithError(err).Error(ErrProtoMarshal)
 			return err
 		}
-		err = game.Put([]byte("data"), b)
+		err = game.Put(gameState, b)
 		if err != nil {
 			store.log.WithError(err).Error(ErrPutData)
 			return err
@@ -81,6 +100,19 @@ func (store *DB) Save(data proto.Message) error {
 		store.log.WithError(err).WithField("filename", store.filename).Error(ErrPutData)
 	}
 	return err
+}
+
+func (store *DB) Load(data proto.Message) error {
+	// retrieve the data
+	return store.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(gameBucket)
+		if bucket == nil {
+			return fmt.Errorf("Bucket %v not found!", string(gameBucket))
+		}
+
+		val := bucket.Get(gameState)
+		return proto.Unmarshal(val, data)
+	})
 }
 
 func (store *DB) Close() error {

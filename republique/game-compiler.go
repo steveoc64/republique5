@@ -24,12 +24,13 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 	}
 
 	game := &Game{
-		AccessCode: NewAccessCode(),
-		TableX:     6,
-		TableY:     4,
+		AccessCode:  NewAccessCode(),
+		AdminAccess: NewAccessCode(),
+		TableX:      6,
+		TableY:      4,
 	}
-	println("Compiling Game", filename, "AccessCode =", game.AccessCode)
-	//var currentTeam *Team
+	println("Compiling Game", filename, "AccessCode =", game.AccessCode, "AdminAccess =", game.AdminAccess)
+	var currentTeam *Team
 	indents := 1
 
 	var k int
@@ -96,6 +97,10 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 					return nil, err
 				}
 				game.Scenario = scn
+				for _, v := range scn.Teams {
+					v.AccessCode = NewAccessCode()
+					println("Team", v.Name, "AccessCode =", v.AccessCode)
+				}
 			case "table":
 				if len(words) != 2 {
 					return nil, CompilerError{k + 1, filename, "expecting 'Table XxY' in feet"}
@@ -112,9 +117,32 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 				game.TableX = int32(x)
 				game.TableY = int32(y)
 			default: // is a team name
-				println("processing team", words[0])
+				currentTeam = nil
+				for _, team := range game.Scenario.Teams {
+					if team.Name == words[0] {
+						currentTeam = team
+						break
+					}
+				}
+				if currentTeam == nil {
+					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Unknown Team '%v'", words[0])}
+				}
+				println("processing team", currentTeam.Name)
 			}
 		case 1: // Player command
+			if currentTeam == nil {
+				return nil, CompilerError{k + 1, filename, "No Team Defined"}
+			}
+			player := &Player{AccessCode: NewAccessCode()}
+			v = strings.TrimSpace(v)
+			names := strings.Split(v, ",")
+			for _, name := range names {
+				name = strings.TrimSpace(name)
+				if currentTeam.GetCommandByCommanderName(name) == nil {
+					return nil, CompilerError{k + 1, filename, fmt.Sprintf("%v is not a valid commander in team %v", name, currentTeam.Name)}
+				}
+				player.Commanders = append(player.Commanders, name)
+			}
 		default:
 			return nil, CompilerError{k + 1, filename, fmt.Sprintf("Dont know what to do with a line at indent level %d '%v", ii, v)}
 		}

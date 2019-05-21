@@ -136,8 +136,8 @@ message Team {
 
 message Player {
   string accessCode = 1;
-  repeated Command commands = 2;
-  int32 points = 3;
+  repeated string commanders = 3; // being an index into the Team.Commands by Command.Name
+  int32 points = 4;
 }
 
 message Scenario {
@@ -152,6 +152,7 @@ message Game {
   int32 tableX = 4;
   int32 tableY = 5;
   google.protobuf.Timestamp gameTime = 6;
+  string adminAccess = 7;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
