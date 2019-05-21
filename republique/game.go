@@ -16,11 +16,12 @@ func (g *Game) GenerateIDs() {
 			uID = 1
 			for _, subCommand := range command.GetSubcommands() {
 				subCommand.Id = cID + ccID
-				ccID += 10
+				uID = 1
 				for _, unit := range subCommand.Units {
 					unit.Id = cID + ccID + uID
 					uID++
 				}
+				ccID += 10
 			}
 
 		}

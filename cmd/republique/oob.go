@@ -42,11 +42,14 @@ func oob(log *logrus.Logger, game string) error {
 						nn := ""
 						switch unit.Arm {
 						case republique.Arm_CAVALRY:
-							nn = fmt.Sprintf("(%d horse)", unit.Strength*550)
+							nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
 						case republique.Arm_INFANTRY:
 							nn = fmt.Sprintf("(%d men)", unit.Strength*550)
+							if unit.SkirmisherMax > 0 {
+								nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)
+							}
 						}
-						println(unit.Name, strings.ToLower(unit.Grade.String()), strings.ToLower(unit.UnitType.String()), nn)
+						println(unit.Name, strings.ToLower(unit.Grade.String()), strings.Replace(strings.ToLower(unit.UnitType.String()), "_", " ", 1), nn)
 					}
 					for _, subCommand := range c.Subcommands {
 						print("        (", subCommand.Id, ") ", subCommand.Name, " - ", subCommand.CommanderName)
@@ -56,11 +59,14 @@ func oob(log *logrus.Logger, game string) error {
 							nn := ""
 							switch unit.Arm {
 							case republique.Arm_CAVALRY:
-								nn = fmt.Sprintf("(%d horse)", unit.Strength*550)
+								nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
 							case republique.Arm_INFANTRY:
 								nn = fmt.Sprintf("(%d men)", unit.Strength*550)
+								if unit.SkirmisherMax > 0 {
+									nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)
+								}
 							}
-							println(unit.Name, strings.ToLower(unit.Grade.String()), strings.ToLower(unit.UnitType.String()), nn)
+							println(unit.Name, strings.ToLower(unit.Grade.String()), strings.Replace(strings.ToLower(unit.UnitType.String()), "_", " ", 1), nn)
 						}
 					}
 				}
