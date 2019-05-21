@@ -49,6 +49,7 @@ message Unit {
   bool commandReserve = 12;
   UnitGameState gameState = 13;
   repeated UnitGameState history = 14;
+  int32 id = 15;
 }
 
 // Unit details that can change from turn to turn
@@ -96,6 +97,7 @@ message Command {
   CommandGameState gameState = 14;
   repeated CommandGameState history = 15;
   bool reserve = 16;
+  int32 id = 17;
 }
 
 // Command details that can change from turn to turn

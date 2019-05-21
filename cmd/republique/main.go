@@ -37,6 +37,13 @@ func main() {
 			usage()
 			os.Exit(1)
 		}
+	case "oob":
+		err := oob(log, os.Args[2])
+		if err != nil {
+			println("Error:", err.Error())
+			usage()
+			os.Exit(1)
+		}
 	case "info":
 		err := info(log, os.Args[2])
 		if err != nil {

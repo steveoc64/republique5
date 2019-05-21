@@ -19,3 +19,6 @@ test:
 
 info:
 	republique info Jena-1
+
+oob:
+	republique oob Jena-1

@@ -97,6 +97,7 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 					return nil, err
 				}
 				game.Scenario = scn
+				game.GameTime = scn.StartTime
 				for _, v := range scn.Teams {
 					v.AccessCode = NewAccessCode()
 					println("Team", v.Name, "AccessCode =", v.AccessCode)
@@ -143,9 +144,12 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 				}
 				player.Commanders = append(player.Commanders, name)
 			}
+			currentTeam.Players = append(currentTeam.Players, player)
 		default:
 			return nil, CompilerError{k + 1, filename, fmt.Sprintf("Dont know what to do with a line at indent level %d '%v", ii, v)}
 		}
 	}
+
+	game.GenerateIDs()
 	return game, nil
 }
