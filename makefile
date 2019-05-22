@@ -1,6 +1,6 @@
-SUBDIRS := republique cmd/republique
+SUBDIRS := republique cmd/republique cmd/republique-ui
 
-all: $(SUBDIRS) test
+all: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
@@ -22,3 +22,7 @@ info:
 
 oob:
 	republique oob Jena-1
+
+ui:
+	$(MAKE) -C cmd/republique-ui
+	republique-ui
