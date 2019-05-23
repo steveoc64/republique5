@@ -1,20 +1,28 @@
 package login
 
 import (
+	"context"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
+	"log"
 	"os"
 	"time"
+
+	"github.com/steveoc64/republique5/republique"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"google.golang.org/grpc"
 )
 
 type login struct {
 	accessCodes [3][4]int
+	codeStrings [3]string
 	mode        int
 	i           int
 
+	server    *widget.Entry
 	descr     *widget.Label
 	code      [4]*widget.Label
 	buttons   map[string]*widget.Button
@@ -27,6 +35,9 @@ func (c *login) GetWindow() fyne.Window {
 }
 
 func (c *login) paintCode() {
+	for k, v := range c.accessCodes {
+		c.codeStrings[k] = fmt.Sprintf("%d%d%d%d", v[0], v[1], v[2], v[3])
+	}
 	for i := 0; i < 4; i++ {
 		if i < c.i {
 			c.code[i].SetText(fmt.Sprintf("%d", c.accessCodes[c.mode][i]))
@@ -82,7 +93,7 @@ func (c *login) typedKey(ev *fyne.KeyEvent) {
 		c.setMode(c.mode + 1)
 	case fyne.KeyUp:
 		c.setMode(c.mode - 1)
-	case fyne.KeyBackspace, fyne.KeyDelete:
+	case fyne.KeyBackspace, fyne.KeyDelete, fyne.KeyEscape:
 		c.i--
 		if c.i < 0 {
 			c.i = 0
@@ -111,7 +122,12 @@ func (c *login) setMode(m int) {
 	case 2:
 		c.descr.SetText("Player Code")
 	case 3:
-		// all done ! call the server and validate
+		if err := c.login(); err != nil {
+			println("Well that didnt work", err.Error())
+			c.mode = 0
+			c.paintCode()
+			return
+		}
 		os.Exit(1)
 		return
 	}
@@ -119,7 +135,33 @@ func (c *login) setMode(m int) {
 	c.paintCode()
 }
 
-func (c *login) loadUI(app fyne.App) {
+func (c *login) login() error {
+	println("Connecting to server", c.server.Text, "AccessCodes", c.codeStrings[0], c.codeStrings[1], c.codeStrings[2])
+	serverAddr := c.server.Text
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+	conn, err := grpc.Dial(serverAddr, opts...)
+	if err != nil {
+		log.Fatalf("fail to dial: %v", err)
+	}
+	defer conn.Close()
+	client := republique.NewGameServiceClient(conn)
+	rsp, err := client.Login(context.Background(), &republique.LoginMessage{
+		AccessCode: c.codeStrings[0],
+		TeamCode:   c.codeStrings[1],
+		PlayerCode: c.codeStrings[2],
+	})
+	if err != nil {
+		return err
+	}
+	spew.Dump("logged in ok", rsp)
+	return nil
+}
+
+func (c *login) loadUI(app fyne.App, servername string) {
+	println("servername is", servername)
+	c.server = widget.NewEntry()
+	c.server.SetText(servername)
 	c.descr = widget.NewLabel("Access Code")
 	c.descr.Alignment = fyne.TextAlignCenter
 	c.mode = 0
@@ -130,7 +172,9 @@ func (c *login) loadUI(app fyne.App) {
 	}
 
 	c.window = app.NewWindow("Login")
-	c.window.SetContent(fyne.NewContainerWithLayout(layout.NewGridLayout(1),
+	c.window.SetContent(fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
+		widget.NewLabel("Server Address"),
+		c.server,
 		c.descr,
 		fyne.NewContainerWithLayout(layout.NewGridLayout(4),
 			c.code[0], c.code[1], c.code[2], c.code[3],
@@ -164,8 +208,9 @@ func newLogin() *login {
 }
 
 // Show loads a calculator example window for the specified app context
-func Show(app fyne.App) fyne.Window {
+func Show(app fyne.App, servername string) fyne.Window {
+	println("show", servername)
 	c := newLogin()
-	c.loadUI(app)
+	c.loadUI(app, servername)
 	return c.GetWindow()
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sirupsen/logrus"
@@ -17,17 +18,34 @@ type Server struct {
 	filename string
 	port     int
 	web      int
+	game     *Game
+	db       *DB
 }
 
 // New returns a new republique server
-func NewServer(log *logrus.Logger, version string, filename string, port int, web int) *Server {
+func NewServer(log *logrus.Logger, version string, filename string, port int, web int) (*Server, error) {
+	// load the DB
+	if !strings.HasSuffix(filename, ".db") {
+		filename = filename + ".db"
+	}
+	db, err := OpenDB(log, filename)
+	if err != nil {
+		return nil, err
+	}
+	data := &Game{}
+	err = db.Load(data)
+	if err != nil {
+		return nil, err
+	}
 	return &Server{
 		log:      log,
 		version:  version,
 		filename: filename,
 		port:     port,
 		web:      web,
-	}
+		game:     data,
+		db:       db,
+	}, nil
 }
 
 // Run runs a republique server

@@ -9,6 +9,7 @@ import "google/protobuf/empty.proto";
 service GameService {
   rpc Echo(StringMessage) returns (StringMessage) {}
   rpc Version(EmptyMessage) returns (StringMessage) {}
+  rpc Login(LoginMessage) returns (LoginResponse) {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,19 @@ message StringMessage {
 
 message EmptyMessage {
   // empty
+}
+
+message LoginMessage {
+  string accessCode = 1;
+  string teamCode = 2;
+  string playerCode = 3;
+}
+
+message LoginResponse {
+  string welcome = 2;
+  repeated string commanders = 3; // being an index into the Team.Commands by Command.Name
+  string teamName = 4;
+  string briefing = 5;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,11 +149,13 @@ message Team {
   repeated Player players = 5;
 }
 
+// TODO - add some public key enc / tokens to this
 message Player {
   string accessCode = 1;
   repeated string commanders = 3; // being an index into the Team.Commands by Command.Name
   int32 points = 4;
 }
+
 
 message Scenario {
   google.protobuf.Timestamp startTime = 1;

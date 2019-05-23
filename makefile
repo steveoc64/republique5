@@ -17,6 +17,9 @@ test:
 	republique compile games/Jena-1.game
 	republique info Jena-1
 
+serve: 
+	republique serve -port 1815 -web 8015 -game Jena-1
+
 info:
 	republique info Jena-1
 

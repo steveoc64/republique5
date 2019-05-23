@@ -16,6 +16,7 @@ func info(log *logrus.Logger, game string) error {
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 	data := &republique.Game{}
 	err = db.Load(data)
 	if err != nil {
