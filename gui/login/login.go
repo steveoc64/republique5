@@ -57,7 +57,7 @@ func (c *login) digit(d int) {
 	c.i++
 	if c.i >= 4 {
 		c.paintCode()
-		time.Sleep(time.Millisecond * 600)
+		time.Sleep(time.Millisecond * 200)
 		c.setMode(c.mode + 1)
 	}
 	c.paintCode()
@@ -104,6 +104,10 @@ func (c *login) typedKey(ev *fyne.KeyEvent) {
 
 func (c *login) ok() {
 	c.setMode(c.mode + 1)
+}
+
+func (c *login) del() {
+	c.typedKey(&fyne.KeyEvent{Name: fyne.KeyDelete})
 }
 
 func (c *login) setMode(m int) {
@@ -190,6 +194,7 @@ func (c *login) loadUI(app fyne.App, servername string) {
 			c.digitButton(2),
 			c.digitButton(3),
 			c.digitButton(0),
+			c.addButton("Del", c.del),
 			c.addButton("OK", c.ok),
 		),
 	))
