@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type DB struct {
@@ -25,6 +26,27 @@ var (
 	gameState       = []byte("state")
 )
 
+func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
+	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
+	if _, err := os.Stat(filename); err == os.ErrExist {
+		return nil, err
+	}
+
+	// open the DB
+	db, err := bolt.Open(filename, 0644, &bolt.Options{ReadOnly: true})
+	if err != nil {
+		if err == bolt.ErrTimeout {
+			log.Fatal("DB already in use by another process")
+		}
+		return nil, err
+	}
+	return &DB{
+		log:      log,
+		db:       db,
+		filename: filename,
+	}, nil
+}
+
 func OpenDB(log *logrus.Logger, name string) (*DB, error) {
 	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
 	if _, err := os.Stat(filename); err == os.ErrExist {
@@ -32,8 +54,11 @@ func OpenDB(log *logrus.Logger, name string) (*DB, error) {
 	}
 
 	// open the DB
-	db, err := bolt.Open(filename, 0644, nil)
+	db, err := bolt.Open(filename, 0644, &bolt.Options{Timeout: 200 * time.Millisecond})
 	if err != nil {
+		if err == bolt.ErrTimeout {
+			log.Fatal("DB already in use by another process")
+		}
 		return nil, err
 	}
 	return &DB{
@@ -53,8 +78,11 @@ func NewDB(log *logrus.Logger, name string) *DB {
 	}
 
 	// Create the DB
-	db, err := bolt.Open(filename, 0644, nil)
+	db, err := bolt.Open(filename, 0644,&bolt.Options{Timeout: 200 * time.Millisecond})
 	if err != nil {
+		if err == bolt.ErrTimeout {
+			log.Fatal("DB already in use by another process")
+		}
 		log.Fatal(err)
 	}
 

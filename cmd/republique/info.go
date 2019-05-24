@@ -12,7 +12,7 @@ func info(log *logrus.Logger, game string) error {
 	if !strings.HasSuffix(game, ".db") {
 		game = game + ".db"
 	}
-	db, err := republique.OpenDB(log, game)
+	db, err := republique.OpenReadDB(log, game)
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"fmt"
+	"fyne.io/fyne/theme"
 	"github.com/davecgh/go-spew/spew"
 	"log"
 	"os"
@@ -63,6 +64,13 @@ func (c *login) digit(d int) {
 	c.paintCode()
 }
 
+func (c *login) addIconButton(text string, icon fyne.Resource, action func()) *widget.Button {
+	button := widget.NewButtonWithIcon(text, icon, action)
+	c.buttons[text] = button
+
+	return button
+}
+
 func (c *login) addButton(text string, action func()) *widget.Button {
 	button := widget.NewButton(text, action)
 	c.buttons[text] = button
@@ -94,6 +102,10 @@ func (c *login) typedKey(ev *fyne.KeyEvent) {
 	case fyne.KeyUp:
 		c.setMode(c.mode - 1)
 	case fyne.KeyBackspace, fyne.KeyDelete, fyne.KeyEscape:
+		if c.i == 0 {
+			c.setMode(c.mode-1)
+			return
+		}
 		c.i--
 		if c.i < 0 {
 			c.i = 0
@@ -193,9 +205,9 @@ func (c *login) loadUI(app fyne.App, servername string) {
 			c.digitButton(1),
 			c.digitButton(2),
 			c.digitButton(3),
+			c.addIconButton("Del", theme.CancelIcon(), c.del),
 			c.digitButton(0),
-			c.addButton("Del", c.del),
-			c.addButton("OK", c.ok),
+			c.addIconButton("OK", theme.ConfirmIcon(), c.ok),
 		),
 	))
 

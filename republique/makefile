@@ -1,4 +1,4 @@
-all: proto
+all:
 
 proto:
 	protoc -I/usr/local/include -I. \
