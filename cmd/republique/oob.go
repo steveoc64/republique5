@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
+	"github.com/steveoc64/republique5/republique/db"
+	rp "github.com/steveoc64/republique5/republique/proto"
 	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/steveoc64/republique5/republique"
 )
 
 func oob(log *logrus.Logger, game string) error {
 	if !strings.HasSuffix(game, ".db") {
 		game = game + ".db"
 	}
-	db, err := republique.OpenReadDB(log, game)
+	db, err := db.OpenReadDB(log, game)
 	if err != nil {
 		return err
 	}
-	data := &republique.Game{}
-	err = db.Load(data)
+	data := &rp.Game{}
+	err = db.Load("game", "state", data)
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,7 @@ func oob(log *logrus.Logger, game string) error {
 	print("Table: ", data.TableX, "x", data.TableY, " ft tabletop\n")
 	for _, team := range data.Scenario.GetTeams() {
 		println("  =============================================================================")
-		println("  Team", team.Name, "AccessCode =", team.AccessCode)
+		println("  Team", team.Name, "AccessCode =", team.AccessCode, "GameName =", team.GameName)
 		println("")
 		for _, player := range team.GetPlayers() {
 			println("    Player AccessCode =", player.GetAccessCode())
@@ -41,9 +42,9 @@ func oob(log *logrus.Logger, game string) error {
 						print("      - (", unit.Id, ") ")
 						nn := ""
 						switch unit.Arm {
-						case republique.Arm_CAVALRY:
+						case rp.Arm_CAVALRY:
 							nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
-						case republique.Arm_INFANTRY:
+						case rp.Arm_INFANTRY:
 							nn = fmt.Sprintf("(%d men)", unit.Strength*550)
 							if unit.SkirmisherMax > 0 {
 								nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)
@@ -58,9 +59,9 @@ func oob(log *logrus.Logger, game string) error {
 							print("          - (", unit.Id, ") ")
 							nn := ""
 							switch unit.Arm {
-							case republique.Arm_CAVALRY:
+							case rp.Arm_CAVALRY:
 								nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
-							case republique.Arm_INFANTRY:
+							case rp.Arm_INFANTRY:
 								nn = fmt.Sprintf("(%d men)", unit.Strength*550)
 								if unit.SkirmisherMax > 0 {
 									nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)

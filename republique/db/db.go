@@ -1,4 +1,4 @@
-package republique
+package db
 
 import (
 	"errors"
@@ -22,8 +22,6 @@ var (
 	ErrNoGameBucket = errors.New("No game bucket")
 	ErrPutData      = errors.New("Put data")
 	ErrProtoMarshal = errors.New("Marshal data")
-	gameBucket      = []byte("game")
-	gameState       = []byte("state")
 )
 
 func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
@@ -33,10 +31,10 @@ func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
 	}
 
 	// open the DB
-	db, err := bolt.Open(filename, 0644, &bolt.Options{ReadOnly: true})
+	db, err := bolt.Open(filename, 0644, &bolt.Options{Timeout: 200 * time.Millisecond})
 	if err != nil {
 		if err == bolt.ErrTimeout {
-			log.Fatal("DB already in use by another process")
+			log.Fatal("DB is locked by another process - maybe republique serve is already running ?")
 		}
 		return nil, err
 	}
@@ -78,7 +76,7 @@ func NewDB(log *logrus.Logger, name string) *DB {
 	}
 
 	// Create the DB
-	db, err := bolt.Open(filename, 0644,&bolt.Options{Timeout: 200 * time.Millisecond})
+	db, err := bolt.Open(filename, 0644, &bolt.Options{Timeout: 200 * time.Millisecond})
 	if err != nil {
 		if err == bolt.ErrTimeout {
 			log.Fatal("DB already in use by another process")
@@ -105,9 +103,9 @@ func NewDB(log *logrus.Logger, name string) *DB {
 	}
 }
 
-func (store *DB) Save(data proto.Message) error {
+func (store *DB) Save(bucket, key string, data proto.Message) error {
 	err := store.db.Update(func(tx *bolt.Tx) error {
-		game := tx.Bucket(gameBucket)
+		game := tx.Bucket([]byte(bucket))
 		if game == nil {
 			store.log.Error(ErrNoGameBucket)
 			return ErrNoGameBucket
@@ -117,7 +115,7 @@ func (store *DB) Save(data proto.Message) error {
 			store.log.WithError(err).Error(ErrProtoMarshal)
 			return err
 		}
-		err = game.Put(gameState, b)
+		err = game.Put([]byte(key), b)
 		if err != nil {
 			store.log.WithError(err).Error(ErrPutData)
 			return err
@@ -130,15 +128,15 @@ func (store *DB) Save(data proto.Message) error {
 	return err
 }
 
-func (store *DB) Load(data proto.Message) error {
+func (store *DB) Load(bucket, key string, data proto.Message) error {
 	// retrieve the data
 	return store.db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket(gameBucket)
+		bucket := tx.Bucket([]byte(bucket))
 		if bucket == nil {
-			return fmt.Errorf("Bucket %v not found!", string(gameBucket))
+			return fmt.Errorf("Bucket %v not found!", bucket)
 		}
 
-		val := bucket.Get(gameState)
+		val := bucket.Get([]byte(key))
 		return proto.Unmarshal(val, data)
 	})
 }

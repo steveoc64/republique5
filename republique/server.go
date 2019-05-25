@@ -1,15 +1,11 @@
 package republique
 
 import (
-	"context"
-	"fmt"
-	"net"
-	"net/http"
+	"github.com/steveoc64/republique5/republique/db"
+	rp "github.com/steveoc64/republique5/republique/proto"
 	"strings"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 )
 
 type Server struct {
@@ -18,8 +14,8 @@ type Server struct {
 	filename string
 	port     int
 	web      int
-	game     *Game
-	db       *DB
+	game     *rp.Game
+	db       *db.DB
 }
 
 // New returns a new republique server
@@ -28,12 +24,12 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 	if !strings.HasSuffix(filename, ".db") {
 		filename = filename + ".db"
 	}
-	db, err := OpenDB(log, filename)
+	db, err := db.OpenDB(log, filename)
 	if err != nil {
 		return nil, err
 	}
-	data := &Game{}
-	err = db.Load(data)
+	data := &rp.Game{}
+	err = db.Load("game", "state", data)
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +54,6 @@ func (s *Server) Serve() {
 	}).Println("Starting Republique 5.0 Server")
 	s.log.SetFormatter(&logrus.JSONFormatter{})
 
-	// Load DB
-
 	// Setup REST endpoints
 	go s.rpcProxy()
 
@@ -67,38 +61,12 @@ func (s *Server) Serve() {
 	s.grpcRun()
 }
 
-func (s *Server) grpcRun() {
-	endpoint := fmt.Sprintf(":%d", s.port)
-	lis, err := net.Listen("tcp", endpoint)
-	if err != nil {
-		s.log.Fatalf("failed to listen: %v", err)
-	}
-	grpcServer := grpc.NewServer()
-	RegisterGameServiceServer(grpcServer, s)
-	s.log.WithFields(logrus.Fields{
-		"port":     s.port,
-		"endpoint": endpoint,
-	}).Println("Serving gRPC")
-	grpcServer.Serve(lis)
+// Save saves the game state to the DB
+func (s *Server) Save() {
+	s.db.Save("game", "state", s.game)
 }
 
-func (s *Server) rpcProxy() error {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	rpcendpoint := fmt.Sprintf(":%d", s.port)
-	webendpoint := fmt.Sprintf(":%d", s.web)
-	err := RegisterGameServiceHandlerFromEndpoint(ctx, mux, rpcendpoint, opts)
-	if err != nil {
-		return err
-	}
-
-	s.log.WithFields(logrus.Fields{
-		"port":     s.web,
-		"endpoint": webendpoint,
-	}).Println("Serving REST Proxy")
-	return http.ListenAndServe(webendpoint, mux)
+// Close closes the DB - needed when you quit
+func (s *Server) Close() {
+	s.db.Close()
 }

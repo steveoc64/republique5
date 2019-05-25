@@ -1,18 +1,19 @@
 package republique
 
 import (
-	context "context"
+	"context"
 	"errors"
+	rp "github.com/steveoc64/republique5/republique/proto"
 
 	"github.com/sirupsen/logrus"
 )
 
-func (s *Server) Login(c context.Context, req *LoginMessage) (*LoginResponse, error) {
+func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginResponse, error) {
 	s.log.WithFields(logrus.Fields{
 		"Access": req.AccessCode,
 		"Team":   req.TeamCode,
 		"Player": req.PlayerCode,
-	}).Println("Login gRPC")
+	}).Debug("Login gRPC")
 	// check the game access code
 	if req.AccessCode != s.game.AccessCode {
 		s.log.Error("Invalid Access Code")
@@ -24,17 +25,21 @@ func (s *Server) Login(c context.Context, req *LoginMessage) (*LoginResponse, er
 			// check the player code
 			for _, player := range team.Players {
 				if player.AccessCode == req.PlayerCode {
-					rsp := &LoginResponse{
+					player.Token = rp.NewToken()
+					rsp := &rp.LoginResponse{
 						Welcome:    "welcome",
 						Commanders: player.Commanders,
 						TeamName:   team.Name,
 						Briefing:   team.Briefing,
+						GameName:   team.GameName,
+						Token:      player.GetToken(),
 					}
 					s.log.WithFields(logrus.Fields{
 						"Commanders": rsp.Commanders,
 						"Team":       rsp.TeamName,
-						"Briefing":   rsp.Briefing,
-					})
+						"Token":      rsp.Token.Id,
+						"Expires":    rsp.Token.Expires.String(),
+					}).Info("Player Login")
 					return rsp, nil
 				}
 			}

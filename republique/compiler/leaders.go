@@ -1,6 +1,8 @@
-package republique
+package compiler
 
-import "strings"
+import (
+	"strings"
+)
 
 var leaders = map[string]int32{
 	// French Commanders

@@ -1,4 +1,4 @@
-package republique
+package compiler
 
 import (
 	"fmt"
@@ -9,21 +9,22 @@ import (
 	"time"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	rp "github.com/steveoc64/republique5/republique/proto"
 )
 
-func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
+func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 	lines, err := c.load(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Error Loading %s: %s", filename, err.Error())
 	}
 
-	scn := &Scenario{
-		Teams: map[string]*Team{},
+	scn := &rp.Scenario{
+		Teams: map[string]*rp.Team{},
 	}
-	var currentTeam *Team
+	var currentTeam *rp.Team
 	indents := 1
 	isBriefing := false
-	position := BattlefieldPosition_REAR
+	position := rp.BattlefieldPosition_REAR
 
 	var k int
 	var v string
@@ -93,7 +94,7 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 		}
 		switch ii {
 		case 0: // Side Definition
-			currentTeam = &Team{
+			currentTeam = &rp.Team{
 				Name: strings.TrimSpace(v),
 			}
 			scn.Teams[currentTeam.Name] = currentTeam
@@ -107,16 +108,16 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 				isBriefing = true
 			case "center", "centre":
 				isBriefing = false
-				position = BattlefieldPosition_CENTRE
+				position = rp.BattlefieldPosition_CENTRE
 			case "right":
 				isBriefing = false
-				position = BattlefieldPosition_RIGHT
+				position = rp.BattlefieldPosition_RIGHT
 			case "left":
 				isBriefing = false
-				position = BattlefieldPosition_LEFT
+				position = rp.BattlefieldPosition_LEFT
 			case "reserve":
 				isBriefing = false
-				position = BattlefieldPosition_REAR
+				position = rp.BattlefieldPosition_REAR
 			default:
 				return nil, CompilerError{k + 1, filename, "Invalid command: " + v}
 			}
@@ -175,7 +176,7 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 			default:
 				return nil, CompilerError{k + 1, filename, "Too many - chars, expecting 'MainOOB - SubUnit (arrivals) XX%"}
 			}
-			cmd, err := c.compileOOB(filepath.Join(filepath.Dir(filename), commandName+".oob"))
+			cmd, err := c.CompileOOB(filepath.Join(filepath.Dir(filename), commandName+".oob"))
 			if err != nil {
 				return nil, err
 			}
@@ -192,7 +193,7 @@ func (c *Compiler) compileScenario(filename string) (*Scenario, error) {
 					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Failed to find subUnit '%v' in '%v", subUnit, commandName)}
 				}
 			}
-			cmd.Arrival = &Arrival{
+			cmd.Arrival = &rp.Arrival{
 				From:     int32(fromHour),
 				To:       int32(toHour),
 				Percent:  int32(chance),

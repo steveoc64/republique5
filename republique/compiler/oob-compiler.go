@@ -1,30 +1,31 @@
-package republique
+package compiler
 
 import (
 	"fmt"
+	rp "github.com/steveoc64/republique5/republique/proto"
 	"runtime/debug"
 	"strconv"
 	"strings"
 )
 
-func (c *Compiler) compileOOB(filename string) (*Command, error) {
+func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 	lines, err := c.load(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Error Loading %s: %s", filename, err.Error())
 	}
 
 	year := 1800
-	skRating := SkirmishRating_POOR
+	skRating := rp.SkirmishRating_POOR
 	skMax := "one"
 	bnGuns := false
-	cmd := &Command{
-		Arm:           Arm_INFANTRY,
-		CommandRating: CommandRating_CUMBERSOME,
-		Nationality:   Nationality_ANY_NATION,
-		Grade:         UnitGrade_REGULAR,
-		Drill:         Drill_LINEAR,
+	cmd := &rp.Command{
+		Arm:           rp.Arm_INFANTRY,
+		CommandRating: rp.CommandRating_CUMBERSOME,
+		Nationality:   rp.Nationality_ANY_NATION,
+		Grade:         rp.UnitGrade_REGULAR,
+		Drill:         rp.Drill_LINEAR,
 	}
-	var lastSubCommand *Command
+	var lastSubCommand *rp.Command
 	indents := 1
 
 	var k int
@@ -78,81 +79,81 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				}
 				indents = i
 			case "cavalry":
-				cmd.Arm = Arm_CAVALRY
+				cmd.Arm = rp.Arm_CAVALRY
 			case "infantry":
-				cmd.Arm = Arm_INFANTRY
+				cmd.Arm = rp.Arm_INFANTRY
 			case "guards", "guard":
-				cmd.Grade = UnitGrade_GUARD
+				cmd.Grade = rp.UnitGrade_GUARD
 			case "artillery":
-				cmd.Arm = Arm_ARTILLERY
+				cmd.Arm = rp.Arm_ARTILLERY
 			case "elite":
-				cmd.Grade = UnitGrade_ELITE
+				cmd.Grade = rp.UnitGrade_ELITE
 			case "veteran":
-				cmd.Grade = UnitGrade_VETERAN
+				cmd.Grade = rp.UnitGrade_VETERAN
 			case "regular":
-				cmd.Grade = UnitGrade_REGULAR
+				cmd.Grade = rp.UnitGrade_REGULAR
 			case "green", "conscript":
-				cmd.Grade = UnitGrade_CONSCRIPT
+				cmd.Grade = rp.UnitGrade_CONSCRIPT
 			case "militia", "landwehr":
-				cmd.Grade = UnitGrade_MILITIA
+				cmd.Grade = rp.UnitGrade_MILITIA
 			case "rabble":
-				cmd.Grade = UnitGrade_CIVILIAN
+				cmd.Grade = rp.UnitGrade_CIVILIAN
 			case "efficient":
-				cmd.CommandRating = CommandRating_EFFICIENT
+				cmd.CommandRating = rp.CommandRating_EFFICIENT
 			case "functional":
-				cmd.CommandRating = CommandRating_FUNCTIONAL
+				cmd.CommandRating = rp.CommandRating_FUNCTIONAL
 			case "cumbersome":
-				cmd.CommandRating = CommandRating_CUMBERSOME
+				cmd.CommandRating = rp.CommandRating_CUMBERSOME
 			case "useless":
-				cmd.CommandRating = CommandRating_USELESS
+				cmd.CommandRating = rp.CommandRating_USELESS
 			case "linear":
-				cmd.Drill = Drill_LINEAR
+				cmd.Drill = rp.Drill_LINEAR
 			case "Massed":
-				cmd.Drill = Drill_MASSED
+				cmd.Drill = rp.Drill_MASSED
 			case "Rapid":
-				cmd.Drill = Drill_RAPID
+				cmd.Drill = rp.Drill_RAPID
 			case "french", "france":
 				year, err = getYear(k, words)
 				if err != nil {
 					return nil, CompilerError{k + 1, filename, err.Error()}
 				}
-				cmd.Nationality = Nationality_FRENCH
+				cmd.Nationality = rp.Nationality_FRENCH
 				switch {
 				case year >= 1813:
-					cmd.Drill = Drill_RAPID
-					cmd.CommandRating = CommandRating_FUNCTIONAL
-					cmd.Grade = UnitGrade_CONSCRIPT
-					skRating = SkirmishRating_ADEQUATE
+					cmd.Drill = rp.Drill_RAPID
+					cmd.CommandRating = rp.CommandRating_FUNCTIONAL
+					cmd.Grade = rp.UnitGrade_CONSCRIPT
+					skRating = rp.SkirmishRating_ADEQUATE
 				case year >= 1805:
-					cmd.Drill = Drill_RAPID
-					cmd.CommandRating = CommandRating_EFFICIENT
-					cmd.Grade = UnitGrade_VETERAN
+					cmd.Drill = rp.Drill_RAPID
+					cmd.CommandRating = rp.CommandRating_EFFICIENT
+					cmd.Grade = rp.UnitGrade_VETERAN
 					skMax = "all"
-					skRating = SkirmishRating_CRACK_SHOT
+					skRating = rp.SkirmishRating_CRACK_SHOT
 				case year >= 1796:
-					cmd.Drill = Drill_MASSED
-					cmd.CommandRating = CommandRating_FUNCTIONAL
-					cmd.Grade = UnitGrade_VETERAN
-					skRating = SkirmishRating_CRACK_SHOT
+					cmd.Drill = rp.Drill_MASSED
+					cmd.CommandRating = rp.CommandRating_FUNCTIONAL
+					cmd.Grade = rp.UnitGrade_VETERAN
+					skRating = rp.SkirmishRating_CRACK_SHOT
 				case year >= 1791:
-					cmd.Drill = Drill_MASSED
+					cmd.Drill = rp.Drill_MASSED
 				}
 			case "prussia", "prussian":
 				year, err = getYear(k, words)
 				if err != nil {
 					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
-				cmd.Nationality = Nationality_PRUSSIAN
+				cmd.Nationality = rp.Nationality_PRUSSIAN
 				switch {
 				case year >= 1814:
-					cmd.Drill = Drill_RAPID
-					cmd.CommandRating = CommandRating_EFFICIENT
-					skRating = SkirmishRating_ADEQUATE
+					cmd.Drill = rp.Drill_RAPID
+					cmd.CommandRating = rp.CommandRating_EFFICIENT
+					skRating = rp.SkirmishRating_ADEQUATE
 				case year >= 1812:
-					cmd.Drill = Drill_MASSED
-					cmd.CommandRating = CommandRating_FUNCTIONAL
-					cmd.Grade = UnitGrade_CONSCRIPT
-					skRating = SkirmishRating_ADEQUATE
+					cmd.Drill = rp.Drill_MASSED
+					cmd.CommandRating = rp.CommandRating_FUNCTIONAL
+					cmd.Grade = rp.UnitGrade_CONSCRIPT
+					skRating = rp.SkirmishRating_ADEQUATE
 				case year <= 1806:
 					bnGuns = true
 				}
@@ -161,15 +162,15 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				if err != nil {
 					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
-				cmd.Nationality = Nationality_AUSTRIAN
+				cmd.Nationality = rp.Nationality_AUSTRIAN
 				switch {
 				case year >= 1813:
-					cmd.Drill = Drill_MASSED
-					cmd.CommandRating = CommandRating_FUNCTIONAL
-					skRating = SkirmishRating_ADEQUATE
+					cmd.Drill = rp.Drill_MASSED
+					cmd.CommandRating = rp.CommandRating_FUNCTIONAL
+					skRating = rp.SkirmishRating_ADEQUATE
 				case year >= 1809:
-					cmd.Drill = Drill_MASSED
-					skRating = SkirmishRating_ADEQUATE
+					cmd.Drill = rp.Drill_MASSED
+					skRating = rp.SkirmishRating_ADEQUATE
 				case year <= 1802:
 					bnGuns = true
 				}
@@ -178,7 +179,7 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				if err != nil {
 					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
-				cmd.Nationality = Nationality_RUSSIAN
+				cmd.Nationality = rp.Nationality_RUSSIAN
 				skMax = "none"
 				switch {
 				case year <= 1808:
@@ -189,11 +190,11 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				if err != nil {
 					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
-				cmd.Nationality = Nationality_SWEDEN
+				cmd.Nationality = rp.Nationality_SWEDEN
 				skMax = "one"
-				skRating = SkirmishRating_ADEQUATE
-				cmd.Drill = Drill_LINEAR
-				cmd.CommandRating = CommandRating_FUNCTIONAL
+				skRating = rp.SkirmishRating_ADEQUATE
+				cmd.Drill = rp.Drill_LINEAR
+				cmd.CommandRating = rp.CommandRating_FUNCTIONAL
 			default:
 				return nil, CompilerError{k + 1, filename, fmt.Sprintf("Invalid Command '%v'", v)}
 			}
@@ -226,9 +227,9 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			}
 			cmd.Name = strings.TrimSpace(words[0])
 			cmd.CommanderName = strings.TrimSpace(words[1])
-			cmd.Rank = Rank_CORPS
-			cmd.Subcommands = []*Command{}
-			cmd.Units = []*Unit{}
+			cmd.Rank = rp.Rank_CORPS
+			cmd.Subcommands = []*rp.Command{}
+			cmd.Units = []*rp.Unit{}
 			cmd.CommanderBonus = -1
 			if cmd.CommanderName != "" {
 				cmd.CommanderBonus = c.getLeaderRating(cmd.CommanderName)
@@ -241,7 +242,7 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			if ll != 2 && ll != 1 {
 				return nil, CompilerError{k + 1, filename, "Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')"}
 			}
-			subCommand := &Command{
+			subCommand := &rp.Command{
 				CommandRating: cmd.CommandRating,
 				Arm:           cmd.Arm,
 				Nationality:   cmd.Nationality,
@@ -270,16 +271,16 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 					nation := strings.ToLower(params[ib1+1 : ib2])
 					switch nation {
 					case "french":
-						subCommand.Nationality = Nationality_FRENCH
+						subCommand.Nationality = rp.Nationality_FRENCH
 						skMax = "all"
 					case "prussian", "saxon":
-						subCommand.Nationality = Nationality_PRUSSIAN
+						subCommand.Nationality = rp.Nationality_PRUSSIAN
 						skMax = "one"
 					case "austrian":
-						subCommand.Nationality = Nationality_AUSTRIAN
+						subCommand.Nationality = rp.Nationality_AUSTRIAN
 						skMax = "one"
 					case "russian":
-						subCommand.Nationality = Nationality_RUSSIAN
+						subCommand.Nationality = rp.Nationality_RUSSIAN
 						skMax = "none"
 					}
 					params = params[:ib1]
@@ -291,7 +292,7 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			}
 
 			// Scan the title for rank strings
-			subCommand.Rank = Rank_DIVISION
+			subCommand.Rank = rp.Rank_DIVISION
 			lname := strings.ToLower(subCommand.Name)
 			switch {
 			case strings.Contains(lname, "cavalry div"),
@@ -300,24 +301,24 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				strings.Contains(lname, "corps cav"),
 				strings.Contains(lname, "cavalry reserve"),
 				strings.Contains(lname, "dragoon div"):
-				subCommand.Arm = Arm_CAVALRY
-				subCommand.Rank = Rank_CAVALRY_DIV
+				subCommand.Arm = rp.Arm_CAVALRY
+				subCommand.Rank = rp.Rank_CAVALRY_DIV
 			case strings.Contains(lname, "cavalry brigade"):
-				subCommand.Arm = Arm_CAVALRY
-				subCommand.Rank = Rank_CAVALRY_BDE
+				subCommand.Arm = rp.Arm_CAVALRY
+				subCommand.Rank = rp.Rank_CAVALRY_BDE
 			case strings.Contains(lname, "cavalry bde"),
 				strings.Contains(lname, "hussar bde"),
 				strings.Contains(lname, "chasseur bde"):
-				subCommand.Arm = Arm_CAVALRY
-				subCommand.Rank = Rank_CAVALRY_BDE
+				subCommand.Arm = rp.Arm_CAVALRY
+				subCommand.Rank = rp.Rank_CAVALRY_BDE
 			case strings.Contains(lname, "artillery"):
-				subCommand.Arm = Arm_ARTILLERY
-				subCommand.Rank = Rank_GUN_PARK
+				subCommand.Arm = rp.Arm_ARTILLERY
+				subCommand.Rank = rp.Rank_GUN_PARK
 			case strings.Contains(lname, "brigade"),
 				strings.Contains(lname, "bde"):
-				subCommand.Rank = Rank_BRIGADE
+				subCommand.Rank = rp.Rank_BRIGADE
 			}
-			subCommand.Units = []*Unit{}
+			subCommand.Units = []*rp.Unit{}
 			lastSubCommand = subCommand
 			cmd.Subcommands = append(cmd.Subcommands, subCommand)
 			continue
@@ -332,18 +333,18 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			if len(words) != 2 {
 				return nil, CompilerError{k + 1, filename, "Invalid Unit Definition - needs 'Unit Name' - N bases [Unit Paramaters]"}
 			}
-			unit := &Unit{
+			unit := &rp.Unit{
 				Name:           strings.TrimSpace(words[0]),
 				Arm:            lastSubCommand.Arm,
-				UnitType:       UnitType_INFANTRY_LINE,
+				UnitType:       rp.UnitType_INFANTRY_LINE,
 				Grade:          lastSubCommand.Grade,
 				Nationality:    lastSubCommand.Nationality,
 				Drill:          lastSubCommand.Drill,
 				CommandReserve: lastSubCommand.Reserve,
 			}
 			// max inherited grade is regular, except for guard formations which are all guard by default
-			if unit.Grade > UnitGrade_REGULAR && unit.Grade != UnitGrade_GUARD {
-				unit.Grade = UnitGrade_REGULAR
+			if unit.Grade > rp.UnitGrade_REGULAR && unit.Grade != rp.UnitGrade_GUARD {
+				unit.Grade = rp.UnitGrade_REGULAR
 			}
 
 			params := words[1]
@@ -378,27 +379,27 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			switch {
 			case strings.Contains(params, "militia"),
 				strings.Contains(params, "landwehr"):
-				unit.Grade = UnitGrade_MILITIA
+				unit.Grade = rp.UnitGrade_MILITIA
 				useSK = useSK.Decrement()
 				useSK = useSK.Decrement()
 				hasGrade = true
 			case strings.Contains(params, "green"),
 				strings.Contains(params, "conscript"):
-				unit.Grade = UnitGrade_CONSCRIPT
+				unit.Grade = rp.UnitGrade_CONSCRIPT
 				useSK = useSK.Decrement()
 				hasGrade = true
 			case strings.Contains(params, "regular"):
-				unit.Grade = UnitGrade_REGULAR
+				unit.Grade = rp.UnitGrade_REGULAR
 				hasGrade = true
 			case strings.Contains(params, "veteran"):
-				unit.Grade = UnitGrade_VETERAN
+				unit.Grade = rp.UnitGrade_VETERAN
 				hasGrade = true
 			case strings.Contains(params, "elite"):
-				unit.Grade = UnitGrade_ELITE
+				unit.Grade = rp.UnitGrade_ELITE
 				useSK = useSK.Increment()
 				hasGrade = true
 			case strings.Contains(params, "guard"):
-				unit.Grade = UnitGrade_GUARD
+				unit.Grade = rp.UnitGrade_GUARD
 				useSK = useSK.Increment()
 				useSK = useSK.Increment()
 				hasGrade = true
@@ -407,29 +408,29 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 			// troop types
 			switch {
 			case strings.Contains(params, "rifle"):
-				unit.Arm = Arm_INFANTRY
-				unit.UnitType = UnitType_INFANTRY_RIFLES
-				useSK = SkirmishRating_EXCELLENT
+				unit.Arm = rp.Arm_INFANTRY
+				unit.UnitType = rp.UnitType_INFANTRY_RIFLES
+				useSK = rp.SkirmishRating_EXCELLENT
 			case strings.Contains(params, "grenadier"):
-				unit.Arm = Arm_INFANTRY
-				unit.UnitType = UnitType_INFANTRY_GRENADIER
+				unit.Arm = rp.Arm_INFANTRY
+				unit.UnitType = rp.UnitType_INFANTRY_GRENADIER
 			case strings.Contains(params, "dragoon"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_DRAGOON
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_DRAGOON
 				useMax = "all"
 			case strings.Contains(params, "medium cav"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_MEDIUM
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_MEDIUM
 			case strings.Contains(params, "light cav"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_LIGHT
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_LIGHT
 				useMax = "all"
 			case strings.Contains(params, "heavy cav"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_HEAVY
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_HEAVY
 			case strings.Contains(params, "hussar"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_HUSSAR
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_HUSSAR
 			case strings.Contains(params, "chas chev"),
 				strings.Contains(params, "chaschev"),
 				strings.Contains(params, "chev legere"),
@@ -440,62 +441,62 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				strings.Contains(params, "chasseurs a cheval"),
 				strings.Contains(params, "horse jager"),
 				strings.Contains(params, "mounted jager"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_LIGHT
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_LIGHT
 			case strings.Contains(params, "cuirassier"),
 				strings.Contains(params, "carabinier"),
 				strings.Contains(params, "karabinier"),
 				strings.Contains(params, "kuirassier"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_CUIRASSIER
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_CUIRASSIER
 			case strings.Contains(params, "lancer"),
 				strings.Contains(params, "landwehr cav"),
 				strings.Contains(params, "uhlan"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_LANCER
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_LANCER
 			case strings.Contains(params, "cossack"):
-				unit.Arm = Arm_CAVALRY
-				unit.UnitType = UnitType_CAVALRY_COSSACK
+				unit.Arm = rp.Arm_CAVALRY
+				unit.UnitType = rp.UnitType_CAVALRY_COSSACK
 			case strings.Contains(params, "mdf"):
-				unit.Arm = Arm_ARTILLERY
-				unit.UnitType = UnitType_ARTILLERY_MEDIUM
+				unit.Arm = rp.Arm_ARTILLERY
+				unit.UnitType = rp.UnitType_ARTILLERY_MEDIUM
 			case strings.Contains(params, "ltf"):
-				unit.Arm = Arm_ARTILLERY
-				unit.UnitType = UnitType_ARTILLERY_LIGHT
+				unit.Arm = rp.Arm_ARTILLERY
+				unit.UnitType = rp.UnitType_ARTILLERY_LIGHT
 			case strings.Contains(params, "lth"):
-				unit.Arm = Arm_ARTILLERY
-				unit.UnitType = UnitType_ARTILLERY_LIGHT_HORSE
+				unit.Arm = rp.Arm_ARTILLERY
+				unit.UnitType = rp.UnitType_ARTILLERY_LIGHT_HORSE
 			case strings.Contains(params, "hvf"):
-				unit.Arm = Arm_ARTILLERY
-				unit.UnitType = UnitType_ARTILLERY_HEAVY
+				unit.Arm = rp.Arm_ARTILLERY
+				unit.UnitType = rp.UnitType_ARTILLERY_HEAVY
 			case strings.Contains(params, "mdh"):
-				unit.Arm = Arm_ARTILLERY
-				unit.UnitType = UnitType_ARTILLERY_HORSE
+				unit.Arm = rp.Arm_ARTILLERY
+				unit.UnitType = rp.UnitType_ARTILLERY_HORSE
 			case strings.Contains(params, "light"),
 				strings.Contains(params, "fusiliers"),
 				strings.Contains(params, "jager"):
-				unit.Arm = Arm_INFANTRY
-				unit.UnitType = UnitType_INFANTRY_LIGHT
+				unit.Arm = rp.Arm_INFANTRY
+				unit.UnitType = rp.UnitType_INFANTRY_LIGHT
 				useMax = "all"
 			case strings.Contains(params, "grenz"):
-				unit.Arm = Arm_INFANTRY
-				unit.UnitType = UnitType_INFANTRY_LIGHT
+				unit.Arm = rp.Arm_INFANTRY
+				unit.UnitType = rp.UnitType_INFANTRY_LIGHT
 				useMax = "all"
 				isGrenz = true
 			case strings.Contains(params, "line"):
-				unit.Arm = Arm_INFANTRY
-				unit.UnitType = UnitType_INFANTRY_LINE
+				unit.Arm = rp.Arm_INFANTRY
+				unit.UnitType = rp.UnitType_INFANTRY_LINE
 			}
 			// set skirmisher ratings
-			if unit.Arm == Arm_INFANTRY ||
-				unit.UnitType == UnitType_CAVALRY_DRAGOON ||
-				unit.UnitType == UnitType_CAVALRY_LIGHT {
-				if !hasGrade && unit.Grade < UnitGrade_REGULAR {
+			if unit.Arm == rp.Arm_INFANTRY ||
+				unit.UnitType == rp.UnitType_CAVALRY_DRAGOON ||
+				unit.UnitType == rp.UnitType_CAVALRY_LIGHT {
+				if !hasGrade && unit.Grade < rp.UnitGrade_REGULAR {
 					useSK = useSK.Decrement()
 				}
 				unit.SkirmishRating = useSK
-				if unit.UnitType != UnitType_INFANTRY_LIGHT &&
-					unit.Grade < UnitGrade_VETERAN &&
+				if unit.UnitType != rp.UnitType_INFANTRY_LIGHT &&
+					unit.Grade < rp.UnitGrade_VETERAN &&
 					useMax == "all" {
 					useMax = "one"
 				}
@@ -505,25 +506,25 @@ func (c *Compiler) compileOOB(filename string) (*Command, error) {
 				case "all":
 					unit.SkirmisherMax = unit.Strength
 				case "none":
-					unit.SkirmishRating = SkirmishRating_POOR
+					unit.SkirmishRating = rp.SkirmishRating_POOR
 				}
 			}
 			// Minimum default grading for cav and artillery
-			if !hasGrade && (unit.Arm == Arm_CAVALRY || unit.Arm == Arm_ARTILLERY) {
-				if unit.Grade < UnitGrade_REGULAR {
-					unit.Grade = UnitGrade_REGULAR
+			if !hasGrade && (unit.Arm == rp.Arm_CAVALRY || unit.Arm == rp.Arm_ARTILLERY) {
+				if unit.Grade < rp.UnitGrade_REGULAR {
+					unit.Grade = rp.UnitGrade_REGULAR
 				}
 			}
 			// default bnGuns for line troops by nationality
 			if bnGuns &&
-				(unit.UnitType == UnitType_INFANTRY_LINE ||
-					unit.UnitType == UnitType_INFANTRY_GRENADIER) {
+				(unit.UnitType == rp.UnitType_INFANTRY_LINE ||
+					unit.UnitType == rp.UnitType_INFANTRY_GRENADIER) {
 				unit.BnGuns = true
 			}
 			// grenzer rule
 			if isGrenz && !hasGrade {
-				unit.Grade = UnitGrade_REGULAR
-				unit.SkirmishRating = SkirmishRating_POOR
+				unit.Grade = rp.UnitGrade_REGULAR
+				unit.SkirmishRating = rp.SkirmishRating_POOR
 			}
 			lastSubCommand.Units = append(lastSubCommand.Units, unit)
 			continue

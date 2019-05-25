@@ -1,8 +1,11 @@
 package republique
 
-import context "context"
+import (
+	"context"
+	rp "github.com/steveoc64/republique5/republique/proto"
+)
 
-func (s *Server) Echo(c context.Context, req *StringMessage) (*StringMessage, error) {
+func (s *Server) Echo(c context.Context, req *rp.StringMessage) (*rp.StringMessage, error) {
 	s.log.WithField("value", req.Value).Println("Echo gRPC")
 	return req, nil
 }

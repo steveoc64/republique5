@@ -1,12 +1,14 @@
-package republique
+package compiler
 
 import (
 	"fmt"
+	rp "github.com/steveoc64/republique5/republique/proto"
 	"math/rand"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func NewAccessCode() string {
@@ -17,20 +19,21 @@ func NewAccessCode() string {
 	return string(a)
 }
 
-func (c *Compiler) compileGame(filename string) (*Game, error) {
+func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
+	rand.Seed(time.Now().UnixNano())
 	lines, err := c.load(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Error Loading %s: %s", filename, err.Error())
 	}
 
-	game := &Game{
+	game := &rp.Game{
 		AccessCode:  NewAccessCode(),
 		AdminAccess: NewAccessCode(),
 		TableX:      6,
 		TableY:      4,
 	}
 	println("Compiling Game", filename, "AccessCode =", game.AccessCode, "AdminAccess =", game.AdminAccess)
-	var currentTeam *Team
+	var currentTeam *rp.Team
 	indents := 1
 
 	var k int
@@ -87,12 +90,14 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 		switch ii {
 		case 0: // Directive
 			switch w {
+			case "name":
+				game.Name = strings.TrimSpace(v[4:])
 			case "scenario":
 				if len(words) != 2 {
 					return nil, CompilerError{k + 1, filename, "Invalid Scenario Name"}
 				}
 				filename := filepath.Join(filepath.Dir(filename), "..", "scenarios", words[1]+".scenario")
-				scn, err := c.compileScenario(filename)
+				scn, err := c.CompileScenario(filename)
 				if err != nil {
 					return nil, err
 				}
@@ -119,9 +124,19 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 				game.TableY = int32(y)
 			default: // is a team name
 				currentTeam = nil
+				teamname := words[0]
+				teamwords := strings.Split(v, " - ")
+				println("from", v)
+				println("teamwords is", teamwords)
+				teamgamename := game.Name
+				if len(teamwords) == 2 {
+					teamname = teamwords[0]
+					teamgamename = teamwords[1]
+				}
 				for _, team := range game.Scenario.Teams {
-					if team.Name == words[0] {
+					if team.Name == teamname {
 						currentTeam = team
+						team.GameName = teamgamename
 						break
 					}
 				}
@@ -134,7 +149,7 @@ func (c *Compiler) compileGame(filename string) (*Game, error) {
 			if currentTeam == nil {
 				return nil, CompilerError{k + 1, filename, "No Team Defined"}
 			}
-			player := &Player{AccessCode: NewAccessCode()}
+			player := &rp.Player{AccessCode: NewAccessCode()}
 			v = strings.TrimSpace(v)
 			names := strings.Split(v, ",")
 			for _, name := range names {

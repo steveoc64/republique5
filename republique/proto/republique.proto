@@ -2,7 +2,7 @@ syntax = "proto3";
 package republique;
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
+//import "google/protobuf/empty.proto";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RPCs
@@ -33,6 +33,8 @@ message LoginResponse {
   repeated string commanders = 3; // being an index into the Team.Commands by Command.Name
   string teamName = 4;
   string briefing = 5;
+  string gameName = 6;
+  Token token = 7;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +149,7 @@ message Team {
   repeated Command commands = 3;
   string accessCode = 4;
   repeated Player players = 5;
+  string gameName = 6;
 }
 
 // TODO - add some public key enc / tokens to this
@@ -154,8 +157,13 @@ message Player {
   string accessCode = 1;
   repeated string commanders = 3; // being an index into the Team.Commands by Command.Name
   int32 points = 4;
+  Token token = 5;
 }
 
+message Token {
+  string id = 1;
+  google.protobuf.Timestamp expires = 2;
+}
 
 message Scenario {
   google.protobuf.Timestamp startTime = 1;
@@ -170,6 +178,7 @@ message Game {
   int32 tableY = 5;
   google.protobuf.Timestamp gameTime = 6;
   string adminAccess = 7;
+  string name = 8;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

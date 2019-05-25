@@ -1,10 +1,12 @@
-package republique
+package compiler
 
 import (
 	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/steveoc64/republique5/republique/db"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/sirupsen/logrus"
@@ -36,7 +38,7 @@ func (c *Compiler) Compile(filename string) error {
 
 	switch ext {
 	case ".oob":
-		cmd, err := c.compileOOB(filename)
+		cmd, err := c.CompileOOB(filename)
 		if err != nil {
 			println(err.Error())
 			return err
@@ -54,7 +56,7 @@ func (c *Compiler) Compile(filename string) error {
 			return err
 		}
 	case ".scenario":
-		scn, err := c.compileScenario(filename)
+		scn, err := c.CompileScenario(filename)
 		if err != nil {
 			println(err.Error())
 			return err
@@ -72,7 +74,7 @@ func (c *Compiler) Compile(filename string) error {
 			return err
 		}
 	case ".game":
-		game, err := c.compileGame(filename)
+		game, err := c.CompileGame(filename)
 		if err != nil {
 			println(err.Error())
 			return err
@@ -83,8 +85,8 @@ func (c *Compiler) Compile(filename string) error {
 			return err
 		}
 
-		db := NewDB(c.log, filepath.Base(shortName+".db"))
-		db.Save(game)
+		db := db.NewDB(c.log, filepath.Base(shortName+".db"))
+		db.Save("game", "state", game)
 		err = f.Close()
 		if err != nil {
 			fmt.Println(err)
