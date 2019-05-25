@@ -3,7 +3,6 @@ package appwindow
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
 	"github.com/steveoc64/republique5/republique"
 )
 
@@ -13,7 +12,7 @@ type appwindow struct {
 
 	header  *HeaderBar
 	sidebar *SideBar
-	footer  *widget.Box
+	footer  *FooterBar
 }
 
 func Show(s *republique.Session, app fyne.App) {
@@ -27,10 +26,12 @@ func (w *appwindow) loadUI(app fyne.App) {
 	w.window = app.NewWindow("Republique 5.0")
 	w.header = newHeaderBar(w.session)
 	w.sidebar = newSideBar(w.session)
-	w.footer = widget.NewHBox()
-	w.window.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(w.header.HBox, w.footer, w.sidebar.VBox, nil),
-		w.header.HBox,
-		w.sidebar.VBox))
+	w.footer = newFooterBar(w.session)
+	w.window.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(w.header.Box, w.footer.Box, w.sidebar.Box, nil),
+		w.header.Box,
+		w.sidebar.Box,
+		w.footer.Box,
+	))
 
 	w.window.Canvas().SetOnTypedRune(w.typedRune)
 	w.window.Canvas().SetOnTypedKey(w.typedKey)

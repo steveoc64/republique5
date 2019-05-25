@@ -180,6 +180,7 @@ func (c *login) login() error {
 	c.session.LoginDetails = rsp
 	c.session.GameName = rsp.GameName
 	c.session.GameTime = time.Unix(rsp.GameTime.Seconds, 0)
+	c.session.Phase = "Pre Game Setup"
 	return nil
 }
 

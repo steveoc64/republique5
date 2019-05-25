@@ -2,8 +2,9 @@ package republique
 
 import (
 	"fmt"
-	rp "github.com/steveoc64/republique5/republique/proto"
 	"time"
+
+	rp "github.com/steveoc64/republique5/republique/proto"
 )
 
 type Session struct {
@@ -11,6 +12,7 @@ type Session struct {
 	LoginDetails *rp.LoginResponse
 	GameName     string
 	GameTime     time.Time
+	Phase        string
 }
 
 func (s *Session) String() string {

@@ -6,7 +6,7 @@ import (
 )
 
 type HeaderBar struct {
-	HBox    *widget.Box
+	Box     *widget.Box
 	session *republique.Session
 
 	GameName *widget.Label
@@ -19,7 +19,7 @@ func newHeaderBar(s *republique.Session) *HeaderBar {
 		GameName: widget.NewLabel(s.GameName),
 		GameTime: widget.NewLabel(s.GameTime.Format(republique.DateFormat)),
 	}
-	h.HBox = widget.NewHBox(h.GameName, h.GameTime)
+	h.Box = widget.NewHBox(h.GameName, h.GameTime)
 	return h
 }
 
