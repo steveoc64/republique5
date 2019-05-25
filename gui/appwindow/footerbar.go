@@ -1,29 +1,47 @@
 package appwindow
 
 import (
+	"fyne.io/fyne"
+	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
-	"github.com/steveoc64/republique5/republique"
 )
 
 type FooterBar struct {
-	Box     *widget.Box
-	session *republique.Session
+	app *App
+	Box *fyne.Container
 
+	onDone     func(bool)
+	Done       bool
 	PhaseLabel *widget.Label
 	DoneBtn    *widget.Button
 }
 
-func newFooterBar(s *republique.Session) *FooterBar {
+func newFooterBar(app *App, onDone func(bool)) *FooterBar {
 	h := &FooterBar{
-		session:    s,
-		PhaseLabel: widget.NewLabel(s.Phase),
+		app:        app,
+		onDone:     onDone,
+		PhaseLabel: widget.NewLabel(app.Phase),
 	}
-	h.DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonCheckedIcon(), h.done)
-	h.Box = widget.NewHBox(h.DoneBtn, h.PhaseLabel)
+	h.DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonIcon(), h.ToggleDone)
+	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(3),
+		h.PhaseLabel, h.DoneBtn)
 	return h
 }
 
-func (h *FooterBar) done() {
-	println("End Turn")
+func (f *FooterBar) ToggleDone() {
+	f.Done = !f.Done
+	switch f.Done {
+	case true:
+		f.DoneBtn.SetIcon(theme.CheckButtonCheckedIcon())
+	case false:
+		f.DoneBtn.SetIcon(theme.CheckButtonIcon())
+	}
+	f.onDone(f.Done)
+}
+
+func (f *FooterBar) NotDone() {
+	f.Done = false
+	f.DoneBtn.SetIcon(theme.CheckButtonIcon())
+	f.onDone(false)
 }

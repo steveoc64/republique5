@@ -3,13 +3,13 @@ package login
 import (
 	"context"
 	"fmt"
-	rp "github.com/steveoc64/republique5/republique/proto"
 	"log"
 	"time"
 
-	"fyne.io/fyne/theme"
+	"github.com/steveoc64/republique5/gui/appwindow"
+	rp "github.com/steveoc64/republique5/republique/proto"
 
-	"github.com/steveoc64/republique5/republique"
+	"fyne.io/fyne/theme"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
@@ -18,7 +18,8 @@ import (
 )
 
 type login struct {
-	session     *republique.Session
+	app         fyne.App
+	servername  string
 	accessCodes [3][4]int
 	codeStrings [3]string
 	mode        int
@@ -34,11 +35,11 @@ type login struct {
 	onLogin   func()
 }
 
-func Show(s *republique.Session, app fyne.App, servername string, onsuccess func()) {
+func Show(app fyne.App, servername string) {
 	c := newLogin()
-	c.session = s
-	c.onLogin = onsuccess
-	c.loadUI(app, servername)
+	c.app = app
+	c.servername = servername
+	c.loadUI()
 }
 
 func (c *login) paintCode() {
@@ -150,8 +151,6 @@ func (c *login) setMode(m int) {
 			c.failed.Show()
 			return
 		}
-		c.onLogin()
-		c.window.Hide()
 		return
 	}
 	c.mode = m
@@ -177,16 +176,14 @@ func (c *login) login() error {
 	if err != nil {
 		return err
 	}
-	c.session.LoginDetails = rsp
-	c.session.GameName = rsp.GameName
-	c.session.GameTime = time.Unix(rsp.GameTime.Seconds, 0)
-	c.session.Phase = "Pre Game Setup"
+	appwindow.Show(c.app, c.servername, rsp)
+	c.window.Hide()
 	return nil
 }
 
-func (c *login) loadUI(app fyne.App, servername string) {
+func (c *login) loadUI() {
 	c.server = widget.NewEntry()
-	c.server.SetText(servername)
+	c.server.SetText(c.servername)
 	c.descr = widget.NewLabel("Access Code")
 	c.descr.Alignment = fyne.TextAlignCenter
 	c.failed = widget.NewLabel("Failed - Try Again")
@@ -200,7 +197,7 @@ func (c *login) loadUI(app fyne.App, servername string) {
 		c.code[i].TextStyle.Monospace = true
 	}
 
-	c.window = app.NewWindow("Login")
+	c.window = c.app.NewWindow("Login")
 	c.window.SetContent(fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
 		c.server,
 		c.failed,
@@ -229,6 +226,7 @@ func (c *login) loadUI(app fyne.App, servername string) {
 	c.window.Canvas().SetOnTypedRune(c.typedRune)
 	c.window.Canvas().SetOnTypedKey(c.typedKey)
 	c.window.Show()
+	c.window.CenterOnScreen()
 	c.failed.Hide()
 }
 
