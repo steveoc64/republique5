@@ -150,8 +150,8 @@ func (c *login) setMode(m int) {
 			c.failed.Show()
 			return
 		}
-		c.window.Hide()
 		c.onLogin()
+		c.window.Hide()
 		return
 	}
 	c.mode = m
@@ -178,6 +178,8 @@ func (c *login) login() error {
 		return err
 	}
 	c.session.LoginDetails = rsp
+	c.session.GameName = rsp.GameName
+	c.session.GameTime = time.Unix(rsp.GameTime.Seconds, 0)
 	return nil
 }
 
@@ -208,15 +210,15 @@ func (c *login) loadUI(app fyne.App, servername string) {
 			widget.NewLabel(" "),
 		),
 		fyne.NewContainerWithLayout(layout.NewGridLayout(3),
-			c.digitButton(7),
-			c.digitButton(8),
-			c.digitButton(9),
-			c.digitButton(4),
-			c.digitButton(5),
-			c.digitButton(6),
 			c.digitButton(1),
 			c.digitButton(2),
 			c.digitButton(3),
+			c.digitButton(4),
+			c.digitButton(5),
+			c.digitButton(6),
+			c.digitButton(7),
+			c.digitButton(8),
+			c.digitButton(9),
 			c.addIconButton("Del", theme.CancelIcon(), c.del),
 			c.digitButton(0),
 			c.addIconButton("OK", theme.ConfirmIcon(), c.ok),

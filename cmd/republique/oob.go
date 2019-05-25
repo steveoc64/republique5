@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/steveoc64/republique5/republique"
 	"github.com/steveoc64/republique5/republique/db"
 	rp "github.com/steveoc64/republique5/republique/proto"
 	"strings"
@@ -24,7 +25,7 @@ func oob(log *logrus.Logger, game string) error {
 		return err
 	}
 	println("Game:", game, "AccessCode =", data.AccessCode)
-	println("Date:", time.Unix(data.GameTime.Seconds, 0).UTC().Format("Monday, 02-Jan-2006 15:04"))
+	println("Date:", time.Unix(data.GameTime.Seconds, 0).UTC().Format(republique.DateTimeFormat))
 	print("Table: ", data.TableX, "x", data.TableY, " ft tabletop\n")
 	for _, team := range data.Scenario.GetTeams() {
 		println("  =============================================================================")

@@ -3,6 +3,7 @@ package republique
 import (
 	"context"
 	"errors"
+
 	rp "github.com/steveoc64/republique5/republique/proto"
 
 	"github.com/sirupsen/logrus"
@@ -32,11 +33,14 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 						TeamName:   team.Name,
 						Briefing:   team.Briefing,
 						GameName:   team.GameName,
+						GameTime:   s.game.GameTime,
 						Token:      player.GetToken(),
 					}
 					s.log.WithFields(logrus.Fields{
 						"Commanders": rsp.Commanders,
 						"Team":       rsp.TeamName,
+						"GameName":   rsp.GameName,
+						"GameTime":   rsp.GameTime.String(),
 						"Token":      rsp.Token.Id,
 						"Expires":    rsp.Token.Expires.String(),
 					}).Info("Player Login")

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/steveoc64/republique5/republique"
 	db2 "github.com/steveoc64/republique5/republique/db"
 	rp "github.com/steveoc64/republique5/republique/proto"
 	"strings"
@@ -25,7 +26,7 @@ func info(log *logrus.Logger, game string) error {
 	}
 	println("Game:", game, "AccessCode =", data.AccessCode)
 	println("Name:", data.Name)
-	println("Date:", time.Unix(data.GameTime.Seconds, 0).UTC().Format("Monday, 02-Jan-2006 15:04"))
+	println("Date:", time.Unix(data.GameTime.Seconds, 0).UTC().Format(republique.DateTimeFormat))
 	print("Table: ", data.TableX, "x", data.TableY, " ft tabletop\n")
 	println("  -------------------------------------------------------------------------")
 	println("  Admin Access =", data.AdminAccess)
