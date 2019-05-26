@@ -1,15 +1,14 @@
 package appwindow
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/layout"
+	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
 	"strings"
 )
 
 type BriefingPanel struct {
 	app *App
-	Box *fyne.Container
+	Box *widget.Box
 
 	Header *widget.Label
 	Notes  *widget.Label
@@ -21,7 +20,10 @@ func newBriefingPanel(app *App) *BriefingPanel {
 		Header: widget.NewLabel("Briefing for: " + strings.Join(app.Commanders, ", ")),
 		Notes:  widget.NewLabel(app.Briefing),
 	}
-	h.Box = fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
+	img := app.loadImage("banner")
+	img.FillMode = canvas.ImageFillStretch
+	h.Box = widget.NewVBox(
+		img,
 		h.Header,
 		h.Notes,
 	)

@@ -1,14 +1,15 @@
 package appwindow
 
 import (
-	"fyne.io/fyne/canvas"
-	"fyne.io/fyne/widget"
-	"github.com/hajimehoshi/oto"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
 	"path/filepath"
 	"time"
+
+	"fyne.io/fyne/canvas"
+	"fyne.io/fyne/widget"
+	"github.com/hajimehoshi/oto"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
@@ -29,15 +30,24 @@ type App struct {
 	Expires    time.Time
 	Phase      string
 
-	layout        fyne.Layout
-	container     *fyne.Container
-	header        *HeaderBar
-	sidebar       *SideBar
-	footer        *FooterBar
-	briefingPanel *BriefingPanel
-	splashPanel   *fyne.Container
+	layout          fyne.Layout
+	container       *fyne.Container
+	header          *HeaderBar
+	sidebar         *SideBar
+	footer          *FooterBar
+	briefingPanel   *BriefingPanel
+	actionsPanel    *ActionsPanel
+	mapPanel        *MapPanel
+	ordersPanel     *OrdersPanel
+	unitsPanel      *UnitsPanel
+	formationsPanel *FormationsPanel
+	advancePanel    *AdvancePanel
+	withdrawPanel   *WithdrawPanel
+	surrenderPanel  *SurrenderPanel
 
-	player *oto.Player
+	splashPanel *fyne.Container
+
+	audioPort *oto.Player
 }
 
 func Show(app fyne.App, servername string, l *rp.LoginResponse) {
@@ -79,7 +89,17 @@ func (a *App) loadUI() {
 
 	// Create the panels that go in the middle of the container, and then hide them
 	a.briefingPanel = newBriefingPanel(a)
+	a.actionsPanel = newActionsPanel(a)
+	a.mapPanel = newMapPanel(a)
+	a.ordersPanel = newOrdersPanel(a)
+	a.unitsPanel = newUnitsPanel(a)
+	a.formationsPanel = newFormationsPanel(a)
+	a.advancePanel = newAdvancePanel(a)
+	a.withdrawPanel = newWithdrawPanel(a)
+	a.surrenderPanel = newSurrenderPanel(a)
+
 	a.briefingPanel.Box.Hide()
+	a.actionsPanel.Box.Hide()
 
 	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, a.sidebar.Box, nil)
 	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, a.sidebar.Box, nil),
@@ -129,5 +149,42 @@ func (a *App) setPanel(p fyne.CanvasObject) {
 }
 
 func (a *App) showBriefing() {
+	a.PlayAudio("command")
 	a.setPanel(a.briefingPanel.Box)
+}
+
+func (a *App) showActions() {
+	a.setPanel(a.actionsPanel.Box)
+}
+
+func (a *App) showMap() {
+	a.setPanel(a.mapPanel.Box)
+}
+
+func (a *App) showOrders() {
+	a.PlayAudio("command")
+	a.setPanel(a.ordersPanel.Box)
+}
+
+func (a *App) showUnits() {
+	a.PlayAudio("infantry")
+	a.setPanel(a.unitsPanel.Box)
+}
+
+func (a *App) showFormations() {
+	a.setPanel(a.formationsPanel.Box)
+}
+
+func (a *App) showAdvance() {
+	a.setPanel(a.advancePanel.Box)
+}
+
+func (a *App) showWithdraw() {
+	a.PlaySystemAudio("surrender")
+	a.setPanel(a.withdrawPanel.Box)
+}
+
+func (a *App) showSurrender() {
+	a.PlaySystemAudio("surrender")
+	a.setPanel(a.surrenderPanel.Box)
 }

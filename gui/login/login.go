@@ -65,7 +65,6 @@ func (c *login) clear() {
 }
 
 func (c *login) digit(d int) {
-	println("digit", d, c.i, c.mode)
 	c.failed.Hide()
 	c.accessCodes[c.mode][c.i] = d
 	c.i++

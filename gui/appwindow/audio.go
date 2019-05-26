@@ -11,19 +11,19 @@ import (
 	"github.com/hajimehoshi/oto"
 )
 
+var isPlaying bool
+
 func (a *App) PlayAudio(arm string) {
 	dirname := filepath.Join(os.Getenv("HOME"), "republique", arm)
-	os.Chdir(dirname)
 	files := []string{}
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
 			return err
 		}
-		if info.IsDir() && info.Name() == arm {
-			return filepath.SkipDir
+		if !info.IsDir() {
+			files = append(files, path)
 		}
-		files = append(files, path)
 		return nil
 	})
 	if len(files) < 1 {
@@ -31,33 +31,44 @@ func (a *App) PlayAudio(arm string) {
 	}
 	i := rand.Intn(len(files))
 	audioFile := files[i]
-	go a.playAudio(audioFile)
+	a.playAudio(audioFile)
 }
 
-func (a *App) playAudio(audioFile string) error {
-	f, err := os.Open(audioFile)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
+func (a *App) PlaySystemAudio(name string) {
+	a.playAudio(filepath.Join(os.Getenv("HOME"), "republique", "system", name+".mp3"))
+}
 
-	d, err := mp3.NewDecoder(f)
-	if err != nil {
-		return err
+func (a *App) playAudio(audioFile string) {
+	if isPlaying {
+		return
 	}
-
-	if a.player == nil {
-		p, err := oto.NewPlayer(d.SampleRate(), 2, 2, 8192)
+	go func() {
+		f, err := os.Open(audioFile)
 		if err != nil {
-			return err
+			println("audio error:", err.Error())
+			return
 		}
-		a.player = p
-	}
+		defer f.Close()
 
-	fmt.Printf("Length: %d[bytes]\n", d.Length())
+		d, err := mp3.NewDecoder(f)
+		if err != nil {
+			println("audio error:", err.Error())
+			return
+		}
 
-	if _, err := io.Copy(a.player, d); err != nil {
-		return err
-	}
-	return nil
+		if a.audioPort == nil {
+			p, err := oto.NewPlayer(d.SampleRate(), 2, 2, 8192)
+			if err != nil {
+				println("audio error:", err.Error())
+				return
+			}
+			a.audioPort = p
+		}
+
+		isPlaying = true
+		if _, err := io.Copy(a.audioPort, d); err != nil {
+			println("audio error:", err.Error())
+		}
+		isPlaying = false
+	}()
 }
