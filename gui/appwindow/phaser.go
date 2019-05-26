@@ -2,10 +2,9 @@ package appwindow
 
 import (
 	"context"
-	"github.com/steveoc64/memdebug"
-	"github.com/steveoc64/republique5/republique"
-	rp "github.com/steveoc64/republique5/republique/proto"
 	"time"
+
+	rp "github.com/steveoc64/republique5/republique/proto"
 )
 
 func (a *App) Phaser() {
