@@ -1,7 +1,11 @@
 package appwindow
 
 import (
+	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
+	_ "image/jpeg"
+	_ "image/png"
+	"os"
 	"time"
 
 	"fyne.io/fyne"
@@ -56,11 +60,17 @@ func (a *App) loadUI() {
 	a.sidebar = newSideBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 
+	img := canvas.NewImageFromFile(os.Getenv("HOME") + "/.republique/battle.png")
+	img.FillMode = canvas.ImageFillStretch
 	a.splashPanel = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		widget.NewLabelWithStyle(
-			"\n\n\n\nRepublique 5.0\n\n\nAugmented Reality Tabletop Miniatures",
+		img,
+		widget.NewLabelWithStyle("Republique 5.0",
 			fyne.TextAlignCenter,
-			fyne.TextStyle{Bold: true, Italic: true}))
+			fyne.TextStyle{Bold: true, Italic: false}),
+		widget.NewLabelWithStyle("Augmented Tabletop Miniatures",
+			fyne.TextAlignCenter,
+			fyne.TextStyle{Bold: false, Italic: true}),
+	)
 
 	// Create the panels that go in the middle of the container, and then hide them
 	a.briefingPanel = newBriefingPanel(a)

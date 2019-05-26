@@ -8,7 +8,7 @@ import (
 )
 
 type HeaderBar struct {
-	Box *fyne.Container
+	Box *widget.Box
 	app *App
 
 	TeamName *widget.Label
@@ -25,8 +25,15 @@ func newHeaderBar(app *App) *HeaderBar {
 	}
 	h.TeamName.TextStyle = fyne.TextStyle{Bold: true}
 	h.GameTime.TextStyle = fyne.TextStyle{Italic: true}
-	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(3),
-		h.TeamName, h.GameName, h.GameTime)
+	//h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(3),
+	//h.TeamName, h.GameName, h.GameTime)
+	h.Box = widget.NewHBox(
+		h.TeamName,
+		layout.NewSpacer(),
+		h.GameName,
+		layout.NewSpacer(),
+		h.GameTime,
+	)
 	return h
 }
 

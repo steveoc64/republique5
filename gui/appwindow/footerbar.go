@@ -1,7 +1,6 @@
 package appwindow
 
 import (
-	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
@@ -9,12 +8,13 @@ import (
 
 type FooterBar struct {
 	app *App
-	Box *fyne.Container
+	Box *widget.Box
 
 	onDone     func(bool)
 	Done       bool
 	PhaseLabel *widget.Label
 	DoneBtn    *widget.Button
+	StopWatch  *widget.Label
 }
 
 func newFooterBar(app *App, onDone func(bool)) *FooterBar {
@@ -22,10 +22,16 @@ func newFooterBar(app *App, onDone func(bool)) *FooterBar {
 		app:        app,
 		onDone:     onDone,
 		PhaseLabel: widget.NewLabel(app.Phase),
+		StopWatch:  widget.NewLabel("00:00"),
 	}
-	h.DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonIcon(), h.ToggleDone)
-	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(3),
-		h.PhaseLabel, h.DoneBtn)
+	DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonIcon(), h.ToggleDone)
+	h.Box = widget.NewHBox(
+		h.PhaseLabel,
+		layout.NewSpacer(),
+		h.DoneBtn,
+		layout.NewSpacer(),
+		h.StopWatch,
+	)
 	return h
 }
 
