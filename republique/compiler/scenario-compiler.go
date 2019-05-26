@@ -49,7 +49,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 		words := strings.Split(v, " ")
 		ww := len(words)
 		w := strings.ToLower(words[0])
-		if len(v) == 0 && !isBriefing {
+		if len(v) == 0 {
 			// empty lines are OK
 			continue
 		}
