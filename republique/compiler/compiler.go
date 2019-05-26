@@ -81,8 +81,7 @@ func (c *Compiler) Compile(filename string) error {
 		}
 
 		db := db.NewDB(c.log, filepath.Base(shortName+".db"))
-		db.Save("game", "state", game)
-		err = f.Close()
+		err = db.Save("game", "state", game)
 		if err != nil {
 			fmt.Println(err)
 			return err

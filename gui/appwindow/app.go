@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"google.golang.org/grpc"
+
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
 	"github.com/hajimehoshi/oto"
@@ -19,6 +21,8 @@ import (
 type App struct {
 	app    fyne.App
 	window fyne.Window
+	conn   *grpc.ClientConn
+	client rp.GameServiceClient
 
 	ServerName string
 	GameName   string
@@ -50,7 +54,7 @@ type App struct {
 	audioPort *oto.Player
 }
 
-func Show(app fyne.App, servername string, l *rp.LoginResponse) {
+func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, client rp.GameServiceClient) {
 	a := &App{
 		app:        app,
 		ServerName: servername,
@@ -62,11 +66,14 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse) {
 		Token:      l.Token.Id,
 		Expires:    time.Unix(l.Token.Expires.Seconds, 0),
 		Phase:      "Pre Game Setup",
+		conn:       conn,
+		client:     client,
 	}
 	a.loadUI()
 	a.window.CenterOnScreen()
 	a.window.Show()
 	a.PlayAudio("artillery")
+	a.Phaser()
 }
 
 func (a *App) loadUI() {

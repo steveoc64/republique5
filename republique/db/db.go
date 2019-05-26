@@ -6,6 +6,7 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
+	"github.com/steveoc64/memdebug"
 	"os"
 	"path/filepath"
 	"strings"
@@ -104,6 +105,7 @@ func NewDB(log *logrus.Logger, name string) *DB {
 }
 
 func (store *DB) Save(bucket, key string, data proto.Message) error {
+	t1 := time.Now()
 	err := store.db.Update(func(tx *bolt.Tx) error {
 		game := tx.Bucket([]byte(bucket))
 		if game == nil {
@@ -115,6 +117,7 @@ func (store *DB) Save(bucket, key string, data proto.Message) error {
 			store.log.WithError(err).Error(ErrProtoMarshal)
 			return err
 		}
+		memdebug.Print(t1, "marshalled", bucket, key)
 		err = game.Put([]byte(key), b)
 		if err != nil {
 			store.log.WithError(err).Error(ErrPutData)
@@ -125,19 +128,24 @@ func (store *DB) Save(bucket, key string, data proto.Message) error {
 	if err != nil {
 		store.log.WithError(err).WithField("filename", store.filename).Error(ErrPutData)
 	}
+	memdebug.Print(t1, "saved", bucket, key)
 	return err
 }
 
 func (store *DB) Load(bucket, key string, data proto.Message) error {
 	// retrieve the data
+	t1 := time.Now()
 	return store.db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(bucket))
-		if bucket == nil {
-			return fmt.Errorf("Bucket %v not found!", bucket)
+		b := tx.Bucket([]byte(bucket))
+		if b == nil {
+			return fmt.Errorf("Bucket %v not found!", b)
 		}
 
-		val := bucket.Get([]byte(key))
-		return proto.Unmarshal(val, data)
+		val := b.Get([]byte(key))
+		memdebug.Print(t1, "loaded", bucket, key)
+		err := proto.Unmarshal(val, data)
+		memdebug.Print(t1, "unmarshal")
+		return err
 	})
 }
 

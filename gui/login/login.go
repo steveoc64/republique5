@@ -170,7 +170,6 @@ func (c *login) login() error {
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
-	defer conn.Close()
 	client := rp.NewGameServiceClient(conn)
 	rsp, err := client.Login(context.Background(), &rp.LoginMessage{
 		AccessCode: c.codeStrings[0],
@@ -180,7 +179,7 @@ func (c *login) login() error {
 	if err != nil {
 		return err
 	}
-	appwindow.Show(c.app, c.servername, rsp)
+	appwindow.Show(c.app, c.servername, rsp, conn, client)
 	c.window.Hide()
 	return nil
 }

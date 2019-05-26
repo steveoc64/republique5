@@ -10,6 +10,7 @@ service GameService {
   rpc Echo(StringMessage) returns (StringMessage) {}
   rpc Version(EmptyMessage) returns (StringMessage) {}
   rpc Login(LoginMessage) returns (LoginResponse) {}
+  rpc GameTime(StringMessage) returns (GameTimeResponse) {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +21,12 @@ message StringMessage {
 
 message EmptyMessage {
   // empty
+}
+
+message GameTimeResponse {
+  Phase phase = 1;
+  google.protobuf.Timestamp gameTime = 2;
+  int64 stopWatch = 3;
 }
 
 message LoginMessage {
@@ -180,6 +187,7 @@ message Game {
   google.protobuf.Timestamp gameTime = 6;
   string adminAccess = 7;
   string name = 8;
+  Phase phase = 9;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,4 +329,17 @@ enum BattlefieldPosition {
   LEFT = 1;
   CENTRE = 2;
   RIGHT = 3;
+}
+
+enum Phase {
+  PREGAME = 0;
+  LEADERS = 1;
+  MOVEMENT1 = 2;
+  FIRING1 = 3;
+  ASSAULT1 = 4;
+  PANIC1 = 5;
+  MOVEMENT2 = 6;
+  FIRING2 = 7;
+  ASSAULT2 = 8;
+  PANIC2 = 9;
 }

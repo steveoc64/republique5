@@ -9,13 +9,14 @@ import (
 )
 
 type Server struct {
-	log      *logrus.Logger
-	version  string
-	filename string
-	port     int
-	web      int
-	game     *rp.Game
-	db       *db.DB
+	log       *logrus.Logger
+	version   string
+	filename  string
+	port      int
+	web       int
+	game      *rp.Game
+	db        *db.DB
+	stopWatch int64
 }
 
 // New returns a new republique server
