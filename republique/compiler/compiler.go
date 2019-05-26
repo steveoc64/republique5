@@ -79,11 +79,6 @@ func (c *Compiler) Compile(filename string) error {
 			println(err.Error())
 			return err
 		}
-		f, err := os.Create(shortName + ".json")
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
 
 		db := db.NewDB(c.log, filepath.Base(shortName+".db"))
 		db.Save("game", "state", game)

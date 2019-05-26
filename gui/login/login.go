@@ -48,7 +48,11 @@ func (c *login) paintCode() {
 	}
 	for i := 0; i < 4; i++ {
 		if i < c.i {
-			c.code[i].SetText(fmt.Sprintf("%d", c.accessCodes[c.mode][i]))
+			if c.i >= 4 {
+				c.code[i].SetText("*")
+			} else {
+				c.code[i].SetText(fmt.Sprintf("%d", c.accessCodes[c.mode][i]))
+			}
 		} else {
 			c.code[i].SetText("_")
 		}
@@ -61,6 +65,7 @@ func (c *login) clear() {
 }
 
 func (c *login) digit(d int) {
+	println("digit", d, c.i, c.mode)
 	c.failed.Hide()
 	c.accessCodes[c.mode][c.i] = d
 	c.i++

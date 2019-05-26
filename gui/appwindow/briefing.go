@@ -19,19 +19,7 @@ func newBriefingPanel(app *App) *BriefingPanel {
 	h := &BriefingPanel{
 		app:    app,
 		Header: widget.NewLabel("Briefing for: " + strings.Join(app.Commanders, ", ")),
-		Notes: widget.NewLabel(app.Briefing + `
-
-lots of other details heer
-
-just seeing how it goes with lots of lines
-
-and more lines
-
-
-
-
-and even more lines
-`),
+		Notes:  widget.NewLabel(app.Briefing),
 	}
 	h.Box = fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
 		h.Header,
