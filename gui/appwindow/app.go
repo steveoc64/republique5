@@ -1,6 +1,7 @@
 package appwindow
 
 import (
+	"fyne.io/fyne/widget"
 	"time"
 
 	"fyne.io/fyne"
@@ -28,6 +29,7 @@ type App struct {
 	sidebar       *SideBar
 	footer        *FooterBar
 	briefingPanel *BriefingPanel
+	splashPanel   *fyne.Container
 }
 
 func Show(app fyne.App, servername string, l *rp.LoginResponse) {
@@ -54,6 +56,12 @@ func (a *App) loadUI() {
 	a.sidebar = newSideBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 
+	a.splashPanel = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
+		widget.NewLabelWithStyle(
+			"\n\n\n\nRepublique 5.0\n\n\nAugmented Reality Tabletop Miniatures",
+			fyne.TextAlignCenter,
+			fyne.TextStyle{Bold: true, Italic: true}))
+
 	// Create the panels that go in the middle of the container, and then hide them
 	a.briefingPanel = newBriefingPanel(a)
 	a.briefingPanel.Box.Hide()
@@ -63,7 +71,7 @@ func (a *App) loadUI() {
 		a.header.Box,
 		a.sidebar.Box,
 		a.footer.Box,
-		fyne.NewContainer(),
+		a.splashPanel,
 	)
 	a.window.SetContent(a.container)
 
