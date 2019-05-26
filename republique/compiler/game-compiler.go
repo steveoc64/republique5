@@ -126,8 +126,6 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				currentTeam = nil
 				teamname := words[0]
 				teamwords := strings.Split(v, " - ")
-				println("from", v)
-				println("teamwords is", teamwords)
 				teamgamename := game.Name
 				if len(teamwords) == 2 {
 					teamname = teamwords[0]
