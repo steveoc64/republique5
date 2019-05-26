@@ -41,15 +41,15 @@ func (s *SideBar) formations() {
 	println("formations", s.app.Briefing)
 }
 func (s *SideBar) advance() {
-	println("general advance", s.app.Briefing)
+	s.app.PlayAudio("command")
 }
 func (s *SideBar) withdraw() {
-	println("withdraw", s.app.Briefing)
+	s.app.PlayAudio("infantry")
 }
 func (s *SideBar) surrender() {
 	println("surrender", s.app.Briefing)
 	os.Exit(1)
 }
 func (s *SideBar) actions() {
-	println("Actions", s.app.Briefing)
+	s.app.PlayAudio("artillery")
 }

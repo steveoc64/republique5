@@ -24,7 +24,7 @@ func newFooterBar(app *App, onDone func(bool)) *FooterBar {
 		PhaseLabel: widget.NewLabel(app.Phase),
 		StopWatch:  widget.NewLabel("00:00"),
 	}
-	DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonIcon(), h.ToggleDone)
+	h.DoneBtn = widget.NewButtonWithIcon("End Turn", theme.CheckButtonIcon(), h.ToggleDone)
 	h.Box = widget.NewHBox(
 		h.PhaseLabel,
 		layout.NewSpacer(),

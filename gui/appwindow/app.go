@@ -3,9 +3,11 @@ package appwindow
 import (
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
+	"github.com/hajimehoshi/oto"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
+	"path/filepath"
 	"time"
 
 	"fyne.io/fyne"
@@ -34,6 +36,8 @@ type App struct {
 	footer        *FooterBar
 	briefingPanel *BriefingPanel
 	splashPanel   *fyne.Container
+
+	player *oto.Player
 }
 
 func Show(app fyne.App, servername string, l *rp.LoginResponse) {
@@ -52,6 +56,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse) {
 	a.loadUI()
 	a.window.CenterOnScreen()
 	a.window.Show()
+	a.PlayAudio("artillery")
 }
 
 func (a *App) loadUI() {
@@ -60,7 +65,7 @@ func (a *App) loadUI() {
 	a.sidebar = newSideBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 
-	img := canvas.NewImageFromFile(os.Getenv("HOME") + "/.republique/battle.png")
+	img := a.loadImage("banner")
 	img.FillMode = canvas.ImageFillStretch
 	a.splashPanel = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
 		img,
@@ -97,6 +102,20 @@ func (w *App) typedKey(ev *fyne.KeyEvent) {
 
 func (a *App) endTurn(done bool) {
 	println("end turn", done)
+}
+
+func (a *App) loadImage(name string) *canvas.Image {
+	dirname := filepath.Join(os.Getenv("HOME"), "republique")
+
+	f := filepath.Join(dirname, name+".png")
+	if _, err := os.Stat(f); err == nil {
+		return canvas.NewImageFromFile(f)
+	}
+	f = filepath.Join(dirname, name+".jpg")
+	if _, err := os.Stat(f); err == nil {
+		return canvas.NewImageFromFile(f)
+	}
+	return nil
 }
 
 func (a *App) setPanel(p fyne.CanvasObject) {
