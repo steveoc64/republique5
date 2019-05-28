@@ -28,12 +28,11 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 	}
 
 	game := &rp.Game{
-		AccessCode:  NewAccessCode(),
 		AdminAccess: NewAccessCode(),
 		TableX:      6,
 		TableY:      4,
 	}
-	println("Compiling Game", filename, "AccessCode =", game.AccessCode, "AdminAccess =", game.AdminAccess)
+	println("Compiling Game", filename, "AdminAccess =", game.AdminAccess)
 	var currentTeam *rp.Team
 	indents := 1
 

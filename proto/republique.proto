@@ -30,7 +30,6 @@ message GameTimeResponse {
 }
 
 message LoginMessage {
-  string accessCode = 1;
   string teamCode = 2;
   string playerCode = 3;
 }
@@ -180,14 +179,13 @@ message Scenario {
 
 message Game {
   Scenario scenario = 1;
-  string accessCode = 2;
-  int32 turnNumber = 3;
-  int32 tableX = 4;
-  int32 tableY = 5;
-  google.protobuf.Timestamp gameTime = 6;
-  string adminAccess = 7;
-  string name = 8;
-  Phase phase = 9;
+  int32 turnNumber = 2;
+  int32 tableX = 3;
+  int32 tableY = 4;
+  google.protobuf.Timestamp gameTime = 5;
+  string adminAccess = 6;
+  string name = 7;
+  Phase phase = 8;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

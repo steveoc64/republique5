@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/steveoc64/republique5/db"
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	rp "github.com/steveoc64/republique5/proto"
 	"github.com/steveoc64/republique5/republique"
-	"github.com/steveoc64/republique5/republique/db"
-
-	"github.com/sirupsen/logrus"
 )
 
 func oob(log *logrus.Logger, game string) error {
@@ -25,7 +24,7 @@ func oob(log *logrus.Logger, game string) error {
 	if err != nil {
 		return err
 	}
-	println("Game:", game, "AccessCode =", data.AccessCode)
+	println("Game:", game)
 	println("Date:", time.Unix(data.GameTime.Seconds, 0).UTC().Format(republique.DateTimeFormat))
 	print("Table: ", data.TableX, "x", data.TableY, " ft tabletop\n")
 	for _, team := range data.Scenario.GetTeams() {

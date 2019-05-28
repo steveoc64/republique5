@@ -3,10 +3,9 @@ package compiler
 import (
 	"bufio"
 	"fmt"
+	"github.com/steveoc64/republique5/db"
 	"os"
 	"path/filepath"
-
-	"github.com/steveoc64/republique5/republique/db"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/sirupsen/logrus"

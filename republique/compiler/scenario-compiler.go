@@ -136,12 +136,12 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 			// if we are still here, its a unit to be added to current player
 			// extract out the arrival data
 			v := strings.TrimSpace(v)
-			ib1 := strings.Index(v, "(")
+			ib1 := strings.Index(v, " (")
 			ib2 := strings.Index(v, ")")
 			arrival := ""
 			chance := 100
 			if ib1 != -1 && ib2 != -1 {
-				arrival = strings.ToLower(v[ib1+1 : ib2])
+				arrival = strings.ToLower(v[ib1+2 : ib2])
 				pc := strings.TrimSpace(v[ib2+1:])
 				if strings.HasSuffix(pc, "%") {
 					chance, _ = strconv.Atoi(pc[:strings.Index(pc, "%")])
@@ -183,7 +183,8 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 			if subUnit != "" {
 				found := false
 				for _, v := range cmd.Subcommands {
-					if v.Name == subUnit || v.CommanderName != subUnit {
+					println("looking for", subUnit, "got", v.Name, v.CommanderName)
+					if v.Name == subUnit || v.CommanderName == subUnit {
 						cmd = v
 						found = true
 						break

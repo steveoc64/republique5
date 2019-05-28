@@ -32,7 +32,7 @@ func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
 	}
 
 	// open the DB
-	db, err := bolt.Open(filename, 0644, &bolt.Options{Timeout: 200 * time.Millisecond})
+	db, err := bolt.Open(filename, 0644, &bolt.Options{ReadOnly: true, Timeout: 200 * time.Millisecond})
 	if err != nil {
 		if err == bolt.ErrTimeout {
 			log.Fatal("DB is locked by another process - maybe republique serve is already running ?")

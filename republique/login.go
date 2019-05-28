@@ -10,15 +10,9 @@ import (
 
 func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginResponse, error) {
 	s.log.WithFields(logrus.Fields{
-		"Access": req.AccessCode,
 		"Team":   req.TeamCode,
 		"Player": req.PlayerCode,
 	}).Debug("Login gRPC")
-	// check the game access code
-	if req.AccessCode != s.game.AccessCode {
-		s.log.Error("Invalid Access Code")
-		return nil, errors.New("Invalid Access Code")
-	}
 	// check the team code
 	for _, team := range s.game.Scenario.GetTeams() {
 		if team.AccessCode == req.TeamCode {

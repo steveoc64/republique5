@@ -3,9 +3,13 @@ package login
 import (
 	"context"
 	"fmt"
-	rp "github.com/steveoc64/republique5/proto"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
+
+	rp "github.com/steveoc64/republique5/proto"
 
 	"fyne.io/fyne/theme"
 	"github.com/steveoc64/republique5/gui/appwindow"
@@ -19,8 +23,9 @@ import (
 type login struct {
 	app         fyne.App
 	servername  string
-	accessCodes [3][4]int
-	codeStrings [3]string
+	savefile    string
+	accessCodes [2][4]int
+	codeStrings [2]string
 	mode        int
 	i           int
 
@@ -35,9 +40,7 @@ type login struct {
 }
 
 func Show(app fyne.App, servername string) {
-	c := newLogin()
-	c.app = app
-	c.servername = servername
+	c := newLogin(app, servername)
 	c.loadUI()
 }
 
@@ -71,6 +74,7 @@ func (c *login) digit(d int) {
 		c.paintCode()
 		time.Sleep(time.Millisecond * 200)
 		c.setMode(c.mode + 1)
+		return
 	}
 	c.paintCode()
 }
@@ -143,12 +147,10 @@ func (c *login) setMode(m int) {
 	c.i = 0
 	switch m {
 	case 0:
-		c.descr.SetText("Access Code")
-	case 1:
 		c.descr.SetText("Team Code")
-	case 2:
+	case 1:
 		c.descr.SetText("Player Code")
-	case 3:
+	case 2:
 		if err := c.login(); err != nil {
 			c.setMode(0)
 			c.failed.Show()
@@ -161,7 +163,7 @@ func (c *login) setMode(m int) {
 }
 
 func (c *login) login() error {
-	println("Connecting to server", c.server.Text, "AccessCodes", c.codeStrings[0], c.codeStrings[1], c.codeStrings[2])
+	println("Connecting to server", c.server.Text, "AccessCodes", c.codeStrings[0], c.codeStrings[1])
 	serverAddr := c.server.Text
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
@@ -171,22 +173,24 @@ func (c *login) login() error {
 	}
 	client := rp.NewGameServiceClient(conn)
 	rsp, err := client.Login(context.Background(), &rp.LoginMessage{
-		AccessCode: c.codeStrings[0],
-		TeamCode:   c.codeStrings[1],
-		PlayerCode: c.codeStrings[2],
+		TeamCode:   c.codeStrings[0],
+		PlayerCode: c.codeStrings[1],
 	})
 	if err != nil {
 		return err
 	}
 	appwindow.Show(c.app, c.servername, rsp, conn, client)
 	c.window.Hide()
+	// save the servername
+	savename := filepath.Join(os.Getenv("HOME"), ".republique", "server")
+	ioutil.WriteFile(savename, []byte(serverAddr), 0644)
 	return nil
 }
 
 func (c *login) loadUI() {
 	c.server = widget.NewEntry()
 	c.server.SetText(c.servername)
-	c.descr = widget.NewLabel("Access Code")
+	c.descr = widget.NewLabel("Team Code")
 	c.descr.Alignment = fyne.TextAlignCenter
 	c.failed = widget.NewLabel("Failed - Try Again")
 	c.failed.Alignment = fyne.TextAlignCenter
@@ -232,10 +236,19 @@ func (c *login) loadUI() {
 	c.failed.Hide()
 }
 
-func newLogin() *login {
-	c := &login{}
+func newLogin(app fyne.App, servername string) *login {
+	c := &login{
+		app:        app,
+		servername: servername,
+	}
 	c.functions = make(map[string]func())
 	c.buttons = make(map[string]*widget.Button)
+
+	c.savefile = filepath.Join(os.Getenv("HOME"), ".republique", "server")
+	s, err := ioutil.ReadFile(c.savefile)
+	if err == nil && len(s) > 0 {
+		c.servername = string(s)
+	}
 
 	return c
 }
