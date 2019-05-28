@@ -3,7 +3,7 @@ package republique
 import (
 	"context"
 	"fmt"
-	rp "github.com/steveoc64/republique5/republique/proto"
+	"github.com/steveoc64/republique5"
 	"net"
 	"net/http"
 
@@ -19,7 +19,7 @@ func (s *Server) grpcRun() {
 		s.log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	rp.RegisterGameServiceServer(grpcServer, s)
+	republique5.RegisterGameServiceServer(grpcServer, s)
 	s.log.WithFields(logrus.Fields{
 		"port":     s.port,
 		"endpoint": endpoint,
@@ -36,7 +36,7 @@ func (s *Server) rpcProxy() error {
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	rpcendpoint := fmt.Sprintf(":%d", s.port)
 	webendpoint := fmt.Sprintf(":%d", s.web)
-	err := rp.RegisterGameServiceHandlerFromEndpoint(ctx, mux, rpcendpoint, opts)
+	err := republique5.RegisterGameServiceHandlerFromEndpoint(ctx, mux, rpcendpoint, opts)
 	if err != nil {
 		return err
 	}

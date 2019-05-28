@@ -1,6 +1,7 @@
 package appwindow
 
 import (
+	rp "github.com/steveoc64/republique5/proto"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
@@ -15,7 +16,6 @@ import (
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
-	rp "github.com/steveoc64/republique5/republique/proto"
 )
 
 type App struct {
@@ -78,6 +78,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 
 func (a *App) loadUI() {
 	a.window = a.app.NewWindow("Republique 5.0")
+	a.window.SetOnClosed(func() { os.Exit(0) })
 	a.header = newHeaderBar(a)
 	a.sidebar = newSideBar(a)
 	a.footer = newFooterBar(a, a.endTurn)

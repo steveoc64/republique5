@@ -3,13 +3,12 @@ package login
 import (
 	"context"
 	"fmt"
+	rp "github.com/steveoc64/republique5/proto"
 	"log"
 	"time"
 
-	"github.com/steveoc64/republique5/gui/appwindow"
-	rp "github.com/steveoc64/republique5/republique/proto"
-
 	"fyne.io/fyne/theme"
+	"github.com/steveoc64/republique5/gui/appwindow"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"

@@ -2,7 +2,7 @@ package compiler
 
 import (
 	"fmt"
-	rp "github.com/steveoc64/republique5/republique/proto"
+	rp "github.com/steveoc64/republique5/proto"
 	"math/rand"
 	"path/filepath"
 	"runtime/debug"

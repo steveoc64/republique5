@@ -2,7 +2,7 @@ package compiler
 
 import (
 	"fmt"
-	rp "github.com/steveoc64/republique5/republique/proto"
+	rp "github.com/steveoc64/republique5/proto"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -441,8 +441,8 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 				strings.Contains(params, "chasseurs a cheval"),
 				strings.Contains(params, "horse jager"),
 				strings.Contains(params, "mounted jager"):
-				unit.Arm = rp.Arm_CAVALRY
-				unit.UnitType = rp.UnitType_CAVALRY_LIGHT
+				unit.Arm = republique5.Arm_CAVALRY
+				unit.UnitType = republique5.UnitType_CAVALRY_LIGHT
 			case strings.Contains(params, "cuirassier"),
 				strings.Contains(params, "carabinier"),
 				strings.Contains(params, "karabinier"),

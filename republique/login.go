@@ -3,13 +3,12 @@ package republique
 import (
 	"context"
 	"errors"
-
-	rp "github.com/steveoc64/republique5/republique/proto"
+	"github.com/steveoc64/republique5"
 
 	"github.com/sirupsen/logrus"
 )
 
-func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginResponse, error) {
+func (s *Server) Login(c context.Context, req *republique5.LoginMessage) (*republique5.LoginResponse, error) {
 	s.log.WithFields(logrus.Fields{
 		"Access": req.AccessCode,
 		"Team":   req.TeamCode,
@@ -26,9 +25,9 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 			// check the player code
 			for _, player := range team.Players {
 				if player.AccessCode == req.PlayerCode {
-					player.Token = rp.NewToken()
+					player.Token = republique5.NewToken()
 					s.db.Save("game", "state", s.game)
-					rsp := &rp.LoginResponse{
+					rsp := &republique5.LoginResponse{
 						Welcome:    "welcome",
 						Commanders: player.Commanders,
 						TeamName:   team.Name,

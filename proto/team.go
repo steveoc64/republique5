@@ -1,6 +1,6 @@
 package republique
 
-func (t *Team) GetCommandByCommanderName(name string) *Command {
+func (t *republique5.Team) GetCommandByCommanderName(name string) *republique5.Command {
 	for _, command := range t.GetCommands() {
 		if command.CommanderName == name {
 			return command

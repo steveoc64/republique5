@@ -1,9 +1,9 @@
 package main
 
 import (
+	rp "github.com/steveoc64/republique5/proto"
 	"github.com/steveoc64/republique5/republique"
 	db2 "github.com/steveoc64/republique5/republique/db"
-	rp "github.com/steveoc64/republique5/republique/proto"
 	"strings"
 	"time"
 

@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	rp "github.com/steveoc64/republique5/proto"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
@@ -9,7 +10,6 @@ import (
 	"time"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	rp "github.com/steveoc64/republique5/republique/proto"
 )
 
 func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {

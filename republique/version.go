@@ -2,12 +2,12 @@ package republique
 
 import (
 	"context"
-	rp "github.com/steveoc64/republique5/republique/proto"
+	"github.com/steveoc64/republique5"
 )
 
-func (s *Server) Version(c context.Context, req *rp.EmptyMessage) (*rp.StringMessage, error) {
+func (s *Server) Version(c context.Context, req *republique5.EmptyMessage) (*republique5.StringMessage, error) {
 	s.log.Println("Version gRPC")
-	return &rp.StringMessage{
+	return &republique5.StringMessage{
 		Value: s.version,
 	}, nil
 }

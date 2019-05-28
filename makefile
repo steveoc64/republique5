@@ -1,6 +1,6 @@
-SUBDIRS := republique cmd/republique cmd/republique-ui
+SUBDIRS := cmd/republique cmd/republique-ui
 
-all: $(SUBDIRS)
+all: protobuf $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
@@ -9,8 +9,8 @@ $(SUBDIRS):
 help:
 	@echo proto compile dump newgame serve info oob ui
 
-proto:
-	$(MAKE) -C republique/proto
+protobuf:
+	$(MAKE) -C proto
 
 compile:cmd/republique
 	republique compile oob/jena*/fr*/*.oob
