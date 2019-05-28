@@ -2,7 +2,7 @@ package republique
 
 import (
 	"context"
-	rp "github.com/steveoc64/republique5"
+	rp "github.com/steveoc64/republique5/proto"
 )
 
 func (s *Server) Echo(c context.Context, req *rp.StringMessage) (*rp.StringMessage, error) {

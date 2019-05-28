@@ -1,28 +1,24 @@
 package republique
 
-import (
-	rp "github.com/steveoc64/republique5/proto"
-)
-
-func (x rp.SkirmishRating) Decrement() rp.SkirmishRating {
+func (x SkirmishRating) Decrement() SkirmishRating {
 	switch x {
-	case rp.SkirmishRating_ADEQUATE:
-		return rp.SkirmishRating_POOR
-	case rp.SkirmishRating_CRACK_SHOT:
-		return rp.SkirmishRating_ADEQUATE
-	case rp.SkirmishRating_EXCELLENT:
-		return rp.SkirmishRating_CRACK_SHOT
+	case SkirmishRating_ADEQUATE:
+		return SkirmishRating_POOR
+	case SkirmishRating_CRACK_SHOT:
+		return SkirmishRating_ADEQUATE
+	case SkirmishRating_EXCELLENT:
+		return SkirmishRating_CRACK_SHOT
 	}
 	return x
 }
-func (x rp.SkirmishRating) Increment() rp.SkirmishRating {
+func (x SkirmishRating) Increment() SkirmishRating {
 	switch x {
-	case rp.SkirmishRating_POOR:
-		return rp.SkirmishRating_ADEQUATE
-	case rp.SkirmishRating_ADEQUATE:
-		return rp.SkirmishRating_CRACK_SHOT
-	case rp.SkirmishRating_CRACK_SHOT:
-		return rp.SkirmishRating_EXCELLENT
+	case SkirmishRating_POOR:
+		return SkirmishRating_ADEQUATE
+	case SkirmishRating_ADEQUATE:
+		return SkirmishRating_CRACK_SHOT
+	case SkirmishRating_CRACK_SHOT:
+		return SkirmishRating_EXCELLENT
 	}
 	return x
 }

@@ -1,7 +1,7 @@
 package republique
 
 import (
-	"github.com/steveoc64/republique5"
+	rp "github.com/steveoc64/republique5/proto"
 	"github.com/steveoc64/republique5/republique/db"
 	"strings"
 
@@ -14,7 +14,7 @@ type Server struct {
 	filename  string
 	port      int
 	web       int
-	game      *republique5.Game
+	game      *rp.Game
 	db        *db.DB
 	stopWatch int64
 }
@@ -29,7 +29,7 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 	if err != nil {
 		return nil, err
 	}
-	data := &republique5.Game{}
+	data := &rp.Game{}
 	err = db.Load("game", "state", data)
 	if err != nil {
 		return nil, err

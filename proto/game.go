@@ -1,6 +1,6 @@
 package republique
 
-func (g *republique5.Game) GenerateIDs() {
+func (g *Game) GenerateIDs() {
 	var cID, ccID, uID int32
 	for _, team := range g.GetScenario().GetTeams() {
 		for _, command := range team.GetCommands() {
