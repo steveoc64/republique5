@@ -129,7 +129,7 @@ func (w *App) typedKey(ev *fyne.KeyEvent) {
 }
 
 func (a *App) endTurn(done bool) {
-	println("end turn", done)
+	// TODO - transmit ImDone to the backend
 }
 
 func (a *App) loadImage(name string) *canvas.Image {

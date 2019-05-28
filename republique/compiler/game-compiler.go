@@ -2,13 +2,14 @@ package compiler
 
 import (
 	"fmt"
-	rp "github.com/steveoc64/republique5/proto"
 	"math/rand"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
+
+	rp "github.com/steveoc64/republique5/proto"
 )
 
 func NewAccessCode() string {
@@ -152,10 +153,14 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 			names := strings.Split(v, ",")
 			for _, name := range names {
 				name = strings.TrimSpace(name)
-				if currentTeam.GetCommandByCommanderName(name) == nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("%v is not a valid commander in team %v", name, currentTeam.Name)}
+				cc := currentTeam.GetCommandByName(name)
+				if cc == nil {
+					cc = currentTeam.GetCommandByCommanderName(name)
+					if cc == nil {
+						return nil, CompilerError{k + 1, filename, fmt.Sprintf("%v is not a valid unit or commander in team %v", name, currentTeam.Name)}
+					}
 				}
-				player.Commanders = append(player.Commanders, name)
+				player.Commanders = append(player.Commanders, cc.CommanderName)
 			}
 			currentTeam.Players = append(currentTeam.Players, player)
 		default:

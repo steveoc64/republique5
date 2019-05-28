@@ -55,8 +55,10 @@ func (s *Server) Serve() {
 	}).Println("Starting Republique 5.0 Server")
 	s.log.SetFormatter(&logrus.JSONFormatter{})
 
-	// Setup REST endpoints
-	go s.rpcProxy()
+	// Setup REST endpoints, but only if we want web with it
+	if s.web != 0 {
+		go s.rpcProxy()
+	}
 
 	// Load GPPC endpoints
 	s.grpcRun()

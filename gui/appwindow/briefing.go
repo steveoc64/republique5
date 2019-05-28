@@ -21,7 +21,7 @@ func newBriefingPanel(app *App) *BriefingPanel {
 		Notes:  widget.NewLabel(app.Briefing),
 	}
 	img := app.loadImage("banner")
-	img.FillMode = canvas.ImageFillStretch
+	img.FillMode = canvas.ImageFillOriginal
 	h.Box = widget.NewVBox(
 		img,
 		h.Header,

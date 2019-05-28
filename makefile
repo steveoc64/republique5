@@ -12,6 +12,9 @@ help:
 protobuf:
 	$(MAKE) -C proto
 
+compiler: 
+	$(MAKE) -C cmd/republique
+
 compile:cmd/republique
 	republique compile oob/jena*/fr*/*.oob
 
@@ -28,6 +31,9 @@ newgame:cmd/republique
 	republique info Jena-1
 
 serve: cmd/republique
+	republique serve -port 1815 -game Jena-intro
+
+web: cmd/republique
 	republique serve -port 1815 -web 8015 -game Jena-intro
 
 info: cmd/republique

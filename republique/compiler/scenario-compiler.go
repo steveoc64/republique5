@@ -183,7 +183,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 			if subUnit != "" {
 				found := false
 				for _, v := range cmd.Subcommands {
-					if v.Name == subUnit {
+					if v.Name == subUnit || v.CommanderName != subUnit {
 						cmd = v
 						found = true
 						break
