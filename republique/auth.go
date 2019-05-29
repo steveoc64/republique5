@@ -1,37 +1,42 @@
 package republique
 
 import (
-	"github.com/sirupsen/logrus"
+	"github.com/davecgh/go-spew/spew"
 	"time"
 
 	"github.com/micro/protobuf/ptypes"
+	"github.com/sirupsen/logrus"
 	rp "github.com/steveoc64/republique5/proto"
 )
 
-
-func (s *Server) Auth{token string) error {
-	_,ok := s.TokenCache[token]
-	return ok
+func (s *Server) Auth(token string) error {
+	t, ok := s.tokenCache[token]
+	if !ok {
+		return errUnauthorised
+	}
+	e, err := ptypes.Timestamp(t.GetExpires())
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"token":   t.GetId(),
+			"expires": t.GetExpires(),
+		}).WithError(err).Error("parsing expired value of token")
+		return errUnauthorised
+	}
+	if time.Now().After(e) {
+		return errSessionExpired
+	}
+	return nil
 }
 
-func (s *Server) OldAuth(token string) error {
-	for _, team := range s.game.GetScenario().GetTeams() {
+func NewTokenCache(game *rp.Game) map[string]*rp.Token {
+	tokenCache := make(map[string]*rp.Token)
+	for _, team := range game.GetScenario().GetTeams() {
 		for _, player := range team.GetPlayers() {
-			if player.GetToken().GetId() == token {
-				t, err := ptypes.Timestamp(player.GetToken().GetExpires())
-				if err != nil {
-					s.log.WithFields(logrus.Fields{
-						"token":   player.GetToken().GetId(),
-						"expires": player.GetToken().GetExpires(),
-					}).WithError(err).Error("parsing expired value of token")
-					return errUnauthorised
-				}
-				if time.Now().After(t) {
-					return errUnauthorised
-				}
-				return nil
+			if player.Token != nil {
+				tokenCache[player.Token.GetId()] = player.Token
 			}
 		}
 	}
-	return errUnauthorised
+	spew.Dump("token cache", tokenCache)
+	return tokenCache
 }

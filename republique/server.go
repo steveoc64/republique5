@@ -43,7 +43,7 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 		web:        web,
 		game:       data,
 		db:         db,
-		tokenCache: make(map[string]*rp.Token),
+		tokenCache: NewTokenCache(data),
 	}, nil
 }
 
