@@ -32,6 +32,8 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 		TableX:      6,
 		TableY:      4,
 	}
+	tableMode := false
+	tableLine := int32(0)
 	println("Compiling Game", filename, "AdminAccess =", game.AdminAccess)
 	var currentTeam *rp.Team
 	indents := 1
@@ -49,6 +51,25 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 
 	// scan for !commands
 	for k, v = range lines {
+		println("kvm", k, v, tableMode, tableLine, v)
+		if tableMode {
+			if tableLine == 0 && v[0] != '-' {
+				tableMode = false
+			} else {
+				if tableLine > 0 && tableLine <= game.TableY {
+					// v contains a row to add to the tableLayout
+					for int32(len(v)) < game.TableX {
+						v = v + " "
+					}
+					game.TableLayout = game.TableLayout + v
+				}
+				tableLine++
+				if tableLine > game.TableY+1 {
+					tableMode = false
+				}
+				continue
+			}
+		}
 		words := strings.Split(v, " ")
 		ww := len(words)
 		w := strings.ToLower(words[0])
@@ -89,6 +110,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 		}
 		switch ii {
 		case 0: // Directive
+
 			switch w {
 			case "name":
 				game.Name = strings.TrimSpace(v[4:])
@@ -122,6 +144,9 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				}
 				game.TableX = int32(x)
 				game.TableY = int32(y)
+				tableMode = true
+				// following this is a map
+				// line of dashes + Y lines of X chars + line of dashes
 			default: // is a team name
 				currentTeam = nil
 				teamname := words[0]
