@@ -9,14 +9,15 @@ import (
 )
 
 type Server struct {
-	log       *logrus.Logger
-	version   string
-	filename  string
-	port      int
-	web       int
-	game      *rp.Game
-	db        *db.DB
-	stopWatch int64
+	log        *logrus.Logger
+	version    string
+	filename   string
+	port       int
+	web        int
+	game       *rp.Game
+	db         *db.DB
+	stopWatch  int64
+	tokenCache map[string]*rp.Token
 }
 
 // New returns a new republique server
@@ -35,13 +36,14 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 		return nil, err
 	}
 	return &Server{
-		log:      log,
-		version:  version,
-		filename: filename,
-		port:     port,
-		web:      web,
-		game:     data,
-		db:       db,
+		log:        log,
+		version:    version,
+		filename:   filename,
+		port:       port,
+		web:        web,
+		game:       data,
+		db:         db,
+		tokenCache: make(map[string]*rp.Token),
 	}, nil
 }
 

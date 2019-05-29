@@ -5,9 +5,16 @@ import (
 	"time"
 
 	"github.com/micro/protobuf/ptypes"
+	rp "github.com/steveoc64/republique5/proto"
 )
 
-func (s *Server) Auth(token string) error {
+
+func (s *Server) Auth{token string) error {
+	_,ok := s.TokenCache[token]
+	return ok
+}
+
+func (s *Server) OldAuth(token string) error {
 	for _, team := range s.game.GetScenario().GetTeams() {
 		for _, player := range team.GetPlayers() {
 			if player.GetToken().GetId() == token {
