@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/steveoc64/republique5/db"
 	"strings"
 	"time"
@@ -41,34 +40,14 @@ func oob(log *logrus.Logger, game string) error {
 					println("")
 					for _, unit := range c.Units {
 						print("      - (", unit.Id, ") ")
-						nn := ""
-						switch unit.Arm {
-						case rp.Arm_CAVALRY:
-							nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
-						case rp.Arm_INFANTRY:
-							nn = fmt.Sprintf("(%d men)", unit.Strength*550)
-							if unit.SkirmisherMax > 0 {
-								nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)
-							}
-						}
-						println(unit.Name, strings.ToLower(unit.Grade.String()), strings.Replace(strings.ToLower(unit.UnitType.String()), "_", " ", 1), nn)
+						print(unit.LabelString())
 					}
 					for _, subCommand := range c.Subcommands {
 						print("        (", subCommand.Id, ") ", subCommand.Name, " - ", subCommand.CommanderName)
 						println("")
 						for _, unit := range subCommand.Units {
 							print("          - (", unit.Id, ") ")
-							nn := ""
-							switch unit.Arm {
-							case rp.Arm_CAVALRY:
-								nn = fmt.Sprintf("(%d horse)", unit.Strength*300)
-							case rp.Arm_INFANTRY:
-								nn = fmt.Sprintf("(%d men)", unit.Strength*550)
-								if unit.SkirmisherMax > 0 {
-									nn = nn + fmt.Sprintf(" [%d sk]", unit.SkirmisherMax)
-								}
-							}
-							println(unit.Name, strings.ToLower(unit.Grade.String()), strings.Replace(strings.ToLower(unit.UnitType.String()), "_", " ", 1), nn)
+							println(unit.LabelString())
 						}
 					}
 				}

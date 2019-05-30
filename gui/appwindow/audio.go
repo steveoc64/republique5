@@ -14,6 +14,7 @@ import (
 var isPlaying bool
 
 func (a *App) PlayAudio(arm string) {
+	return
 	dirname := filepath.Join(os.Getenv("HOME"), "republique", arm)
 	files := []string{}
 	filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/steveoc64/memdebug"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -21,6 +22,8 @@ commands:
 }
 
 func main() {
+	memdebug.Profile()
+	defer memdebug.WriteProfile()
 	// get the command verb and process
 	if len(os.Args) < 2 {
 		usage()

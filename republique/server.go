@@ -17,7 +17,7 @@ type Server struct {
 	game       *rp.Game
 	db         *db.DB
 	stopWatch  int64
-	tokenCache map[string]*rp.Token
+	tokenCache map[string]*rp.Player
 }
 
 // New returns a new republique server

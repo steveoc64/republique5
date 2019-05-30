@@ -29,8 +29,9 @@ type App struct {
 	GameTime   time.Time
 	Briefing   string
 	Commanders []string
+	Commands   []*rp.Command
 	TeamName   string
-	Token      string
+	Token      rp.TokenMessage
 	Expires    time.Time
 	Phase      string
 
@@ -63,7 +64,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		Briefing:   l.Briefing,
 		Commanders: l.Commanders,
 		TeamName:   l.TeamName,
-		Token:      l.Token.Id,
+		Token:      rp.TokenMessage{Id: l.Token.Id},
 		Expires:    time.Unix(l.Token.Expires.Seconds, 0),
 		Phase:      "Pre Game Setup",
 		conn:       conn,
@@ -176,6 +177,7 @@ func (a *App) showOrders() {
 
 func (a *App) showUnits() {
 	a.PlayAudio("infantry")
+	a.GetUnits()
 	a.setPanel(a.unitsPanel.Box)
 }
 

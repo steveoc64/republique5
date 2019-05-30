@@ -10,7 +10,9 @@ service GameService {
   rpc Echo(StringMessage) returns (StringMessage) {}
   rpc Version(EmptyMessage) returns (StringMessage) {}
   rpc Login(LoginMessage) returns (LoginResponse) {}
-  rpc GameTime(StringMessage) returns (GameTimeResponse) {}
+  rpc GameTime(TokenMessage) returns (GameTimeResponse) {}
+
+  rpc GetUnits(TokenMessage) returns (Units) {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +23,10 @@ message StringMessage {
 
 message EmptyMessage {
   // empty
+}
+
+message TokenMessage {
+  string id = 1;
 }
 
 message GameTimeResponse {
@@ -167,6 +173,9 @@ message Player {
   Token token = 5;
 }
 
+message Units {
+  repeated Command commands = 1;
+}
 message Token {
   string id = 1;
   google.protobuf.Timestamp expires = 2;

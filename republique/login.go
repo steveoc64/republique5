@@ -12,7 +12,7 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 	s.log.WithFields(logrus.Fields{
 		"Team":   req.TeamCode,
 		"Player": req.PlayerCode,
-	}).Debug("Login gRPC")
+	}).Info("Login gRPC")
 	// check the team code
 	for _, team := range s.game.Scenario.GetTeams() {
 		if team.AccessCode == req.TeamCode {
@@ -20,7 +20,7 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 			for _, player := range team.Players {
 				if player.AccessCode == req.PlayerCode {
 					player.Token = rp.NewToken()
-					s.tokenCache[player.Token.GetId()] = player.Token
+					s.tokenCache[player.Token.GetId()] = player
 					s.db.Save("game", "state", s.game)
 					rsp := &rp.LoginResponse{
 						Welcome:    "welcome",

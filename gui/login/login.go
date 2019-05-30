@@ -86,6 +86,14 @@ func (c *login) addIconButton(text string, icon fyne.Resource, action func()) *w
 	return button
 }
 
+func (c *login) addPrimaryButton(text string, icon fyne.Resource, action func()) *widget.Button {
+	button := widget.NewButtonWithIcon(text, icon, action)
+	button.Style = widget.PrimaryButton
+	c.buttons[text] = button
+
+	return button
+}
+
 func (c *login) addButton(text string, action func()) *widget.Button {
 	button := widget.NewButton(text, action)
 	c.buttons[text] = button
@@ -225,7 +233,7 @@ func (c *login) loadUI() {
 			c.digitButton(9),
 			c.addIconButton("Del", theme.CancelIcon(), c.del),
 			c.digitButton(0),
-			c.addIconButton("OK", theme.ConfirmIcon(), c.ok),
+			c.addPrimaryButton("OK", theme.ConfirmIcon(), c.ok),
 		),
 	))
 

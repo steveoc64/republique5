@@ -5,8 +5,8 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
-func (s *Server) GameTime(c context.Context, req *rp.StringMessage) (*rp.GameTimeResponse, error) {
-	if err := s.Auth(req.Value); err != nil {
+func (s *Server) GameTime(c context.Context, req *rp.TokenMessage) (*rp.GameTimeResponse, error) {
+	if _, err := s.Auth(req.Id); err != nil {
 		return nil, err
 	}
 	return &rp.GameTimeResponse{
