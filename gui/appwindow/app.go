@@ -1,6 +1,7 @@
 package appwindow
 
 import (
+	"fyne.io/fyne/theme"
 	rp "github.com/steveoc64/republique5/proto"
 	_ "image/jpeg"
 	_ "image/png"
@@ -38,7 +39,6 @@ type App struct {
 	layout          fyne.Layout
 	container       *fyne.Container
 	header          *HeaderBar
-	sidebar         *SideBar
 	footer          *FooterBar
 	briefingPanel   *BriefingPanel
 	actionsPanel    *ActionsPanel
@@ -81,7 +81,6 @@ func (a *App) loadUI() {
 	a.window = a.app.NewWindow("Republique 5.0")
 	a.window.SetOnClosed(func() { os.Exit(0) })
 	a.header = newHeaderBar(a)
-	a.sidebar = newSideBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 
 	img := a.loadImage("banner")
@@ -110,12 +109,23 @@ func (a *App) loadUI() {
 	a.briefingPanel.Box.Hide()
 	a.actionsPanel.Box.Hide()
 
-	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, a.sidebar.Box, nil)
-	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, a.sidebar.Box, nil),
+	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil)
+	t := widget.NewTabContainer(
+		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.Box),
+		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.Box),
+		widget.NewTabItemWithIcon("Map", theme.ViewFullScreenIcon(), a.mapPanel.Box),
+		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.Box),
+		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.Box),
+		widget.NewTabItemWithIcon("Formation", theme.ContentCopyIcon(), a.formationsPanel.Box),
+		widget.NewTabItemWithIcon("Advance", theme.MailSendIcon(), a.advancePanel.Box),
+		widget.NewTabItemWithIcon("Withdraw", theme.MailReplyIcon(), a.withdrawPanel.Box),
+		widget.NewTabItemWithIcon("Surrender", theme.CancelIcon(), a.surrenderPanel.Box),
+	)
+	t.SetTabLocation(widget.TabLocationLeading)
+	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil),
 		a.header.Box,
-		a.sidebar.Box,
 		a.footer.Box,
-		a.splashPanel,
+		t,
 	)
 	a.window.SetContent(a.container)
 
@@ -145,56 +155,4 @@ func (a *App) loadImage(name string) *canvas.Image {
 		return canvas.NewImageFromFile(f)
 	}
 	return nil
-}
-
-func (a *App) setPanel(p fyne.CanvasObject) {
-	if len(a.container.Objects) == 4 {
-		a.container.Objects[3].Hide()
-	}
-	a.container.Objects = append(a.container.Objects[:3], p)
-	p.Show()
-	a.container.Layout.Layout(a.container.Objects, a.container.Size())
-	///a.container.Resize(a.container.Size())
-}
-
-func (a *App) showBriefing() {
-	a.PlayAudio("command")
-	a.setPanel(a.briefingPanel.Box)
-}
-
-func (a *App) showActions() {
-	a.setPanel(a.actionsPanel.Box)
-}
-
-func (a *App) showMap() {
-	a.setPanel(a.mapPanel.Box)
-}
-
-func (a *App) showOrders() {
-	a.PlayAudio("command")
-	a.setPanel(a.ordersPanel.Box)
-}
-
-func (a *App) showUnits() {
-	a.PlayAudio("infantry")
-	a.GetUnits()
-	a.setPanel(a.unitsPanel.Box)
-}
-
-func (a *App) showFormations() {
-	a.setPanel(a.formationsPanel.Box)
-}
-
-func (a *App) showAdvance() {
-	a.setPanel(a.advancePanel.Box)
-}
-
-func (a *App) showWithdraw() {
-	a.PlaySystemAudio("surrender")
-	a.setPanel(a.withdrawPanel.Box)
-}
-
-func (a *App) showSurrender() {
-	a.PlaySystemAudio("surrender")
-	a.setPanel(a.surrenderPanel.Box)
 }
