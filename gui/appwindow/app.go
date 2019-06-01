@@ -125,10 +125,14 @@ func (a *App) loadUI() {
 	a.window.Canvas().SetOnTypedKey(a.typedKey)
 }
 
-func (w *App) typedRune(r rune) {
+func (a *App) MinSize() fyne.Size {
+	return fyne.NewSize(1024, 800)
 }
 
-func (w *App) typedKey(ev *fyne.KeyEvent) {
+func (a *App) typedRune(r rune) {
+}
+
+func (a *App) typedKey(ev *fyne.KeyEvent) {
 }
 
 func (a *App) endTurn(done bool) {

@@ -8,8 +8,9 @@ import (
 )
 
 type BriefingPanel struct {
-	app *App
-	Box *widget.Box
+	app    *App
+	Box    *widget.Box
+	Scroll *widget.ScrollContainer
 
 	Header *widget.Label
 	Notes  *widget.Label
@@ -35,6 +36,8 @@ func newBriefingPanel(app *App) *BriefingPanel {
 		h.Header,
 		h.Notes,
 	)
+	h.Scroll = widget.NewScrollContainer(h.Box)
+	h.Scroll.Resize(app.MinSize())
 	h.Box.Show()
 	return h
 }

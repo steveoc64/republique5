@@ -25,7 +25,7 @@ func newUnitsPanel(app *App) *UnitsPanel {
 	}
 	h.Box = widget.NewVBox()
 	h.Scroll = widget.NewScrollContainer(h.Box)
-	h.Scroll.Resize(fyne.NewSize(1024, 600))
+	h.Scroll.Resize(app.MinSize())
 
 	app.GetUnits()
 	h.BuildUnits()
