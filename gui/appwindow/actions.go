@@ -15,6 +15,10 @@ type ActionsPanel struct {
 	Notes  *widget.Label
 }
 
+func (a *ActionsPanel) CanvasObject() fyne.CanvasObject {
+	return a.Box
+}
+
 func newActionsPanel(app *App) *ActionsPanel {
 	h := &ActionsPanel{
 		app:    app,

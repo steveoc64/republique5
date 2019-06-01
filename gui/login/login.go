@@ -179,15 +179,15 @@ func (c *login) login() error {
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
-	client := rp.NewGameServiceClient(conn)
-	rsp, err := client.Login(context.Background(), &rp.LoginMessage{
+	gameServer := rp.NewGameServiceClient(conn)
+	rsp, err := gameServer.Login(context.Background(), &rp.LoginMessage{
 		TeamCode:   c.codeStrings[0],
 		PlayerCode: c.codeStrings[1],
 	})
 	if err != nil {
 		return err
 	}
-	appwindow.Show(c.app, c.servername, rsp, conn, client)
+	appwindow.Show(c.app, c.servername, rsp, conn, gameServer)
 	c.window.Hide()
 	// save the servername
 	savename := filepath.Join(os.Getenv("HOME"), ".republique", "server")

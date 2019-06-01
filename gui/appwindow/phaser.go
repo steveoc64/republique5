@@ -10,7 +10,7 @@ func (a *App) Phaser() {
 		for {
 			time.Sleep(time.Second * 3)
 
-			_, err := a.client.GameTime(context.Background(), &a.Token)
+			_, err := a.gameServer.GameTime(context.Background(), &a.Token)
 			if err != nil {
 				println("got an error", err.Error())
 			}

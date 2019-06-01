@@ -15,6 +15,10 @@ type BriefingPanel struct {
 	Notes  *widget.Label
 }
 
+func (b *BriefingPanel) CanvasObject() fyne.CanvasObject {
+	return b.Box
+}
+
 func newBriefingPanel(app *App) *BriefingPanel {
 	briefingText := strings.Replace(app.Briefing, "\n", "\n\n", -1)
 	h := &BriefingPanel{

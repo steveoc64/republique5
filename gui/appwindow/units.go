@@ -2,8 +2,6 @@ package appwindow
 
 import (
 	"context"
-	"strings"
-
 	"fyne.io/fyne/theme"
 	rp "github.com/steveoc64/republique5/proto"
 
@@ -12,18 +10,23 @@ import (
 )
 
 type UnitsPanel struct {
-	app *App
-	Box *widget.Box
+	app    *App
+	Box    *widget.Box
+	Scroll *widget.ScrollContainer
+}
 
-	Header *widget.Label
+func (u *UnitsPanel) CanvasObject() fyne.CanvasObject {
+	return u.Scroll
 }
 
 func newUnitsPanel(app *App) *UnitsPanel {
 	h := &UnitsPanel{
-		app:    app,
-		Header: widget.NewLabel("Units for: " + strings.Join(app.Commanders, ", ")),
+		app: app,
 	}
 	h.Box = widget.NewVBox()
+	h.Scroll = widget.NewScrollContainer(h.Box)
+	h.Scroll.Resize(fyne.NewSize(1024, 600))
+
 	app.GetUnits()
 	h.BuildUnits()
 	return h
@@ -57,7 +60,6 @@ func (u *UnitsPanel) unitLabel(spacer string, unit *rp.Unit) *widget.Label {
 
 func (u *UnitsPanel) BuildUnits() {
 	u.Box.Children = []fyne.CanvasObject{}
-	u.Box.Append(u.Header)
 	for _, command := range u.app.Commands {
 		if command.Arrival.From > 0 {
 			continue
@@ -77,7 +79,7 @@ func (u *UnitsPanel) BuildUnits() {
 }
 
 func (a *App) GetUnits() error {
-	u, err := a.client.GetUnits(context.Background(), &a.Token)
+	u, err := a.gameServer.GetUnits(context.Background(), &a.Token)
 	if err != nil {
 		return err
 	}

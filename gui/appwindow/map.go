@@ -14,6 +14,10 @@ type MapPanel struct {
 	Notes  *widget.Label
 }
 
+func (m *MapPanel) CanvasObject() fyne.CanvasObject {
+	return m.Box
+}
+
 func newMapPanel(app *App) *MapPanel {
 	h := &MapPanel{
 		app:    app,

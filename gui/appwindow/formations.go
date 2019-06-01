@@ -14,6 +14,9 @@ type FormationsPanel struct {
 	Notes  *widget.Label
 }
 
+func (f *FormationsPanel) CanvasObject() fyne.CanvasObject {
+	return f.Box
+}
 func newFormationsPanel(app *App) *FormationsPanel {
 	h := &FormationsPanel{
 		app:    app,

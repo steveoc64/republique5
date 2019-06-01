@@ -34,8 +34,8 @@ type App struct {
 	Phase      string
 
 	// comms and RPC stuff
-	conn   *grpc.ClientConn
-	client rp.GameServiceClient
+	conn       *grpc.ClientConn
+	gameServer rp.GameServiceClient
 
 	// fyne layout and widgets
 	app       fyne.App
@@ -61,7 +61,7 @@ type App struct {
 	audioPort *oto.Player
 }
 
-func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, client rp.GameServiceClient) {
+func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, gameServer rp.GameServiceClient) {
 	a := &App{
 		app:        app,
 		ServerName: servername,
@@ -74,7 +74,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		Expires:    time.Unix(l.Token.Expires.Seconds, 0),
 		Phase:      "Pre Game Setup",
 		conn:       conn,
-		client:     client,
+		gameServer: gameServer,
 	}
 	a.loadUI()
 	a.window.CenterOnScreen()
@@ -103,15 +103,15 @@ func (a *App) loadUI() {
 
 	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil)
 	t := widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.Box),
-		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.Box),
-		widget.NewTabItemWithIcon("Map", theme.ViewFullScreenIcon(), a.mapPanel.Box),
-		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.Box),
-		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.Box),
-		widget.NewTabItemWithIcon("Formation", theme.ContentCopyIcon(), a.formationsPanel.Box),
-		widget.NewTabItemWithIcon("Advance", theme.MailSendIcon(), a.advancePanel.Box),
-		widget.NewTabItemWithIcon("Withdraw", theme.MailReplyIcon(), a.withdrawPanel.Box),
-		widget.NewTabItemWithIcon("Surrender", theme.CancelIcon(), a.surrenderPanel.Box),
+		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Map", theme.ViewFullScreenIcon(), a.mapPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Formation", theme.ContentCopyIcon(), a.formationsPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Advance", theme.MailSendIcon(), a.advancePanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Withdraw", theme.MailReplyIcon(), a.withdrawPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Surrender", theme.CancelIcon(), a.surrenderPanel.CanvasObject()),
 	)
 	t.SetTabLocation(widget.TabLocationLeading)
 	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil),

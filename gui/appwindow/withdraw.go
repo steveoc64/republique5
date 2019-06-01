@@ -14,6 +14,10 @@ type WithdrawPanel struct {
 	Notes  *widget.Label
 }
 
+func (w *WithdrawPanel) CanvasObject() fyne.CanvasObject {
+	return w.Box
+}
+
 func newWithdrawPanel(app *App) *WithdrawPanel {
 	h := &WithdrawPanel{
 		app:    app,

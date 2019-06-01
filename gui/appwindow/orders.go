@@ -15,6 +15,10 @@ type OrdersPanel struct {
 	Notes  *widget.Label
 }
 
+func (o *OrdersPanel) CanvasObject() fyne.CanvasObject {
+	return o.Box
+}
+
 func newOrdersPanel(app *App) *OrdersPanel {
 	h := &OrdersPanel{
 		app:    app,

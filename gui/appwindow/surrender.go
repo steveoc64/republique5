@@ -14,6 +14,10 @@ type SurrenderPanel struct {
 	Notes  *widget.Label
 }
 
+func (s *SurrenderPanel) CanvasObject() fyne.CanvasObject {
+	return s.Box
+}
+
 func newSurrenderPanel(app *App) *SurrenderPanel {
 	h := &SurrenderPanel{
 		app:    app,

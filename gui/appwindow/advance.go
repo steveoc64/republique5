@@ -14,6 +14,10 @@ type AdvancePanel struct {
 	Notes  *widget.Label
 }
 
+func (a *AdvancePanel) CanvasObject() fyne.CanvasObject {
+	return a.Box
+}
+
 func newAdvancePanel(app *App) *AdvancePanel {
 	h := &AdvancePanel{
 		app:    app,
