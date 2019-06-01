@@ -13,18 +13,21 @@ import (
 	"time"
 )
 
+// DB is the controller for all BoltDB operations
 type DB struct {
 	log      *logrus.Logger
 	db       *bolt.DB
 	filename string
 }
 
+// Error declarations
 var (
 	ErrNoGameBucket = errors.New("No game bucket")
 	ErrPutData      = errors.New("Put data")
 	ErrProtoMarshal = errors.New("Marshal data")
 )
 
+// OpenReadDB opens a BoltDB for reading
 func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
 	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
 	if _, err := os.Stat(filename); err == os.ErrExist {
@@ -46,6 +49,7 @@ func OpenReadDB(log *logrus.Logger, name string) (*DB, error) {
 	}, nil
 }
 
+// OpenDB opens a BoltDB for writing
 func OpenDB(log *logrus.Logger, name string) (*DB, error) {
 	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
 	if _, err := os.Stat(filename); err == os.ErrExist {
@@ -67,6 +71,7 @@ func OpenDB(log *logrus.Logger, name string) (*DB, error) {
 	}, nil
 }
 
+// NewDB returns a new instance of a DB
 func NewDB(log *logrus.Logger, name string) *DB {
 	filename := filepath.Join(os.Getenv("HOME"), ".republique", name)
 
@@ -104,6 +109,7 @@ func NewDB(log *logrus.Logger, name string) *DB {
 	}
 }
 
+// Save writes a record to the DB
 func (store *DB) Save(bucket, key string, data proto.Message) error {
 	t1 := time.Now()
 	err := store.db.Update(func(tx *bolt.Tx) error {
@@ -132,6 +138,7 @@ func (store *DB) Save(bucket, key string, data proto.Message) error {
 	return err
 }
 
+// Load loads a record from the DB
 func (store *DB) Load(bucket, key string, data proto.Message) error {
 	// retrieve the data
 	t1 := time.Now()
@@ -149,6 +156,7 @@ func (store *DB) Load(bucket, key string, data proto.Message) error {
 	})
 }
 
+// Close closes off a DB
 func (store *DB) Close() error {
 	return store.db.Close()
 }

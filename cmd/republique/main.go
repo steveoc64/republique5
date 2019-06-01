@@ -17,8 +17,7 @@ Usage: republique command
 commands:
 	compile [filenames]
 	serve -port RPCPort -web WebPort -game FileName
-	info GameName
-`)
+	info GameName`)
 }
 
 func main() {

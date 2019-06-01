@@ -22,7 +22,7 @@ type Server struct {
 	mTokenCache sync.RWMutex
 }
 
-// New returns a new republique server
+// NewServer returns a new republique server
 func NewServer(log *logrus.Logger, version string, filename string, port int, web int) (*Server, error) {
 	// load the DB
 	if !strings.HasSuffix(filename, ".db") {
@@ -51,7 +51,7 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 	}, nil
 }
 
-// Run runs a republique server
+// Serve runs a game
 func (s *Server) Serve() {
 	s.log.WithFields(logrus.Fields{
 		"version":  s.version,

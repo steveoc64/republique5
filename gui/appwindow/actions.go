@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// ActionsPanel controls the actions
 type ActionsPanel struct {
 	app *App
 	Box *fyne.Container
@@ -15,10 +16,12 @@ type ActionsPanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject gets the top level canvas object
 func (a *ActionsPanel) CanvasObject() fyne.CanvasObject {
 	return a.Box
 }
 
+// newActionsPanel is a pvt function to get a new ActionsPanel
 func newActionsPanel(app *App) *ActionsPanel {
 	h := &ActionsPanel{
 		app:    app,

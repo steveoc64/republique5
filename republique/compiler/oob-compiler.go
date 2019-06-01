@@ -48,7 +48,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 		}
 		year, err = strconv.Atoi(w[1])
 		if err != nil || year == 0 {
-			return 0, CompilerError{k + 1, filename, fmt.Sprintf("%s - invalid year '%v'", strings.Join(w, " "))}
+			return 0, CompilerError{k + 1, filename, fmt.Sprintf("%s - invalid year '%v'", strings.Join(w, " "), v)}
 		}
 		return year, nil
 	}
@@ -473,7 +473,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 				unit.Arm = rp.Arm_ARTILLERY
 				unit.UnitType = rp.UnitType_ARTILLERY_HORSE
 			case strings.Contains(params, "light"),
-				strings.Contains(params, "fusiliers"),
+				strings.Contains(params, "fusilier"),
 				strings.Contains(params, "jager"):
 				unit.Arm = rp.Arm_INFANTRY
 				unit.UnitType = rp.UnitType_INFANTRY_LIGHT

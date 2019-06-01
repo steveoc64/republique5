@@ -49,7 +49,6 @@ func (u *UnitsPanel) commanderButton(command *rp.Command, corps bool) *widget.Bu
 		})
 		return b
 	}
-	return nil
 }
 
 func (u *UnitsPanel) unitLabel(spacer string, unit *rp.Unit) *widget.Label {
