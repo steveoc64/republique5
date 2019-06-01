@@ -1,23 +1,24 @@
 package republique
 
 import (
+	"github.com/sirupsen/logrus"
 	"github.com/steveoc64/republique5/db"
 	rp "github.com/steveoc64/republique5/proto"
 	"strings"
-
-	"github.com/sirupsen/logrus"
+	"sync"
 )
 
 type Server struct {
-	log        *logrus.Logger
-	version    string
-	filename   string
-	port       int
-	web        int
-	game       *rp.Game
-	db         *db.DB
-	stopWatch  int64
-	tokenCache map[string]*rp.Player
+	log         *logrus.Logger
+	version     string
+	filename    string
+	port        int
+	web         int
+	game        *rp.Game
+	db          *db.DB
+	stopWatch   int64
+	tokenCache  map[string]*rp.Player
+	mTokenCache sync.RWMutex
 }
 
 // New returns a new republique server

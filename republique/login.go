@@ -20,7 +20,9 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 			for _, player := range team.Players {
 				if player.AccessCode == req.PlayerCode {
 					player.Token = rp.NewToken()
+					s.mTokenCache.Lock()
 					s.tokenCache[player.Token.GetId()] = player
+					s.mTokenCache.Unlock()
 					s.db.Save("game", "state", s.game)
 					rsp := &rp.LoginResponse{
 						Welcome:    "welcome",

@@ -1,7 +1,6 @@
 package republique
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"time"
 
 	"github.com/micro/protobuf/ptypes"
@@ -10,6 +9,9 @@ import (
 )
 
 func (s *Server) Auth(token string) (*rp.Player, error) {
+	s.mTokenCache.RLock()
+	defer s.mTokenCache.RUnlock()
+
 	p, ok := s.tokenCache[token]
 	if !ok {
 		return nil, errUnauthorised
@@ -37,6 +39,5 @@ func NewTokenCache(game *rp.Game) map[string]*rp.Player {
 			}
 		}
 	}
-	spew.Dump("token cache", tokenCache)
 	return tokenCache
 }
