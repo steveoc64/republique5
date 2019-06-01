@@ -14,6 +14,8 @@ func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginRespon
 		"Player": req.PlayerCode,
 	}).Info("Login gRPC")
 	// check the team code
+	s.Lock()
+	defer s.Unlock()
 	for _, team := range s.game.Scenario.GetTeams() {
 		if team.AccessCode == req.TeamCode {
 			// check the player code

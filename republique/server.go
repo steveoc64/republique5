@@ -9,6 +9,7 @@ import (
 )
 
 type Server struct {
+	sync.RWMutex
 	log         *logrus.Logger
 	version     string
 	filename    string

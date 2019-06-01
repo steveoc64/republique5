@@ -7,7 +7,6 @@ import "google/protobuf/timestamp.proto";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RPCs
 service GameService {
-  rpc Echo(StringMessage) returns (StringMessage) {}
   rpc Version(EmptyMessage) returns (StringMessage) {}
   rpc Login(LoginMessage) returns (LoginResponse) {}
   rpc GameTime(TokenMessage) returns (GameTimeResponse) {}

@@ -9,6 +9,8 @@ import (
 )
 
 func (s *Server) GetUnits(c context.Context, req *rp.TokenMessage) (*rp.Units, error) {
+	s.RLock()
+	defer s.RUnlock()
 	player, err := s.Auth(req.Id)
 	if err != nil {
 		return nil, err
