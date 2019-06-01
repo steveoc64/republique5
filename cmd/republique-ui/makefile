@@ -6,17 +6,18 @@ install: bundle.go
 run: install
 	republique-ui
 
-bundle.go: republique.png
-	fynce bundle republique.png > bundle.go
+bundle.go: *.png *.jpg
+	#fyne bundle republique.png > bundle.go
+	fyne bundle icon.jpg > bundle.go
 
 build: bundle.go
 	go build ./...
 
 package-darwin: bundle.go
 	GOOS=darwin go build ./...
-	fyne package -os darwin -icon republique.png
+	fyne package -os darwin -icon icon.jpg
 
 package-linux: bundle.go
 	GOOS=linux go build ./...
-	fyne package -os linux -icon republique.png
+	fyne package -os linux -icon icon.jpg
 

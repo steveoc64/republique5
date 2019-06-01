@@ -1,13 +1,14 @@
 package appwindow
 
 import (
-	"fyne.io/fyne/theme"
-	rp "github.com/steveoc64/republique5/proto"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
 	"path/filepath"
 	"time"
+
+	"fyne.io/fyne/theme"
+	rp "github.com/steveoc64/republique5/proto"
 
 	"google.golang.org/grpc"
 
@@ -20,11 +21,7 @@ import (
 )
 
 type App struct {
-	app    fyne.App
-	window fyne.Window
-	conn   *grpc.ClientConn
-	client rp.GameServiceClient
-
+	// game state
 	ServerName string
 	GameName   string
 	GameTime   time.Time
@@ -36,8 +33,18 @@ type App struct {
 	Expires    time.Time
 	Phase      string
 
-	layout          fyne.Layout
-	container       *fyne.Container
+	// comms and RPC stuff
+	conn   *grpc.ClientConn
+	client rp.GameServiceClient
+
+	// fyne layout and widgets
+	app       fyne.App
+	window    fyne.Window
+	img       *canvas.Image
+	layout    fyne.Layout
+	container *fyne.Container
+
+	// panels in the tab container
 	header          *HeaderBar
 	footer          *FooterBar
 	briefingPanel   *BriefingPanel
@@ -50,8 +57,7 @@ type App struct {
 	withdrawPanel   *WithdrawPanel
 	surrenderPanel  *SurrenderPanel
 
-	splashPanel *fyne.Container
-
+	// audio bits
 	audioPort *oto.Player
 }
 
@@ -82,17 +88,7 @@ func (a *App) loadUI() {
 	a.window.SetOnClosed(func() { os.Exit(0) })
 	a.header = newHeaderBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
-
-	img := canvas.NewImageFromResource(resourceBannerJpg)
-	a.splashPanel = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		img,
-		widget.NewLabelWithStyle("Republique 5.0",
-			fyne.TextAlignCenter,
-			fyne.TextStyle{Bold: true, Italic: false}),
-		widget.NewLabelWithStyle("Augmented Tabletop Miniatures",
-			fyne.TextAlignCenter,
-			fyne.TextStyle{Bold: false, Italic: true}),
-	)
+	a.img = canvas.NewImageFromResource(resourceBannerJpg)
 
 	// Create the panels that go in the middle of the container, and then hide them
 	a.briefingPanel = newBriefingPanel(a)
@@ -104,9 +100,6 @@ func (a *App) loadUI() {
 	a.advancePanel = newAdvancePanel(a)
 	a.withdrawPanel = newWithdrawPanel(a)
 	a.surrenderPanel = newSurrenderPanel(a)
-
-	a.briefingPanel.Box.Hide()
-	a.actionsPanel.Box.Hide()
 
 	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil)
 	t := widget.NewTabContainer(
