@@ -6,7 +6,7 @@ install: bundle.go
 run: install
 	republique-ui
 
-bundle.go: *.png *.jpg
+bundle.go: *.jpg
 	#fyne bundle republique.png > bundle.go
 	fyne bundle icon.jpg > bundle.go
 

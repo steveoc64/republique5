@@ -106,10 +106,10 @@ func (a *App) loadUI() {
 	a.layout = layout.NewBorderLayout(a.header.CanvasObject(), a.footer.CanvasObject(), nil, nil)
 	t := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Map", theme.ViewFullScreenIcon(), a.mapPanel.CanvasObject()),
-		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
-		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Formation", theme.ContentCopyIcon(), a.formationsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Advance", theme.MailSendIcon(), a.advancePanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Withdraw", theme.MailReplyIcon(), a.withdrawPanel.CanvasObject()),
@@ -128,7 +128,7 @@ func (a *App) loadUI() {
 }
 
 func (a *App) MinSize() fyne.Size {
-	return fyne.NewSize(1024, 800)
+	return fyne.NewSize(1280, 900)
 }
 
 func (a *App) typedRune(r rune) {

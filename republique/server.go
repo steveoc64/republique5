@@ -32,20 +32,22 @@ func NewServer(log *logrus.Logger, version string, filename string, port int, we
 	if err != nil {
 		return nil, err
 	}
-	data := &rp.Game{}
-	err = db.Load("game", "state", data)
+	gameData := &rp.Game{}
+	err = db.Load("game", "state", gameData)
 	if err != nil {
 		return nil, err
 	}
+	gameData.InitGameState()
+
 	return &Server{
 		log:        log,
 		version:    version,
 		filename:   filename,
 		port:       port,
 		web:        web,
-		game:       data,
+		game:       gameData,
 		db:         db,
-		tokenCache: NewTokenCache(data),
+		tokenCache: NewTokenCache(gameData),
 	}, nil
 }
 

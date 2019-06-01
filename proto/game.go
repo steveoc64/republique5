@@ -1,6 +1,12 @@
 package republique
 
+// GenerateIDs loops through all the commanders and units in a game
+// and stamps unique sequential IDs on each unit.
+// This should only be used after compilation.
 func (g *Game) GenerateIDs() {
+	if g.TurnNumber > 0 {
+		return
+	}
 	var cID, ccID, uID int32
 	for _, team := range g.GetScenario().GetTeams() {
 		for _, command := range team.GetCommands() {
@@ -22,6 +28,40 @@ func (g *Game) GenerateIDs() {
 					uID++
 				}
 				ccID += 10
+			}
+
+		}
+
+	}
+}
+
+// InitGameState will loop through the commanders and units in a game
+// and set the GameState to defaults based upon the arrival data.
+// This is only intended to be run on loading a game in the game server.
+// It will return with no changes if the game has already started.
+func (g *Game) InitGameState() {
+	if g.TurnNumber > 0 {
+		return
+	}
+	for _, team := range g.GetScenario().GetTeams() {
+		for _, command := range team.GetCommands() {
+			command.initState(nil, false)
+			for _, unit := range command.Units {
+				unit.initState(command, false)
+			}
+			numInf := 0
+			for _, subCommand := range command.GetSubcommands() {
+				standDown := false
+				if subCommand.Arm == Arm_INFANTRY {
+					numInf++
+					if numInf > 1 {
+						standDown = true
+					}
+				}
+				subCommand.initState(command, standDown)
+				for _, unit := range subCommand.Units {
+					unit.initState(command, standDown)
+				}
 			}
 
 		}

@@ -132,7 +132,7 @@ message CommandGameState {
   int32 turn = 1;
   Grid grid = 2;
   BattlefieldPosition position = 3;
-  string formation = 4;
+  Formation formation = 4;
   int32 panicState = 5;
   bool injured = 6;
   string objectiveName = 7;
@@ -254,11 +254,14 @@ enum Formation {
   RESERVE = 0;
   MARCH_COLUMN = 1;
   ATTACK_COLUMN = 2;
-  LINE = 3;
-  ECHELON = 4;
-  SUPPORTING_LINES = 5;
-  DEBANDE = 6;
-  FORTIFIED = 7;
+  CLOSED_COLUMN = 3;
+  LINE = 4;
+  ECHELON = 5;
+  SUPPORTING_LINES = 6;
+  DEBANDE = 7;
+  FORTIFIED = 8;
+  COLUMN = 9;
+  DOUBLE_LINE = 10;
 }
 
 enum Rank {
@@ -336,6 +339,7 @@ enum BattlefieldPosition {
   LEFT = 1;
   CENTRE = 2;
   RIGHT = 3;
+  OFF_BOARD = 4;
 }
 
 enum Phase {
