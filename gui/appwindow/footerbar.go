@@ -1,6 +1,7 @@
 package appwindow
 
 import (
+	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
@@ -15,6 +16,10 @@ type FooterBar struct {
 	PhaseLabel *widget.Label
 	DoneBtn    *widget.Button
 	StopWatch  *widget.Label
+}
+
+func (f *FooterBar) CanvasObject() fyne.CanvasObject {
+	return f.Box
 }
 
 func newFooterBar(app *App, onDone func(bool)) *FooterBar {

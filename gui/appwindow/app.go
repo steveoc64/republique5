@@ -38,11 +38,12 @@ type App struct {
 	gameServer rp.GameServiceClient
 
 	// fyne layout and widgets
-	app       fyne.App
-	window    fyne.Window
-	img       *canvas.Image
-	layout    fyne.Layout
-	container *fyne.Container
+	app         fyne.App
+	window      fyne.Window
+	img         *canvas.Image
+	layout      fyne.Layout
+	container   *fyne.Container
+	isDarkTheme bool
 
 	// panels in the tab container
 	header          *HeaderBar
@@ -63,18 +64,19 @@ type App struct {
 
 func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, gameServer rp.GameServiceClient) {
 	a := &App{
-		app:        app,
-		ServerName: servername,
-		GameName:   l.GameName,
-		GameTime:   time.Unix(l.GameTime.Seconds, 0),
-		Briefing:   l.Briefing,
-		Commanders: l.Commanders,
-		TeamName:   l.TeamName,
-		Token:      rp.TokenMessage{Id: l.Token.Id},
-		Expires:    time.Unix(l.Token.Expires.Seconds, 0),
-		Phase:      "Pre Game Setup",
-		conn:       conn,
-		gameServer: gameServer,
+		app:         app,
+		ServerName:  servername,
+		GameName:    l.GameName,
+		GameTime:    time.Unix(l.GameTime.Seconds, 0),
+		Briefing:    l.Briefing,
+		Commanders:  l.Commanders,
+		TeamName:    l.TeamName,
+		Token:       rp.TokenMessage{Id: l.Token.Id},
+		Expires:     time.Unix(l.Token.Expires.Seconds, 0),
+		Phase:       "Pre Game Setup",
+		conn:        conn,
+		gameServer:  gameServer,
+		isDarkTheme: true,
 	}
 	a.loadUI()
 	a.window.CenterOnScreen()
@@ -101,7 +103,7 @@ func (a *App) loadUI() {
 	a.withdrawPanel = newWithdrawPanel(a)
 	a.surrenderPanel = newSurrenderPanel(a)
 
-	a.layout = layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil)
+	a.layout = layout.NewBorderLayout(a.header.CanvasObject(), a.footer.CanvasObject(), nil, nil)
 	t := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.CanvasObject()),
@@ -151,4 +153,13 @@ func (a *App) loadImage(name string) *canvas.Image {
 		return canvas.NewImageFromFile(f)
 	}
 	return nil
+}
+
+func (a *App) ToggleTheme() {
+	a.isDarkTheme = !a.isDarkTheme
+	if a.isDarkTheme {
+		a.app.Settings().SetTheme(theme.DarkTheme())
+	} else {
+		a.app.Settings().SetTheme(theme.LightTheme())
+	}
 }
