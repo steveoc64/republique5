@@ -20,7 +20,7 @@ func newBriefingPanel(app *App) *BriefingPanel {
 		Header: widget.NewLabel("Briefing for: " + strings.Join(app.Commanders, ", ")),
 		Notes:  widget.NewLabel(app.Briefing),
 	}
-	img := app.loadImage("banner")
+	img := canvas.NewImageFromResource(resourceBannerJpg)
 	img.FillMode = canvas.ImageFillOriginal
 	h.Box = widget.NewVBox(
 		img,

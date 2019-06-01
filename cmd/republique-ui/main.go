@@ -9,6 +9,7 @@ import (
 
 func main() {
 	app := app.New()
+	app.SetIcon(resourceRepubliquePng)
 
 	servername := "localhost:1815"
 	if len(os.Args) == 2 {

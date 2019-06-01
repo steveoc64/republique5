@@ -83,8 +83,7 @@ func (a *App) loadUI() {
 	a.header = newHeaderBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 
-	img := a.loadImage("banner")
-	img.FillMode = canvas.ImageFillStretch
+	img := canvas.NewImageFromResource(resourceBannerJpg)
 	a.splashPanel = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
 		img,
 		widget.NewLabelWithStyle("Republique 5.0",
