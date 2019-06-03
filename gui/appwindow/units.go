@@ -105,6 +105,10 @@ type UnitLabel struct {
 	OnTapped func()
 }
 
+func (ul *UnitLabel) Hidex() {
+	println("getting a hide call")
+}
+
 // Tapped handler for each unitlabel
 func (ul *UnitLabel) Tapped(*fyne.PointEvent) {
 	println("Clicked on a unit label")
@@ -117,7 +121,7 @@ func (ul *UnitLabel) TappedSecondary(*fyne.PointEvent) {
 	println("tapped secondary")
 }
 
-func NewUnitLabelWithStyle(text string, alignment fyne.TextAlign, style fyne.TextStyle, tapped func()) *UnitLabel {
+func newUnitLabel(text string, alignment fyne.TextAlign, style fyne.TextStyle, tapped func()) *UnitLabel {
 	return &UnitLabel{
 		widget.Label{
 			Text:      text,
@@ -137,7 +141,7 @@ func (u *UnitsPanel) unitAction(unit *rp.Unit) {
 // newUnitLabel returns a new unitLabel
 func (u *UnitsPanel) newUnitLabel(spacer string, unit *rp.Unit) *UnitLabel {
 	st := fyne.TextStyle{Italic: unit.Arm == rp.Arm_CAVALRY, Bold: unit.Arm == rp.Arm_ARTILLERY, Monospace: unit.Arm == rp.Arm_INFANTRY}
-	return NewUnitLabelWithStyle(spacer+unit.LabelString(), fyne.TextAlignLeading, st, func() {
+	return newUnitLabel(spacer+unit.LabelString(), fyne.TextAlignLeading, st, func() {
 		u.unitAction(unit)
 	})
 }
