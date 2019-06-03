@@ -143,6 +143,9 @@ message CommandGameState {
   bool hasRallied = 12;
   google.protobuf.Timestamp timestamp = 13;
   Grid objective = 14;
+  bool canOrder = 15;
+  bool canMove = 16;
+  bool canRally = 17;
 }
 
 message Arrival {

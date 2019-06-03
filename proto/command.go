@@ -67,5 +67,6 @@ func (c *Command) initState(parent *Command, standDown bool) {
 	c.GameState = &CommandGameState{
 		Position:  pos,
 		Formation: form,
+		CanOrder:  true,
 	}
 }
