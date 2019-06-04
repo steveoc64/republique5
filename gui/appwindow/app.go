@@ -32,6 +32,7 @@ type App struct {
 	Token      rp.TokenMessage
 	Expires    time.Time
 	Phase      string
+	MapData    *rp.MapData
 
 	// comms and RPC stuff
 	conn       *grpc.ClientConn

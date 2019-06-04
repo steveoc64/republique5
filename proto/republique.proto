@@ -12,6 +12,7 @@ service GameService {
   rpc GameTime(TokenMessage) returns (GameTimeResponse) {}
 
   rpc GetUnits(TokenMessage) returns (Units) {}
+  rpc GetMap(TokenMessage) returns (MapData) {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +48,13 @@ message LoginResponse {
   string gameName = 6;
   Token token = 7;
   google.protobuf.Timestamp gameTime = 8;
+}
+
+message MapData {
+  int32 x = 1;
+  int32 y = 2;
+  string data = 3;
+  MapSide side = 4;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,6 +173,7 @@ message Team {
   string accessCode = 4;
   repeated Player players = 5;
   string gameName = 6;
+  MapSide side = 7;
 }
 
 // TODO - add some public key enc / tokens to this
@@ -356,4 +365,11 @@ enum Phase {
   FIRING2 = 7;
   ASSAULT2 = 8;
   PANIC2 = 9;
+}
+
+enum MapSide {
+  FRONT = 0;
+  LEFT_FLANK = 1;
+  RIGHT_FLANK = 2;
+  TOP = 3;
 }

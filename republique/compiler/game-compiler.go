@@ -51,7 +51,6 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 
 	// scan for !commands
 	for k, v = range lines {
-		println("kvm", k, v, tableMode, tableLine, v)
 		if tableMode {
 			if tableLine == 0 && v[0] != '-' {
 				tableMode = false
@@ -152,14 +151,43 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				teamname := words[0]
 				teamwords := strings.Split(v, " - ")
 				teamgamename := game.Name
-				if len(teamwords) == 2 {
-					teamname = teamwords[0]
-					teamgamename = teamwords[1]
+				teamside := rp.MapSide_FRONT
+				if len(teamwords) != 2 {
+					return nil, CompilerError{k + 1,
+						filename,
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
 				}
+				teamname = teamwords[0]
+				teamgamename = teamwords[1]
+				// extract the mapside
+				l1 := strings.Index(teamgamename, "(")
+				l2 := strings.Index(teamgamename, ")")
+				if l1 == -1 || l2 == -1 {
+					return nil, CompilerError{k + 1,
+						filename,
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
+				}
+				sidename := strings.ToLower(teamgamename[l1+1 : l2])
+				switch sidename {
+				case "front":
+					teamside = rp.MapSide_FRONT
+				case "top":
+					teamside = rp.MapSide_TOP
+				case "left":
+					teamside = rp.MapSide_LEFT_FLANK
+				case "right":
+					teamside = rp.MapSide_RIGHT_FLANK
+				default:
+					return nil, CompilerError{k + 1,
+						filename,
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
+				}
+				teamgamename = teamgamename[:l1-1]
 				for _, team := range game.Scenario.Teams {
 					if team.Name == teamname {
 						currentTeam = team
 						team.GameName = teamgamename
+						team.Side = teamside
 						break
 					}
 				}

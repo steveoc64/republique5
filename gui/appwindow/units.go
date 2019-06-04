@@ -121,6 +121,10 @@ func (ul *UnitLabel) TappedSecondary(*fyne.PointEvent) {
 	println("tapped secondary")
 }
 
+func (ul *UnitLabel) CreateRenderer() fyne.WidgetRenderer {
+	return widget.Renderer(&ul.Label)
+}
+
 func newUnitLabel(text string, alignment fyne.TextAlign, style fyne.TextStyle, tapped func()) *UnitLabel {
 	return &UnitLabel{
 		widget.Label{
