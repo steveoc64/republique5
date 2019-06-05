@@ -53,6 +53,7 @@ func (u *UnitOverview) build() {
 			}
 		}
 	}
+	widget.Renderer(u.box).Layout(u.box.MinSize())
 }
 
 // commanderAction is the click handler for each commander button
