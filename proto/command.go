@@ -24,6 +24,12 @@ func (c *Command) LabelString() string {
 // BattleFormation returns the default battle formation
 // for a command, based on its drill rating
 func (c *Command) BattleFormation() Formation {
+	switch c.Arm {
+	case Arm_ARTILLERY:
+		return Formation_LINE
+	case Arm_CAVALRY:
+		return Formation_COLUMN
+	}
 	switch c.Drill {
 	case Drill_LINEAR:
 		if c.Grade > UnitGrade_REGULAR {

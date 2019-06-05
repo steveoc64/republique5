@@ -34,11 +34,11 @@ func newFormationsPanel(app *App) *FormationsPanel {
 	n3.Alignment = fyne.TextAlignCenter
 	i3 := canvas.NewImageFromResource(resourceAttackcolumnJpg)
 	i3.FillMode = canvas.ImageFillOriginal
-	n4 := widget.NewLabel("March Column - Fastest - Least Fatigue - Slow to Deploy to other formations")
+	n4 := widget.NewLabel("March Column - Fastest - Poor Defence - Slow to Deploy to other formations")
 	n4.Alignment = fyne.TextAlignCenter
 	i4 := canvas.NewImageFromResource(resourceMarchcolumnJpg)
 	i4.FillMode = canvas.ImageFillOriginal
-	n5 := widget.NewLabel("Echelon - Maximum Firepower - Good Flank Defence")
+	n5 := widget.NewLabel("Echelon - Good Firepower - Good Flank Defence")
 	n5.Alignment = fyne.TextAlignCenter
 	i5 := canvas.NewImageFromResource(resourceEchelonJpg)
 	i5.FillMode = canvas.ImageFillOriginal

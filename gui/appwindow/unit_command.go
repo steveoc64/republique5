@@ -49,6 +49,7 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 		box:   widget.NewVBox(),
 	}
 	u.box.Append(canvas.NewImageFromResource(resourceCmdLineJpg))
+	u.box.Append(widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	u.box.Append(u.form)
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
@@ -83,23 +84,24 @@ func (u *UnitCommand) setField(name, value string) {
 }
 
 func (u *UnitCommand) Populate(command *rp.Command) {
-	println("populating", command.Name)
 	img := u.box.Children[0].(*canvas.Image)
-	println("image is", img.Resource.Name())
+	lbl := u.box.Children[1].(*widget.Label)
 	switch command.GameState.Formation {
 	case rp.Formation_LINE:
 		img.Resource = resourceCmdLineJpg
+		lbl.SetText("Formed by Lines of Brigades")
 	case rp.Formation_DOUBLE_LINE:
 		img.Resource = resourceCmdDoubleJpg
+		lbl.SetText("Formed by Double Lines of Brigades")
 	case rp.Formation_COLUMN:
 		img.Resource = resourceCmdColJpg
+		lbl.SetText("Formed by Columns of Brigades")
 	case rp.Formation_MARCH_COLUMN:
 		img.Resource = resourceCmdMcolJpg
+		lbl.SetText("In March Column")
 	}
 	img.FillMode = canvas.ImageFillOriginal
 	img.Show()
-	println("image changed to", img.Resource.Name(), command.GameState.Formation.String())
-	widget.Renderer(u.box).Refresh()
 	u.setField("ID", fmt.Sprintf("%d", command.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
 		command.GameState.GetGrid().GetX(),
