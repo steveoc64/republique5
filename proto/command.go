@@ -70,6 +70,14 @@ func (c *Command) initState(parent *Command, standDown bool) {
 		pos = BattlefieldPosition_REAR
 		form = Formation_COLUMN
 	}
+	if form != Formation_MARCH_COLUMN {
+		switch c.Arm {
+		case Arm_CAVALRY:
+			form = Formation_COLUMN
+		case Arm_ARTILLERY:
+			form = Formation_LINE
+		}
+	}
 	c.GameState = &CommandGameState{
 		Position:  pos,
 		Formation: form,
