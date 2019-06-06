@@ -79,6 +79,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		gameServer:  gameServer,
 		isDarkTheme: true,
 	}
+	a.ToggleTheme()
 	a.loadUI()
 	a.window.CenterOnScreen()
 	a.window.Show()
@@ -163,4 +164,5 @@ func (a *App) ToggleTheme() {
 	} else {
 		a.app.Settings().SetTheme(theme.LightTheme())
 	}
+	//a.mapPanel.CanvasObject().Show()
 }

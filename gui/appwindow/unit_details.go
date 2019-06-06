@@ -2,6 +2,9 @@ package appwindow
 
 import (
 	"fmt"
+	"fyne.io/fyne/theme"
+	"image/color"
+	"math/rand"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -25,7 +28,7 @@ type UnitDetails struct {
 	box    *widget.Box
 	form   *widget.Form
 	scroll *widget.ScrollContainer
-	fields map[string]*widget.Entry
+	fields map[string]*canvas.Text
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -41,7 +44,9 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 		form:  widget.NewForm(),
 		box: widget.NewVBox(
 			canvas.NewImageFromResource(resourceLineJpg),
-			widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})),
+			//widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})),
+			canvas.NewText("Formation", theme.PrimaryColor()),
+		),
 	}
 	u.box.Append(u.form)
 	u.scroll = widget.NewScrollContainer(u.box)
@@ -52,8 +57,11 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 }
 
 func (u *UnitDetails) newItem(label string) *widget.FormItem {
-	e := widget.NewEntry()
-	e.ReadOnly = true
+	//e := widget.NewEntry()
+	//e.ReadOnly = true
+	e := canvas.NewText("", color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), uint8(rand.Intn(200)), 1})
+	e.TextSize = 10 + rand.Intn(20)
+
 	u.fields[label] = e
 	return &widget.FormItem{
 		Text:   label,
@@ -63,7 +71,7 @@ func (u *UnitDetails) newItem(label string) *widget.FormItem {
 
 // build re-builds the overview to match the app data
 func (u *UnitDetails) build() {
-	u.fields = make(map[string]*widget.Entry)
+	u.fields = make(map[string]*canvas.Text)
 	for _, v := range UnitFieldNames {
 		u.form.AppendItem(u.newItem(v))
 	}
@@ -72,32 +80,33 @@ func (u *UnitDetails) build() {
 
 func (u *UnitDetails) setField(name, value string) {
 	if e, ok := u.fields[name]; ok {
-		e.SetText(value)
+		//e.SetText(value)
+		e.Text = value
 	}
 }
 func (u *UnitDetails) Populate(unit *rp.Unit) {
 	println("populating unit", unit.Name)
 	img := u.box.Children[0].(*canvas.Image)
-	lbl := u.box.Children[1].(*widget.Label)
+	lbl := u.box.Children[1].(*canvas.Text)
 	switch unit.GameState.Formation {
 	case rp.Formation_LINE:
 		img.Resource = resourceLineJpg
-		lbl.SetText("Line Formation")
+		lbl.Text = "Line Formation"
 	case rp.Formation_ATTACK_COLUMN, rp.Formation_CLOSED_COLUMN:
 		img.Resource = resourceAttackcolumnJpg
-		lbl.SetText("Attack Columns")
+		lbl.Text = "Attack Columns"
 	case rp.Formation_MARCH_COLUMN:
 		img.Resource = resourceMarchcolumnJpg
-		lbl.SetText("March Column")
+		lbl.Text = "March Column"
 	case rp.Formation_SUPPORTING_LINES:
 		img.Resource = resourceSupportingJpg
-		lbl.SetText("Supporting Lines")
+		lbl.Text = "Supporting Lines"
 	case rp.Formation_DEBANDE:
 		img.Resource = resourceDebandeJpg
-		lbl.SetText("Debande")
+		lbl.Text = "Debande"
 	case rp.Formation_ECHELON:
 		img.Resource = resourceEchelonJpg
-		lbl.SetText("Echelon")
+		lbl.Text = "Echelon"
 
 	}
 	img.FillMode = canvas.ImageFillOriginal
