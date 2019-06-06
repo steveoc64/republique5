@@ -12,6 +12,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// NewAccessCode generates a random access code and returns it as a string
 func NewAccessCode() string {
 	a := make([]byte, 4, 4)
 	for i := 0; i < 4; i++ {
@@ -20,6 +21,7 @@ func NewAccessCode() string {
 	return string(a)
 }
 
+// CompileGame reads a game file and returns a compiled game
 func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 	rand.Seed(time.Now().UnixNano())
 	lines, err := c.load(filename)
@@ -155,7 +157,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				if len(teamwords) != 2 {
 					return nil, CompilerError{k + 1,
 						filename,
-						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
 				teamname = teamwords[0]
 				teamgamename = teamwords[1]
@@ -165,7 +167,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				if l1 == -1 || l2 == -1 {
 					return nil, CompilerError{k + 1,
 						filename,
-						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
 				sidename := strings.ToLower(teamgamename[l1+1 : l2])
 				switch sidename {
@@ -180,7 +182,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				default:
 					return nil, CompilerError{k + 1,
 						filename,
-						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)")}
+						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
 				teamgamename = teamgamename[:l1-1]
 				for _, team := range game.Scenario.Teams {

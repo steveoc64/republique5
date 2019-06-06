@@ -12,6 +12,7 @@ import (
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
+// ComplieScenario reads a scenario file and returns a compiled scenario
 func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 	lines, err := c.load(filename)
 	if err != nil {

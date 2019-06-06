@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// CompileOOB reads an oob file and returns a compiled OOB
 func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 	lines, err := c.load(filename)
 	if err != nil {

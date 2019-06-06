@@ -79,7 +79,7 @@ func newMapPanel(app *App) *MapPanel {
 			c = color.RGBA{104, 92, 61, 1}
 		}
 		r := canvas.NewRectangle(c)
-		r.SetMinSize(fyne.Size{64, 64})
+		r.SetMinSize(fyne.Size{Width: 64, Height: 64})
 		m.content.AddObject(r)
 	}
 	m.content.Show()

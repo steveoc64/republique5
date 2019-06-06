@@ -11,16 +11,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// CopmilerError is an error type returned by the compiler suite
 type CompilerError struct {
 	line     int
 	filename string
 	msg      string
 }
 
+// Error returns a string
 func (e CompilerError) Error() string {
 	return fmt.Sprintf("ERROR: Line %d: %s - %s", e.line, e.filename, e.msg)
 }
 
+// Compiler is a holder struct for a compiler type
 type Compiler struct {
 	log *logrus.Logger
 }
@@ -31,6 +34,7 @@ func NewCompiler(log *logrus.Logger) *Compiler {
 	}
 }
 
+// Copmile takes a file and calls the appropriate compiler depending on the filename extension
 func (c *Compiler) Compile(filename string) error {
 	ext := filepath.Ext(filename)
 	shortName := filename[:len(filename)-len(ext)]
