@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// LabesString returns a formatted string for rendering the whole command
+// LabelString returns a formatted string for rendering the whole command
 // in the GUI app
 func (c *Command) LabelString() string {
 	s := fmt.Sprintf("%s - %s [%s]", c.Name, c.CommanderName, upString(strings.ToLower(c.GetGameState().GetPosition().String())))

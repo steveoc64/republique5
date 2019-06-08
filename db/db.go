@@ -145,7 +145,7 @@ func (store *DB) Load(bucket, key string, data proto.Message) error {
 	return store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		if b == nil {
-			return fmt.Errorf("bucket %v not found!", b)
+			return fmt.Errorf("bucket %v not found", b)
 		}
 
 		val := b.Get([]byte(key))

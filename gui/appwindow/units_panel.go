@@ -43,14 +43,19 @@ func newUnitsPanel(app *App) *UnitsPanel {
 	return u
 }
 
+// ShowCommand navigates to the commander details and populates the commander
 func (u *UnitsPanel) ShowCommand(command *rp.Command) {
 	u.Command.Populate(command)
 	u.Tabs.SelectTabIndex(1)
 }
 
+// ShowUnit navigates to the unit details and populates the unit
 func (u *UnitsPanel) ShowUnit(unit *rp.Unit) {
 	u.Details.Populate(unit)
 	u.Tabs.SelectTabIndex(2)
+	if commander := u.app.GetUnitCommander(unit.Id); commander != nil {
+		u.Command.Populate(commander)
+	}
 }
 
 // GetUnits fetches the units from the server

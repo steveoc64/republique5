@@ -12,6 +12,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// UnitFieldNames is a slice of the field names on the units display
 var UnitFieldNames = []string{
 	"ID",
 	"Grid",
@@ -56,6 +57,7 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 	return u
 }
 
+// newItem creates a new form item with the given label
 func (u *UnitDetails) newItem(label string) *widget.FormItem {
 	//e := widget.NewEntry()
 	//e.ReadOnly = true
@@ -78,12 +80,15 @@ func (u *UnitDetails) build() {
 	u.form.Show()
 }
 
+// setField sets the contents of the field given by name
 func (u *UnitDetails) setField(name, value string) {
 	if e, ok := u.fields[name]; ok {
 		//e.SetText(value)
 		e.Text = value
 	}
 }
+
+// Populate refreshes the UnitDetail fields from the given unit data
 func (u *UnitDetails) Populate(unit *rp.Unit) {
 	println("populating unit", unit.Name)
 	img := u.box.Children[0].(*canvas.Image)

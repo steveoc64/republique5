@@ -34,7 +34,6 @@ func newUnitOverview(app *App, panel *UnitsPanel) *UnitOverview {
 	return u
 }
 
-
 // build re-builds the overview to match the app data
 func (u *UnitOverview) build() {
 	u.box.Children = []fyne.CanvasObject{}
@@ -74,12 +73,10 @@ func (u *UnitOverview) newCommanderButton(command *rp.Command, corps bool) *widg
 		})
 		b.Style = widget.PrimaryButton
 		return b
-	} else {
-		b := widget.NewButtonWithIcon("  "+command.LabelString(), orderButton, func() {
-			u.commanderAction(command)
-		})
-		return b
 	}
+	return widget.NewButtonWithIcon("  "+command.LabelString(), orderButton, func() {
+		u.commanderAction(command)
+	})
 }
 
 // unitAction is the click handler for a unit button
@@ -94,6 +91,5 @@ func (u *UnitOverview) newUnitLabel(spacer string, unit *rp.Unit) *TapLabel {
 	t := func() {
 		u.unitAction(unit)
 	}
-	return NewTapLabel(spacer+unit.LabelString(), fyne.TextAlignLeading, st, t,t)
+	return NewTapLabel(spacer+unit.LabelString(), fyne.TextAlignLeading, st, t, t)
 }
-

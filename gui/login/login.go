@@ -39,6 +39,7 @@ type login struct {
 	onLogin   func()
 }
 
+// Show creates a new Login window
 func Show(app fyne.App, servername string) {
 	c := newLogin(app, servername)
 	c.loadUI()

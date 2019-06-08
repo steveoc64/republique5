@@ -10,7 +10,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
-// CommanderFieldNames is a slice of field names for the UnitCommand panel
+// CommandFieldNames is a slice of field names for the UnitCommand panel
 var CommandFieldNames = []string{
 	"ID",
 	"Grid",
@@ -90,7 +90,7 @@ func (u *UnitCommand) setField(name, value string) {
 func (u *UnitCommand) Populate(command *rp.Command) {
 	img := u.box.Children[0].(*canvas.Image)
 	lbl := u.box.Children[1].(*widget.Label)
-	switch command.GameState.Formation {
+	switch command.GetGameState().GetFormation() {
 	case rp.Formation_LINE:
 		img.Resource = resourceCmdLineJpg
 		lbl.SetText("Formed by Lines of Brigades")
@@ -108,25 +108,25 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 	img.Show()
 	u.setField("ID", fmt.Sprintf("%d", command.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
-		command.GameState.GetGrid().GetX(),
-		command.GameState.GetGrid().GetY(),
-		upString(command.GameState.Position.String())))
+		command.GetGameState().GetGrid().GetX(),
+		command.GetGameState().GetGrid().GetY(),
+		upString(command.GetGameState().GetPosition().String())))
 	u.setField("Type", fmt.Sprintf("%s %s %s (%s)",
-		upString(command.Nationality.String()),
-		upString(command.Arm.String()),
-		upString(command.Rank.String()),
-		upString(command.Grade.String())))
-	u.setField("Name", command.Name)
-	u.setField("Notes", command.Notes)
+		upString(command.GetNationality().String()),
+		upString(command.GetArm().String()),
+		upString(command.GetRank().String()),
+		upString(command.GetGrade().String())))
+	u.setField("Name", command.GetName())
+	u.setField("Notes", command.GetNotes())
 	u.setField("Commander", fmt.Sprintf("%s (+%d)",
-		command.CommanderName,
-		command.CommanderBonus))
+		command.GetCommanderName(),
+		command.GetCommanderBonus()))
 	u.setField("Drill", fmt.Sprintf("%s Drill - %s Command",
-		upString(command.Drill.String()),
-		upString(command.CommandRating.String())))
-	u.setField("Reserve", fmt.Sprintf("%v", command.Reserve))
-	u.setField("Can Order", fmt.Sprintf("%v", command.GameState.CanOrder))
-	u.setField("Can Move", fmt.Sprintf("%v", command.GameState.CanMove))
-	u.setField("Can Rally", fmt.Sprintf("%v", command.GameState.CanRally))
-	u.setField("Panic State", fmt.Sprintf("%v", command.GameState.PanicState))
+		upString(command.GetDrill().String()),
+		upString(command.GetCommandRating().String())))
+	u.setField("Reserve", fmt.Sprintf("%v", command.GetReserve()))
+	u.setField("Can Order", fmt.Sprintf("%v", command.GetGameState().GetCanOrder()))
+	u.setField("Can Move", fmt.Sprintf("%v", command.GetGameState().GetCanMove()))
+	u.setField("Can Rally", fmt.Sprintf("%v", command.GetGameState().GetCanRally()))
+	u.setField("Panic State", fmt.Sprintf("%v", command.GetGameState().GetPanicState()))
 }

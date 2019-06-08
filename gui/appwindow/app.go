@@ -171,3 +171,22 @@ func (a *App) ToggleTheme() {
 		a.app.Settings().SetTheme(theme.LightTheme())
 	}
 }
+
+// GetUnitCommander gets the commander for the given unit
+func (a *App) GetUnitCommander(unitID int32) *rp.Command {
+	for _, command := range a.Commands {
+		for _, u := range command.Units {
+			if u.Id == unitID {
+				return command
+			}
+		}
+		for _, subCommand := range command.Subcommands {
+			for _, u := range subCommand.Units {
+				if u.Id == unitID {
+					return subCommand
+				}
+			}
+		}
+	}
+	return nil
+}

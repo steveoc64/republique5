@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// WithdrawPanel is the UI for ordering a general withdrawal
 type WithdrawPanel struct {
 	app *App
 	Box *fyne.Container
@@ -14,10 +15,12 @@ type WithdrawPanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject returns the top level UI for the WithdrawPanel
 func (w *WithdrawPanel) CanvasObject() fyne.CanvasObject {
 	return w.Box
 }
 
+// newWithdrawPanel builds a new WithdrawPanel and returns it
 func newWithdrawPanel(app *App) *WithdrawPanel {
 	h := &WithdrawPanel{
 		app:    app,
