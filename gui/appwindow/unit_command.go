@@ -29,12 +29,14 @@ var CommandFieldNames = []string{
 
 // UnitCommand holds the UI for veiwing units overview
 type UnitCommand struct {
-	app    *App
-	panel  *UnitsPanel
-	box    *widget.Box
-	form   *widget.Form
-	scroll *widget.ScrollContainer
-	fields map[string]*canvas.Text
+	app            *App
+	panel          *UnitsPanel
+	box            *widget.Box
+	form           *widget.Form
+	scroll         *widget.ScrollContainer
+	fields         map[string]*canvas.Text
+	formationImg   *canvas.Image
+	formationLabel *widget.Label
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -45,13 +47,16 @@ func (u *UnitCommand) CanvasObject() fyne.CanvasObject {
 // newUnitCommand return a new UnitCommand
 func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 	u := &UnitCommand{
-		app:   app,
-		panel: panel,
-		form:  widget.NewForm(),
-		box:   widget.NewVBox(),
+		app:            app,
+		panel:          panel,
+		form:           widget.NewForm(),
+		box:            widget.NewVBox(),
+		formationImg:   canvas.NewImageFromResource(resourceCmdLineJpg),
+		formationLabel: widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 	}
-	u.box.Append(canvas.NewImageFromResource(resourceCmdLineJpg))
-	u.box.Append(widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+	u.formationImg.FillMode = canvas.ImageFillOriginal
+	u.box.Append(u.formationImg)
+	u.box.Append(u.formationLabel)
 	u.box.Append(u.form)
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
@@ -91,7 +96,6 @@ func (u *UnitCommand) build() {
 	u.form.AppendItem(u.newItem("Can Move", blue, s, 18))
 	u.form.AppendItem(u.newItem("Can Rally", blue, s, 18))
 	u.form.AppendItem(u.newItem("Panic State", red, s, 18))
-	u.form.Show()
 }
 
 // setField sets the text of the given field, by name
@@ -104,24 +108,21 @@ func (u *UnitCommand) setField(name, value string) {
 
 // Populate refreshes the UnitCommand from the given command data
 func (u *UnitCommand) Populate(command *rp.Command) {
-	img := u.box.Children[0].(*canvas.Image)
-	lbl := u.box.Children[1].(*widget.Label)
 	switch command.GetGameState().GetFormation() {
 	case rp.Formation_LINE:
-		img.Resource = resourceCmdLineJpg
-		lbl.SetText("Formed by Lines of Brigades")
+		u.formationImg.Resource = resourceCmdLineJpg
+		u.formationLabel.SetText("Formed by Lines of Brigades")
 	case rp.Formation_DOUBLE_LINE:
-		img.Resource = resourceCmdDoubleJpg
-		lbl.SetText("Formed by Double Lines of Brigades")
+		u.formationImg.Resource = resourceCmdDoubleJpg
+		u.formationLabel.SetText("Formed by Double Lines of Brigades")
 	case rp.Formation_COLUMN:
-		img.Resource = resourceCmdColJpg
-		lbl.SetText("Formed by Columns of Brigades")
+		u.formationImg.Resource = resourceCmdColJpg
+		u.formationLabel.SetText("Formed by Columns of Brigades")
 	case rp.Formation_MARCH_COLUMN:
-		img.Resource = resourceCmdMcolJpg
-		lbl.SetText("In March Column")
+		u.formationImg.Resource = resourceCmdMcolJpg
+		u.formationLabel.SetText("In March Column")
 	}
-	img.FillMode = canvas.ImageFillOriginal
-	canvas.Refresh(img)
+	canvas.Refresh(u.formationImg)
 	u.setField("Unit ID", fmt.Sprintf("%d", command.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
 		command.GetGameState().GetGrid().GetX(),

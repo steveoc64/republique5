@@ -27,15 +27,17 @@ var UnitFieldNames = []string{
 
 // UnitDetails holds the UI for veiwing unit details
 type UnitDetails struct {
-	app            *App
-	panel          *UnitsPanel
-	formationImg   *canvas.Image
-	formationLabel *widget.Label
-	box            *widget.Box
-	form           *widget.Form
-	scroll         *widget.ScrollContainer
-	fields         map[string]*canvas.Text
-	unit           *rp.Unit
+	app              *App
+	panel            *UnitsPanel
+	formationImg     *canvas.Image
+	formationLabel   *widget.Label
+	box              *widget.Box
+	form             *widget.Form
+	scroll           *widget.ScrollContainer
+	fields           map[string]*canvas.Text
+	unit             *rp.Unit
+	hasPrev, hasNext bool
+	prevBtn, nextBtn *TapIcon
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -61,15 +63,16 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 			hbox,
 		),
 	}
-	mkbtn := func(resource fyne.Resource, f func()) *widget.Button {
-		b := widget.NewButtonWithIcon("", resource, f)
-		b.Resize(fyne.Size{64, 64})
+	mkbtn := func(res fyne.Resource, f func()) *TapIcon {
+		b := NewTapIcon(res, f, f)
 		return b
 	}
+	u.prevBtn = mkbtn(resourcePrevSvg, u.prevUnit)
+	u.nextBtn = mkbtn(resourceNextSvg, u.nextUnit)
 	hbox.Append(layout.NewSpacer())
-	hbox.Append(mkbtn(resourcePrevSvg, u.prevUnit))
+	hbox.Append(u.prevBtn)
 	hbox.Append(mkbtn(resourceParentSvg, u.parent))
-	hbox.Append(mkbtn(resourceNextSvg, u.nextUnit))
+	hbox.Append(u.nextBtn)
 	hbox.Append(layout.NewSpacer())
 	u.box.Append(u.form)
 	u.scroll = widget.NewScrollContainer(u.box)
@@ -162,7 +165,31 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 	u.setField("Bn Guns", fmt.Sprintf("%v", unit.BnGuns))
 	u.setField("Drill", upString(unit.Drill.String()))
 	u.setField("Reserve", fmt.Sprintf("%v", unit.CommandReserve))
-	u.CanvasObject().Show()
+
+	// calc if has next prev
+	c := u.app.GetUnitCommander(u.unit.GetId())
+	if c == nil {
+		u.hasNext = false
+		u.hasPrev = false
+	} else {
+		for i, v := range c.Units {
+			if v.Id == u.unit.Id {
+				u.hasPrev = i != 0
+				u.hasNext = i < (len(c.Units) - 1)
+				break
+			}
+		}
+	}
+	if u.hasPrev {
+		u.prevBtn.Enable()
+	} else {
+		u.prevBtn.Disable()
+	}
+	if u.hasNext {
+		u.nextBtn.Enable()
+	} else {
+		u.nextBtn.Disable()
+	}
 }
 
 func (u *UnitDetails) nextUnit() {
