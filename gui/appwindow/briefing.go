@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// BriefingPanel in the UI for the briefing
 type BriefingPanel struct {
 	app    *App
 	Box    *widget.Box
@@ -16,10 +17,12 @@ type BriefingPanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject returns the top level UI element
 func (b *BriefingPanel) CanvasObject() fyne.CanvasObject {
 	return b.Box
 }
 
+// newBriefingPanel creates a new BriefingPanel and returns it
 func newBriefingPanel(app *App) *BriefingPanel {
 	briefingText := strings.Replace(app.Briefing, "\n", "\n\n", -1)
 	h := &BriefingPanel{

@@ -10,11 +10,13 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// MapPanel is the UI for the map
 type MapPanel struct {
 	app     *App
 	content *fyne.Container
 }
 
+// CanvasObject returns the top level UI element for the map
 func (m *MapPanel) CanvasObject() fyne.CanvasObject {
 	return m.content
 }
@@ -26,6 +28,7 @@ func reverse(s string) string {
 	}
 	return string(runes)
 }
+
 func newMapPanel(app *App) *MapPanel {
 	if err := app.GetMap(); err != nil {
 		println("Failed to get map", err.Error())

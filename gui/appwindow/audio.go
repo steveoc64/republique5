@@ -11,7 +11,8 @@ import (
 
 var isPlaying bool
 
-func (a *App) PlayAudio(arm string) {
+// PlayAudio plays a tune given the filename of a custom mp3 file
+func (a *App) PlayAudio(tune string) {
 	return
 	/*
 		dirname := filepath.Join(os.Getenv("HOME"), "republique", arm)
@@ -36,6 +37,7 @@ func (a *App) PlayAudio(arm string) {
 	*/
 }
 
+// PlaySystemAudio plays one of the system tunes
 func (a *App) PlaySystemAudio(name string) {
 	a.playAudio(filepath.Join(os.Getenv("HOME"), "republique", "system", name+".mp3"))
 }

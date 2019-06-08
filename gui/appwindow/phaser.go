@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Phaser is a goroutine that loops on a 3 second timer to fetch the game time
 func (a *App) Phaser() {
 	go func() {
 		for {

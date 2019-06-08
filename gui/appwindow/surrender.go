@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// SurrenderPanel is the UI for editting surrender terms
 type SurrenderPanel struct {
 	app *App
 	Box *fyne.Container
@@ -14,6 +15,7 @@ type SurrenderPanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject returns the top level UI element for the SurrenderPanel
 func (s *SurrenderPanel) CanvasObject() fyne.CanvasObject {
 	return s.Box
 }

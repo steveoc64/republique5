@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// FooterBar is the UI for the footer
 type FooterBar struct {
 	app *App
 	Box *widget.Box
@@ -18,10 +19,12 @@ type FooterBar struct {
 	StopWatch  *widget.Label
 }
 
+// CanvasObject returns the top level UI element in the footer
 func (f *FooterBar) CanvasObject() fyne.CanvasObject {
 	return f.Box
 }
 
+// newFooterBar creates a new FooterBar and returns it
 func newFooterBar(app *App, onDone func(bool)) *FooterBar {
 	h := &FooterBar{
 		app:        app,
@@ -41,6 +44,7 @@ func newFooterBar(app *App, onDone func(bool)) *FooterBar {
 	return h
 }
 
+// ToggleDone toggles the Done flag to signal that the player is ready for the next phase
 func (f *FooterBar) ToggleDone() {
 	f.Done = !f.Done
 	switch f.Done {
@@ -52,6 +56,8 @@ func (f *FooterBar) ToggleDone() {
 	f.onDone(f.Done)
 }
 
+// NotDone sets the done flag back to not done. Use this whenever the player does an action
+// that un-does the fact that they are finished with the turn
 func (f *FooterBar) NotDone() {
 	f.Done = false
 	f.DoneBtn.SetIcon(theme.CheckButtonIcon())

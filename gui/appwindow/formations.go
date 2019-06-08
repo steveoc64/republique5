@@ -6,15 +6,19 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// FormationsPanel is the UI for the formations
 type FormationsPanel struct {
 	app    *App
 	Box    *widget.Box
 	Scroll *widget.ScrollContainer
 }
 
+// CanvasObject returns the top level UI element for the formations panel
 func (f *FormationsPanel) CanvasObject() fyne.CanvasObject {
 	return f.Scroll
 }
+
+// newFormationsPanel creates a new formations panel and returns it
 func newFormationsPanel(app *App) *FormationsPanel {
 	h := &FormationsPanel{app: app}
 	header := widget.NewLabelWithStyle("Division Level Formations", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})

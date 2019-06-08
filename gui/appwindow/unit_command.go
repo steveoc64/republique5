@@ -10,6 +10,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// CommanderFieldNames is a slice of field names for the UnitCommand panel
 var CommandFieldNames = []string{
 	"ID",
 	"Grid",
@@ -25,7 +26,7 @@ var CommandFieldNames = []string{
 	"Panic State",
 }
 
-// UnitOverview holds the UI for veiwing units overview
+// UnitCommand holds the UI for veiwing units overview
 type UnitCommand struct {
 	app    *App
 	panel  *UnitsPanel
@@ -58,6 +59,7 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 	return u
 }
 
+// newItem creates a new form item
 func (u *UnitCommand) newItem(label string) *widget.FormItem {
 	e := widget.NewEntry()
 	e.ReadOnly = true
@@ -77,12 +79,14 @@ func (u *UnitCommand) build() {
 	u.form.Show()
 }
 
+// setField sets the text of the given field, by name
 func (u *UnitCommand) setField(name, value string) {
 	if e, ok := u.fields[name]; ok {
 		e.SetText(value)
 	}
 }
 
+// Populate refreshes the UnitCommand from the given command data
 func (u *UnitCommand) Populate(command *rp.Command) {
 	img := u.box.Children[0].(*canvas.Image)
 	lbl := u.box.Children[1].(*widget.Label)

@@ -8,6 +8,7 @@ import (
 	"github.com/steveoc64/republique5/republique"
 )
 
+// HeaderBar is the UI for the header
 type HeaderBar struct {
 	Box *widget.Box
 	app *App
@@ -18,10 +19,12 @@ type HeaderBar struct {
 	Toolbar  *widget.Toolbar
 }
 
+// CanvasObject returns the top level UI element for the header
 func (h *HeaderBar) CanvasObject() fyne.CanvasObject {
 	return h.Box
 }
 
+// newHeaderBar creates a new HeaderBar and returns it
 func newHeaderBar(app *App) *HeaderBar {
 	h := &HeaderBar{
 		app:      app,
@@ -49,6 +52,7 @@ func newHeaderBar(app *App) *HeaderBar {
 	return h
 }
 
+// Recalc refreshes the content for the header (game time)
 func (h *HeaderBar) Recalc() *HeaderBar {
 	h.GameName.SetText(h.app.GameName)
 	h.GameTime.SetText(h.app.GameTime.Format(republique.TimeFormat))

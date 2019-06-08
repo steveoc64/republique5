@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// OrdersPanel is the UI for placing commander orders
 type OrdersPanel struct {
 	app *App
 	Box *fyne.Container
@@ -15,6 +16,7 @@ type OrdersPanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject returns the top level UI element for the orders
 func (o *OrdersPanel) CanvasObject() fyne.CanvasObject {
 	return o.Box
 }

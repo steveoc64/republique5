@@ -5,9 +5,10 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// TapLabel is a label that implements Tappable interface
 type TapLabel struct {
 	widget.Label
-	OnTapped func()
+	OnTapped    func()
 	OnSecondary func()
 }
 
@@ -25,10 +26,12 @@ func (l *TapLabel) TappedSecondary(*fyne.PointEvent) {
 	}
 }
 
+// CreateRenderer creates a renderer for the TapLabel
 func (l *TapLabel) CreateRenderer() fyne.WidgetRenderer {
 	return widget.Renderer(&l.Label)
 }
 
+// NewTapLabel is a wrapper function to create a new tappable Label
 func NewTapLabel(text string, alignment fyne.TextAlign, style fyne.TextStyle, tapped func(), secondary func()) *TapLabel {
 	return &TapLabel{
 		widget.Label{
