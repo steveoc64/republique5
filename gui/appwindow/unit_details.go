@@ -137,7 +137,7 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 	))
 	u.setField("Name", unit.Name)
 	u.setField("Notes", unit.Notes)
-	u.setField("Strength", unit.GetStrengthLabel())
+	u.setField("Strength", unit.GetStrengthLabel(false))
 	u.setField("Skirmishers", unit.GetSKLabel())
 	u.setField("Bn Guns", fmt.Sprintf("%v", unit.BnGuns))
 	u.setField("Drill", upString(unit.Drill.String()))

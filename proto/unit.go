@@ -21,7 +21,7 @@ func upString(s string) string {
 }
 
 // GetStrengthLabel returns a description of the unit strength
-func (u *Unit) GetStrengthLabel() string {
+func (u *Unit) GetStrengthLabel(withSK bool) string {
 	if u == nil {
 		return ""
 	}
@@ -35,7 +35,7 @@ func (u *Unit) GetStrengthLabel() string {
 		nn = fmt.Sprintf("%d base%s (%d horse)", u.Strength, adds, u.Strength*300)
 	case Arm_INFANTRY:
 		nn = fmt.Sprintf("%d base%s (%d men)", u.Strength, adds, u.Strength*550)
-		if u.SkirmisherMax > 0 {
+		if withSK && u.SkirmisherMax > 0 {
 			skd := "-"
 			if u.GameState.SkirmishersDeployed > 0 {
 				skd = fmt.Sprintf("%d", u.GameState.SkirmishersDeployed)
@@ -155,6 +155,9 @@ func (u *Unit) initState(parent *Command, standDown bool) {
 		form = u.BattleFormation()
 		if u.UnitType == UnitType_INFANTRY_LIGHT {
 			sk = u.SkirmisherMax
+			if form == Formation_DEBANDE {
+				sk *= 2
+			}
 		}
 	}
 	guns := parent.GetArrival().GetContact()
