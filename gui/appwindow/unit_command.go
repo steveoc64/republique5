@@ -82,6 +82,7 @@ func (u *UnitCommand) build() {
 	u.form.AppendItem(u.newItem("_Type", blue, s, 18))
 	u.form.AppendItem(u.newItem("Name", blue, s, 18))
 	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
+	u.form.AppendItem(u.newItem("Strength", blue, s, 18))
 	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
 	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
 	u.form.AppendItem(u.newItem("Can Order", blue, s, 18))
@@ -130,6 +131,7 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 	u.setField("Commander", fmt.Sprintf("%s (+%d)",
 		command.GetCommanderName(),
 		command.GetCommanderBonus()))
+	u.setField("Strength", command.GetCommandStrengthLabel())
 	u.setField("Drill", fmt.Sprintf("%s Drill - %s Command",
 		upString(command.GetDrill().String()),
 		upString(command.GetCommandRating().String())))

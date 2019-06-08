@@ -21,6 +21,43 @@ func (c *Command) LabelString() string {
 	return s
 }
 
+// CommandStrength is the number of troops in a command
+type CommandStrength struct {
+	Infantry int32
+	Cavalry  int32
+	Guns     int32
+}
+
+func (c *Command) GetCommandStrength() CommandStrength {
+	s := CommandStrength{}
+	for _, unit := range c.Units {
+		switch unit.Arm {
+		case Arm_INFANTRY:
+			s.Infantry += unit.Strength * 550
+		case Arm_CAVALRY:
+			s.Cavalry += unit.Strength * 300
+		case Arm_ARTILLERY:
+			s.Guns += unit.Strength * 12
+		}
+	}
+	return s
+}
+
+func (c *Command) GetCommandStrengthLabel() string {
+	retval := []string{}
+	s := c.GetCommandStrength()
+	if s.Infantry > 0 {
+		retval = append(retval, fmt.Sprintf("%d Bayonets", s.Infantry))
+	}
+	if s.Cavalry > 0 {
+		retval = append(retval, fmt.Sprintf("%d Sabres", s.Cavalry))
+	}
+	if s.Guns > 0 {
+		retval = append(retval, fmt.Sprintf("%d Guns", s.Guns))
+	}
+	return strings.Join(retval, ", ")
+}
+
 // BattleFormation returns the default battle formation
 // for a command, based on its drill rating
 func (c *Command) BattleFormation() Formation {
