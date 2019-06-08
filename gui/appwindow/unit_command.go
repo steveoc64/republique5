@@ -98,6 +98,7 @@ func (u *UnitCommand) build() {
 func (u *UnitCommand) setField(name, value string) {
 	if t, ok := u.fields[name]; ok {
 		t.Text = value
+		canvas.Refresh(t)
 	}
 }
 
@@ -120,7 +121,7 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 		lbl.SetText("In March Column")
 	}
 	img.FillMode = canvas.ImageFillOriginal
-	img.Show()
+	canvas.Refresh(img)
 	u.setField("Unit ID", fmt.Sprintf("%d", command.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
 		command.GetGameState().GetGrid().GetX(),

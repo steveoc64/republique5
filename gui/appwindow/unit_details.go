@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"fmt"
+	"fyne.io/fyne/layout"
 	"image/color"
 
 	"fyne.io/fyne"
@@ -26,12 +27,15 @@ var UnitFieldNames = []string{
 
 // UnitDetails holds the UI for veiwing unit details
 type UnitDetails struct {
-	app    *App
-	panel  *UnitsPanel
-	box    *widget.Box
-	form   *widget.Form
-	scroll *widget.ScrollContainer
-	fields map[string]*canvas.Text
+	app            *App
+	panel          *UnitsPanel
+	formationImg   *canvas.Image
+	formationLabel *widget.Label
+	box            *widget.Box
+	form           *widget.Form
+	scroll         *widget.ScrollContainer
+	fields         map[string]*canvas.Text
+	unit           *rp.Unit
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -41,15 +45,32 @@ func (u *UnitDetails) CanvasObject() fyne.CanvasObject {
 
 // newUnitCommand return a new UnitCommand
 func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
+	formationImg := canvas.NewImageFromResource(resourceLineJpg)
+	formationImg.FillMode = canvas.ImageFillOriginal
+	formationLabel := widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+	hbox := widget.NewHBox()
 	u := &UnitDetails{
-		app:   app,
-		panel: panel,
-		form:  widget.NewForm(),
+		app:            app,
+		panel:          panel,
+		form:           widget.NewForm(),
+		formationImg:   formationImg,
+		formationLabel: formationLabel,
 		box: widget.NewVBox(
-			canvas.NewImageFromResource(resourceLineJpg),
-			widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			formationImg,
+			formationLabel,
+			hbox,
 		),
 	}
+	mkbtn := func(resource fyne.Resource, f func()) *widget.Button {
+		b := widget.NewButtonWithIcon("", resource, f)
+		b.Resize(fyne.Size{64, 64})
+		return b
+	}
+	hbox.Append(layout.NewSpacer())
+	hbox.Append(mkbtn(resourcePrevSvg, u.prevUnit))
+	hbox.Append(mkbtn(resourceParentSvg, u.parent))
+	hbox.Append(mkbtn(resourceNextSvg, u.nextUnit))
+	hbox.Append(layout.NewSpacer())
 	u.box.Append(u.form)
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
@@ -93,37 +114,36 @@ func (u *UnitDetails) build() {
 func (u *UnitDetails) setField(name, value string) {
 	if t, ok := u.fields[name]; ok {
 		t.Text = value
+		canvas.Refresh(t)
 	}
 }
 
 // Populate refreshes the UnitDetail fields from the given unit data
 func (u *UnitDetails) Populate(unit *rp.Unit) {
+	u.unit = unit
 	println("populating unit", unit.Name)
-	img := u.box.Children[0].(*canvas.Image)
-	lbl := u.box.Children[1].(*widget.Label)
 	switch unit.GameState.Formation {
 	case rp.Formation_LINE:
-		img.Resource = resourceLineJpg
-		lbl.SetText("Line Formation")
+		u.formationImg.Resource = resourceLineJpg
+		u.formationLabel.SetText("Line Formation")
 	case rp.Formation_ATTACK_COLUMN, rp.Formation_CLOSED_COLUMN:
-		img.Resource = resourceAttackcolumnJpg
-		lbl.SetText("Attack Columns")
+		u.formationImg.Resource = resourceAttackcolumnJpg
+		u.formationLabel.SetText("Attack Columns")
 	case rp.Formation_MARCH_COLUMN:
-		img.Resource = resourceMarchcolumnJpg
-		lbl.SetText("March Column")
+		u.formationImg.Resource = resourceMarchcolumnJpg
+		u.formationLabel.SetText("March Column")
 	case rp.Formation_SUPPORTING_LINES:
-		img.Resource = resourceSupportingJpg
-		lbl.SetText("Supporting Lines")
+		u.formationImg.Resource = resourceSupportingJpg
+		u.formationLabel.SetText("Supporting Lines")
 	case rp.Formation_DEBANDE:
-		img.Resource = resourceDebandeJpg
-		lbl.SetText("Debande")
+		u.formationImg.Resource = resourceDebandeJpg
+		u.formationLabel.SetText("Debande")
 	case rp.Formation_ECHELON:
-		img.Resource = resourceEchelonJpg
-		lbl.SetText("Echelon")
+		u.formationImg.Resource = resourceEchelonJpg
+		u.formationLabel.SetText("Echelon")
 
 	}
-	img.FillMode = canvas.ImageFillOriginal
-	canvas.Refresh(img)
+	canvas.Refresh(u.formationImg)
 	u.setField("Unit ID", fmt.Sprintf("%d", unit.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d",
 		unit.GameState.GetGrid().GetX(),
@@ -142,4 +162,47 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 	u.setField("Bn Guns", fmt.Sprintf("%v", unit.BnGuns))
 	u.setField("Drill", upString(unit.Drill.String()))
 	u.setField("Reserve", fmt.Sprintf("%v", unit.CommandReserve))
+	u.CanvasObject().Show()
+}
+
+func (u *UnitDetails) nextUnit() {
+	println("nextUnit")
+	c := u.app.GetUnitCommander(u.unit.GetId())
+	target := -1
+	if c != nil {
+		for i, unit := range c.Units {
+			if i == target {
+				u.Populate(unit)
+				return
+			}
+			if unit.Id == u.unit.Id {
+				target = i + 1
+			}
+		}
+	}
+}
+
+func (u *UnitDetails) prevUnit() {
+	println("prevUnit")
+	c := u.app.GetUnitCommander(u.unit.GetId())
+	target := -1
+	if c != nil {
+		for i, unit := range c.Units {
+			if unit.Id == u.unit.Id {
+				target = i - 1
+				break
+			}
+		}
+		if target != -1 {
+			u.Populate(c.Units[target])
+		}
+	}
+}
+
+func (u *UnitDetails) parent() {
+	println("parent")
+	c := u.app.GetUnitCommander(u.unit.GetId())
+	if c != nil {
+		u.panel.ShowCommand(c)
+	}
 }
