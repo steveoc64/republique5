@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"fmt"
+	"image/color"
 
 	"fyne.io/fyne/canvas"
 
@@ -12,7 +13,7 @@ import (
 
 // CommandFieldNames is a slice of field names for the UnitCommand panel
 var CommandFieldNames = []string{
-	"ID",
+	"Unit ID",
 	"Grid",
 	"Type",
 	"Name",
@@ -33,7 +34,7 @@ type UnitCommand struct {
 	box    *widget.Box
 	form   *widget.Form
 	scroll *widget.ScrollContainer
-	fields map[string]*widget.Entry
+	fields map[string]*canvas.Text
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -60,29 +61,43 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 }
 
 // newItem creates a new form item
-func (u *UnitCommand) newItem(label string) *widget.FormItem {
-	e := widget.NewEntry()
-	e.ReadOnly = true
-	u.fields[label] = e
+func (u *UnitCommand) newItem(label string, rgba color.RGBA, style fyne.TextStyle, fontSize int) *widget.FormItem {
+	t := canvas.NewText(label, rgba)
+	t.TextSize = fontSize
+	t.TextStyle = style
+	u.fields[label] = t
 	return &widget.FormItem{
 		Text:   label,
-		Widget: e,
+		Widget: t,
 	}
 }
 
 // build re-builds the overview to match the app data
 func (u *UnitCommand) build() {
-	u.fields = make(map[string]*widget.Entry)
-	for _, v := range CommandFieldNames {
-		u.form.AppendItem(u.newItem(v))
-	}
+	u.fields = make(map[string]*canvas.Text)
+	s := fyne.TextStyle{}
+	green := color.RGBA{40, 240, 180, 1}
+	blue := color.RGBA{40, 180, 240, 1}
+	red := color.RGBA{200, 0, 0, 1}
+	u.form.AppendItem(u.newItem("Unit ID", green, fyne.TextStyle{Bold: true}, 48))
+	u.form.AppendItem(u.newItem("Grid", blue, s, 18))
+	u.form.AppendItem(u.newItem("Type", blue, s, 18))
+	u.form.AppendItem(u.newItem("Name", blue, s, 18))
+	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
+	u.form.AppendItem(u.newItem("Commander", blue, s, 18))
+	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
+	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Order", blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Move", blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Rally", blue, s, 18))
+	u.form.AppendItem(u.newItem("Panic State", red, s, 18))
 	u.form.Show()
 }
 
 // setField sets the text of the given field, by name
 func (u *UnitCommand) setField(name, value string) {
-	if e, ok := u.fields[name]; ok {
-		e.SetText(value)
+	if t, ok := u.fields[name]; ok {
+		t.Text = value
 	}
 }
 
@@ -106,7 +121,7 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 	}
 	img.FillMode = canvas.ImageFillOriginal
 	img.Show()
-	u.setField("ID", fmt.Sprintf("%d", command.Id))
+	u.setField("Unit ID", fmt.Sprintf("%d", command.Id))
 	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
 		command.GetGameState().GetGrid().GetX(),
 		command.GetGameState().GetGrid().GetY(),
