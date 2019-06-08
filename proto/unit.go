@@ -6,18 +6,7 @@ import (
 )
 
 func upString(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if i < 1 {
-			if c >= 'a' && c <= 'z' {
-				c -= 'a' - 'A'
-			}
-		}
-		b.WriteByte(c)
-	}
-	return b.String()
+	return strings.Title(strings.ToLower(strings.Replace(s, "_", " ", -1)))
 }
 
 // GetStrengthLabel returns a description of the unit strength
@@ -111,6 +100,33 @@ func (u *Unit) LabelString() string {
 		nn,
 		ff,
 	)
+}
+
+// ShortLabel returns a formatted string suitable for labelling the unit in the GUI
+func (u *Unit) ShortLabel() string {
+	if u == nil {
+		return ""
+	}
+	nn := ""
+	adds := ""
+	if u.Strength > 1 {
+		adds = "s"
+	}
+	switch u.Arm {
+	case Arm_CAVALRY:
+		nn = fmt.Sprintf("%d base%s (%d horse)", u.Strength, adds, u.Strength*300)
+	case Arm_INFANTRY:
+		nn = fmt.Sprintf("%d base%s (%d men)", u.Strength, adds, u.Strength*550)
+	case Arm_ARTILLERY:
+		nn = fmt.Sprintf("%d Bty", u.Strength)
+		if u.GetGameState().GunsDeployed {
+			nn = nn + " [Ready to Fire]"
+		} else {
+			nn = nn + " [Limbered]"
+		}
+	}
+	//return fmt.Sprintf("%s %s - %s", u.Name, nn, upString(u.Grade.String()))
+	return fmt.Sprintf("%d %s %s", u.Id, u.Name, nn)
 }
 
 // BattleFormation returns the default battle formation

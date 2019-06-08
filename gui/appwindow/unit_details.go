@@ -4,26 +4,13 @@ import (
 	"fmt"
 	"fyne.io/fyne/layout"
 	"image/color"
+	"strings"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
 )
-
-// UnitFieldNames is a slice of the field names on the units display
-var UnitFieldNames = []string{
-	"Unit ID",
-	"Grid",
-	"Type",
-	"Name",
-	"Notes",
-	"Strength",
-	"Skirmishers",
-	"Bn Guns",
-	"Drill",
-	"Reserve",
-}
 
 // UnitDetails holds the UI for veiwing unit details
 type UnitDetails struct {
@@ -58,7 +45,7 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 		formationImg:   formationImg,
 		formationLabel: formationLabel,
 		box: widget.NewVBox(
-			formationImg,
+			//formationImg,
 			formationLabel,
 			hbox,
 		),
@@ -88,6 +75,9 @@ func (u *UnitDetails) newItem(label string, rgba color.RGBA, style fyne.TextStyl
 	t.TextSize = fontSize
 	t.TextStyle = style
 	u.fields[label] = t
+	if strings.HasPrefix(label, "_") {
+		label = ""
+	}
 	return &widget.FormItem{
 		Text:   label,
 		Widget: t,
@@ -100,17 +90,16 @@ func (u *UnitDetails) build() {
 	s := fyne.TextStyle{}
 	green := color.RGBA{140, 240, 180, 1}
 	blue := color.RGBA{140, 180, 240, 1}
-	u.form.AppendItem(u.newItem("Unit ID", green, fyne.TextStyle{Bold: true}, 48))
-	u.form.AppendItem(u.newItem("Grid", blue, s, 18))
-	u.form.AppendItem(u.newItem("Type", blue, s, 18))
+	u.form.AppendItem(u.newItem("_UnitID", green, fyne.TextStyle{Bold: true}, 48))
 	u.form.AppendItem(u.newItem("Name", blue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", blue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", blue, s, 18))
 	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
 	u.form.AppendItem(u.newItem("Strength", blue, s, 18))
 	u.form.AppendItem(u.newItem("Skirmishers", blue, s, 18))
 	u.form.AppendItem(u.newItem("Bn Guns", blue, s, 18))
 	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
 	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
-	u.form.Show()
 }
 
 // setField sets the contents of the field given by name
@@ -145,13 +134,13 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 		u.formationLabel.SetText("Echelon")
 
 	}
-	canvas.Refresh(u.formationImg)
-	u.setField("Unit ID", fmt.Sprintf("%d", unit.Id))
-	u.setField("Grid", fmt.Sprintf("%d,%d",
+	//canvas.Refresh(u.formationImg)
+	u.setField("_UnitID", fmt.Sprintf("%d", unit.Id))
+	u.setField("_Grid", fmt.Sprintf("%d,%d",
 		unit.GameState.GetGrid().GetX(),
 		unit.GameState.GetGrid().GetY(),
 	))
-	u.setField("Type", fmt.Sprintf("%s %s - %s %s",
+	u.setField("_Type", fmt.Sprintf("%s %s - %s %s",
 		upString(unit.Nationality.String()),
 		upString(unit.Arm.String()),
 		upString(unit.Grade.String()),

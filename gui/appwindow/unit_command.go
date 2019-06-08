@@ -2,7 +2,9 @@ package appwindow
 
 import (
 	"fmt"
+	"fyne.io/fyne/layout"
 	"image/color"
+	"strings"
 
 	"fyne.io/fyne/canvas"
 
@@ -10,22 +12,6 @@ import (
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
 )
-
-// CommandFieldNames is a slice of field names for the UnitCommand panel
-var CommandFieldNames = []string{
-	"Unit ID",
-	"Grid",
-	"Type",
-	"Name",
-	"Notes",
-	"Commander",
-	"Drill",
-	"Reserve",
-	"Can Order",
-	"Can Move",
-	"Can Rally",
-	"Panic State",
-}
 
 // UnitCommand holds the UI for veiwing units overview
 type UnitCommand struct {
@@ -37,6 +23,8 @@ type UnitCommand struct {
 	fields         map[string]*canvas.Text
 	formationImg   *canvas.Image
 	formationLabel *widget.Label
+	unitList       *widget.Box
+	command        *rp.Command
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -53,11 +41,12 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 		box:            widget.NewVBox(),
 		formationImg:   canvas.NewImageFromResource(resourceCmdLineJpg),
 		formationLabel: widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		unitList:       widget.NewVBox(),
 	}
 	u.formationImg.FillMode = canvas.ImageFillOriginal
-	u.box.Append(u.formationImg)
+	//u.box.Append(u.formationImg)
 	u.box.Append(u.formationLabel)
-	u.box.Append(u.form)
+	u.box.Append(fyne.NewContainerWithLayout(layout.NewGridLayout(2), u.form, u.unitList))
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
 	u.build()
@@ -71,6 +60,9 @@ func (u *UnitCommand) newItem(label string, rgba color.RGBA, style fyne.TextStyl
 	t.TextSize = fontSize
 	t.TextStyle = style
 	u.fields[label] = t
+	if strings.HasPrefix(label, "_") {
+		label = ""
+	}
 	return &widget.FormItem{
 		Text:   label,
 		Widget: t,
@@ -84,12 +76,12 @@ func (u *UnitCommand) build() {
 	green := color.RGBA{40, 240, 180, 1}
 	blue := color.RGBA{40, 180, 240, 1}
 	red := color.RGBA{200, 0, 0, 1}
-	u.form.AppendItem(u.newItem("Unit ID", green, fyne.TextStyle{Bold: true}, 48))
-	u.form.AppendItem(u.newItem("Grid", blue, s, 18))
-	u.form.AppendItem(u.newItem("Type", blue, s, 18))
+	u.form.AppendItem(u.newItem("_UnitID", green, fyne.TextStyle{Bold: true}, 48))
+	u.form.AppendItem(u.newItem("Commander", blue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", blue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", blue, s, 18))
 	u.form.AppendItem(u.newItem("Name", blue, s, 18))
 	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
-	u.form.AppendItem(u.newItem("Commander", blue, s, 18))
 	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
 	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
 	u.form.AppendItem(u.newItem("Can Order", blue, s, 18))
@@ -122,13 +114,13 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 		u.formationImg.Resource = resourceCmdMcolJpg
 		u.formationLabel.SetText("In March Column")
 	}
-	canvas.Refresh(u.formationImg)
-	u.setField("Unit ID", fmt.Sprintf("%d", command.Id))
-	u.setField("Grid", fmt.Sprintf("%d,%d - %s",
+	//canvas.Refresh(u.formationImg)
+	u.setField("_UnitID", fmt.Sprintf("%d", command.Id))
+	u.setField("_Grid", fmt.Sprintf("%d,%d - %s",
 		command.GetGameState().GetGrid().GetX(),
 		command.GetGameState().GetGrid().GetY(),
 		upString(command.GetGameState().GetPosition().String())))
-	u.setField("Type", fmt.Sprintf("%s %s %s (%s)",
+	u.setField("_Type", fmt.Sprintf("%s %s %s (%s)",
 		upString(command.GetNationality().String()),
 		upString(command.GetArm().String()),
 		upString(command.GetRank().String()),
@@ -146,4 +138,23 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 	u.setField("Can Move", fmt.Sprintf("%v", command.GetGameState().GetCanMove()))
 	u.setField("Can Rally", fmt.Sprintf("%v", command.GetGameState().GetCanRally()))
 	u.setField("Panic State", fmt.Sprintf("%v", command.GetGameState().GetPanicState()))
+
+	u.command = command
+	u.populateUnits()
+}
+
+func (u *UnitCommand) populateUnits() {
+	u.unitList.Children = []fyne.CanvasObject{}
+	for _, unit := range u.command.GetUnits() {
+		u.unitList.Append(u.newUnitLabel(unit))
+	}
+}
+
+func (u *UnitCommand) newUnitLabel(unit *rp.Unit) *TapLabel {
+	st := fyne.TextStyle{Italic: unit.Arm == rp.Arm_CAVALRY, Bold: unit.Arm == rp.Arm_ARTILLERY, Monospace: unit.Arm == rp.Arm_INFANTRY}
+	t := func() {
+		u.panel.ShowUnit(unit)
+	}
+	lbl := NewTapLabel(unit.ShortLabel(), fyne.TextAlignLeading, st, t, t)
+	return lbl
 }
