@@ -181,6 +181,9 @@ func (a *App) GetUnitCommander(unitID int32) *rp.Command {
 			}
 		}
 		for _, subCommand := range command.Subcommands {
+			if subCommand.Id == unitID {
+				return command
+			}
 			for _, u := range subCommand.Units {
 				if u.Id == unitID {
 					return subCommand

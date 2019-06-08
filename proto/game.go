@@ -70,17 +70,20 @@ func (g *Game) InitGameState() {
 }
 
 // GetUnitCommander returns the command in charge of the given unit
-func (g *Game) GetUnitCommander(unit *Unit) *Command {
+func (g *Game) GetUnitCommander(id int32) *Command {
 	for _, team := range g.Scenario.Teams {
 		for _, command := range team.Commands {
 			for _, u := range command.Units {
-				if u.Id == unit.Id {
+				if u.Id == id {
 					return command
 				}
 			}
 			for _, subCommand := range command.Subcommands {
+				if subCommand.Id == id {
+					return command
+				}
 				for _, u := range subCommand.Units {
-					if u.Id == unit.Id {
+					if u.Id == id {
 						return subCommand
 					}
 				}
