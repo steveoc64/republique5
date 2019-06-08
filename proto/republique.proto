@@ -112,6 +112,27 @@ message UnitGameState {
   string engagedUnit = 21;
   bool canAssault = 22;
   bool hasAssaulted = 23;
+  UnitAction can = 24;
+  UnitAction has = 25;
+  UnitAction must = 26;
+}
+
+message UnitAction {
+  bool gunFire = 1;
+  bool gunLimber = 2;
+  bool gunDeploy = 3;
+  bool gunMove = 4;
+  bool move = 5;
+  bool assault = 6;
+  bool changeFormation = 7;
+  bool skDeploy = 8;
+  bool skRetire = 9;
+  bool skAttack = 10;
+  bool fallback = 11;
+  bool withdraw = 12;
+  bool rout = 13;
+  bool rally = 14;
+  bool order = 15;
 }
 
 // Command details that are static for a game
@@ -154,6 +175,9 @@ message CommandGameState {
   bool canOrder = 15;
   bool canMove = 16;
   bool canRally = 17;
+  UnitAction can = 18;
+  UnitAction has = 19;
+  UnitAction must = 20;
 }
 
 message Arrival {

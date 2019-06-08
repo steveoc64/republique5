@@ -1,5 +1,6 @@
 package republique
 
+// Decrement drops the skirmish rating by 1 level, safely
 func (x SkirmishRating) Decrement() SkirmishRating {
 	switch x {
 	case SkirmishRating_ADEQUATE:
@@ -11,6 +12,8 @@ func (x SkirmishRating) Decrement() SkirmishRating {
 	}
 	return x
 }
+
+// Increment raises the skirmish rating by 1 level, safely
 func (x SkirmishRating) Increment() SkirmishRating {
 	switch x {
 	case SkirmishRating_POOR:

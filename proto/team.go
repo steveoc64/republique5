@@ -1,5 +1,6 @@
 package republique
 
+// GetCommandByName gets the matching command by the name of the unit
 func (t *Team) GetCommandByName(name string) *Command {
 	for _, command := range t.GetCommands() {
 		if command.Name == name {
@@ -13,6 +14,8 @@ func (t *Team) GetCommandByName(name string) *Command {
 	}
 	return nil
 }
+
+// GetCommandByCommanderName gets the matching command by the name of the commander
 func (t *Team) GetCommandByCommanderName(name string) *Command {
 	for _, command := range t.GetCommands() {
 		if command.CommanderName == name {

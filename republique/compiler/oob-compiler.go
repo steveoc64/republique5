@@ -42,14 +42,14 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 
 	getYear := func(k int, w []string) (int, error) {
 		if k != 0 {
-			return 0, CompilerError{k + 1, filename, "Nationality and Year must only be added on line 1"}
+			return 0, Error{k + 1, filename, "Nationality and Year must only be added on line 1"}
 		}
 		if len(w) != 2 {
-			return 0, CompilerError{k + 1, filename, fmt.Sprintf("%s - missing year", strings.Join(w, " "))}
+			return 0, Error{k + 1, filename, fmt.Sprintf("%s - missing year", strings.Join(w, " "))}
 		}
 		year, err = strconv.Atoi(w[1])
 		if err != nil || year == 0 {
-			return 0, CompilerError{k + 1, filename, fmt.Sprintf("%s - invalid year '%v'", strings.Join(w, " "), v)}
+			return 0, Error{k + 1, filename, fmt.Sprintf("%s - invalid year '%v'", strings.Join(w, " "), v)}
 		}
 		return year, nil
 	}
@@ -72,11 +72,11 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			switch w {
 			case "indent":
 				if ww != 2 {
-					return nil, CompilerError{k + 1, filename, "!Indent Command - missing size"}
+					return nil, Error{k + 1, filename, "!Indent Command - missing size"}
 				}
 				i, err := strconv.Atoi(words[1])
 				if err != nil || i < 1 {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
+					return nil, Error{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
 				}
 				indents = i
 			case "cavalry":
@@ -116,7 +116,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			case "french", "france":
 				year, err = getYear(k, words)
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, err.Error()}
+					return nil, Error{k + 1, filename, err.Error()}
 				}
 				cmd.Nationality = rp.Nationality_FRENCH
 				switch {
@@ -142,7 +142,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			case "prussia", "prussian":
 				year, err = getYear(k, words)
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
 				cmd.Nationality = rp.Nationality_PRUSSIAN
 				switch {
@@ -161,7 +161,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			case "austria", "austrian":
 				year, err = getYear(k, words)
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
 				cmd.Nationality = rp.Nationality_AUSTRIAN
 				switch {
@@ -178,7 +178,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			case "russia", "russian":
 				year, err = getYear(k, words)
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
 				cmd.Nationality = rp.Nationality_RUSSIAN
 				skMax = "none"
@@ -189,7 +189,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			case "sweden":
 				year, err = getYear(k, words)
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Year '%v' %s", words, err.Error())}
 				}
 				cmd.Nationality = rp.Nationality_SWEDEN
 				skMax = "one"
@@ -197,7 +197,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 				cmd.Drill = rp.Drill_LINEAR
 				cmd.CommandRating = rp.CommandRating_FUNCTIONAL
 			default:
-				return nil, CompilerError{k + 1, filename, fmt.Sprintf("Invalid Command '%v'", v)}
+				return nil, Error{k + 1, filename, fmt.Sprintf("Invalid Command '%v'", v)}
 			}
 			// strip the line out
 			//c.lines = append(c.lines[:k], c.lines[k+1:]...)
@@ -217,7 +217,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 		case 0: // Corps Definition
 			words = strings.Split(v, " - ")
 			if len(words) != 2 {
-				return nil, CompilerError{k + 1, filename, "Invalid Corps Definition : needs 'Corps Name' - 'Commander Name'"}
+				return nil, Error{k + 1, filename, "Invalid Corps Definition : needs 'Corps Name' - 'Commander Name'"}
 			}
 			params := words[1]
 			ib1 := strings.Index(params, "(")
@@ -241,7 +241,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			words = strings.Split(v[ioffset:], " - ")
 			ll := len(words)
 			if ll != 2 && ll != 1 {
-				return nil, CompilerError{k + 1, filename, "Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')"}
+				return nil, Error{k + 1, filename, "Invalid Subcommand Definition - needs 'Subcommand Name' (- 'Commander Name')"}
 			}
 			subCommand := &rp.Command{
 				CommandRating: cmd.CommandRating,
@@ -325,14 +325,14 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			continue
 		case 2: // Unit Definiition
 			if lastSubCommand == nil {
-				return nil, CompilerError{k + 1, filename, fmt.Sprintf("Indentation error - unit has no parent sub-command '%v'", v)}
+				return nil, Error{k + 1, filename, fmt.Sprintf("Indentation error - unit has no parent sub-command '%v'", v)}
 			}
 			hasGrade := false
 			isGrenz := false
 			v = strings.TrimSpace(v)
 			words = strings.Split(v, " - ")
 			if len(words) != 2 {
-				return nil, CompilerError{k + 1, filename, "Invalid Unit Definition - needs 'Unit Name' - N bases [Unit Paramaters]"}
+				return nil, Error{k + 1, filename, "Invalid Unit Definition - needs 'Unit Name' - N bases [Unit Paramaters]"}
 			}
 			unit := &rp.Unit{
 				Name:           strings.TrimSpace(words[0]),
@@ -530,7 +530,7 @@ func (c *Compiler) CompileOOB(filename string) (*rp.Command, error) {
 			lastSubCommand.Units = append(lastSubCommand.Units, unit)
 			continue
 		default:
-			return nil, CompilerError{k + 1, filename, fmt.Sprintf("Dont know what to do with a unit at indent level %d", ii)}
+			return nil, Error{k + 1, filename, fmt.Sprintf("Dont know what to do with a unit at indent level %d", ii)}
 		}
 	}
 	return cmd, nil

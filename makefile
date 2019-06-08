@@ -1,10 +1,17 @@
-SUBDIRS := cmd/republique cmd/republique-ui
+SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui
 
 all: protobuf $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
 .PHONY: all $(SUBDIRS)
+
+test:
+	go test ./...
+
+lint:
+	golint ./...
+	go vet ./...
 
 help:
 	@echo proto compile dump newgame serve info oob ui

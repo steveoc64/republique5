@@ -8,6 +8,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// Auth is a helper function in the server to validate a token and return the details of the player
 func (s *Server) Auth(token string) (*rp.Player, error) {
 	s.mTokenCache.RLock()
 	defer s.mTokenCache.RUnlock()
@@ -30,6 +31,7 @@ func (s *Server) Auth(token string) (*rp.Player, error) {
 	return p, nil
 }
 
+// NewTokenCache returns a new map of TokenValue to player details
 func NewTokenCache(game *rp.Game) map[string]*rp.Player {
 	tokenCache := make(map[string]*rp.Player)
 	for _, team := range game.GetScenario().GetTeams() {

@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/widget"
 )
 
+// AdvancePanel is the UI for ordering a general advance
 type AdvancePanel struct {
 	app *App
 	Box *fyne.Container
@@ -14,10 +15,12 @@ type AdvancePanel struct {
 	Notes  *widget.Label
 }
 
+// CanvasObject returns the top level UI element for the AdvancePanel
 func (a *AdvancePanel) CanvasObject() fyne.CanvasObject {
 	return a.Box
 }
 
+// newAdvancePanel builds and returns a new AdvancePanel
 func newAdvancePanel(app *App) *AdvancePanel {
 	h := &AdvancePanel{
 		app:    app,

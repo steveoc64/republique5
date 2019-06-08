@@ -87,11 +87,11 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 			switch w {
 			case "indent":
 				if ww != 2 {
-					return nil, CompilerError{k + 1, filename, "!Indent Command - missing size"}
+					return nil, Error{k + 1, filename, "!Indent Command - missing size"}
 				}
 				i, err := strconv.Atoi(words[1])
 				if err != nil || i < 1 {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
+					return nil, Error{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
 				}
 				indents = i
 				continue
@@ -117,7 +117,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				game.Name = strings.TrimSpace(v[4:])
 			case "scenario":
 				if len(words) != 2 {
-					return nil, CompilerError{k + 1, filename, "Invalid Scenario Name"}
+					return nil, Error{k + 1, filename, "Invalid Scenario Name"}
 				}
 				filename := filepath.Join(filepath.Dir(filename), "..", "scenarios", words[1]+".scenario")
 				scn, err := c.CompileScenario(filename)
@@ -132,16 +132,16 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				}
 			case "table":
 				if len(words) != 2 {
-					return nil, CompilerError{k + 1, filename, "expecting 'Table XxY' in feet"}
+					return nil, Error{k + 1, filename, "expecting 'Table XxY' in feet"}
 				}
 				xpos := strings.Index(words[1], "x")
 				if xpos < 1 {
-					return nil, CompilerError{k + 1, filename, "expecting 'Table XxY' in feet"}
+					return nil, Error{k + 1, filename, "expecting 'Table XxY' in feet"}
 				}
 				x, err := strconv.Atoi(words[1][:xpos])
 				y, err2 := strconv.Atoi(words[1][xpos+1:])
 				if err != nil || err2 != nil {
-					return nil, CompilerError{k + 1, filename, "expecting 'Table X Y' in feet"}
+					return nil, Error{k + 1, filename, "expecting 'Table X Y' in feet"}
 				}
 				game.TableX = int32(x)
 				game.TableY = int32(y)
@@ -155,7 +155,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				teamgamename := game.Name
 				teamside := rp.MapSide_FRONT
 				if len(teamwords) != 2 {
-					return nil, CompilerError{k + 1,
+					return nil, Error{k + 1,
 						filename,
 						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
@@ -165,7 +165,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				l1 := strings.Index(teamgamename, "(")
 				l2 := strings.Index(teamgamename, ")")
 				if l1 == -1 || l2 == -1 {
-					return nil, CompilerError{k + 1,
+					return nil, Error{k + 1,
 						filename,
 						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
@@ -180,7 +180,7 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				case "right":
 					teamside = rp.MapSide_RIGHT_FLANK
 				default:
-					return nil, CompilerError{k + 1,
+					return nil, Error{k + 1,
 						filename,
 						fmt.Sprintf("invalid team name '%v' : expecting 'Team Name - Game Descriptnion (MapSide)' one of (Front, Top, Left, Right)", v)}
 				}
@@ -194,13 +194,13 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 					}
 				}
 				if currentTeam == nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Unknown Team '%v'", words[0])}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Unknown Team '%v'", words[0])}
 				}
 				println("processing team", currentTeam.Name)
 			}
 		case 1: // Player command
 			if currentTeam == nil {
-				return nil, CompilerError{k + 1, filename, "No Team Defined"}
+				return nil, Error{k + 1, filename, "No Team Defined"}
 			}
 			player := &rp.Player{AccessCode: NewAccessCode()}
 			v = strings.TrimSpace(v)
@@ -211,14 +211,14 @@ func (c *Compiler) CompileGame(filename string) (*rp.Game, error) {
 				if cc == nil {
 					cc = currentTeam.GetCommandByCommanderName(name)
 					if cc == nil {
-						return nil, CompilerError{k + 1, filename, fmt.Sprintf("%v is not a valid unit or commander in team %v", name, currentTeam.Name)}
+						return nil, Error{k + 1, filename, fmt.Sprintf("%v is not a valid unit or commander in team %v", name, currentTeam.Name)}
 					}
 				}
 				player.Commanders = append(player.Commanders, cc.CommanderName)
 			}
 			currentTeam.Players = append(currentTeam.Players, player)
 		default:
-			return nil, CompilerError{k + 1, filename, fmt.Sprintf("Dont know what to do with a line at indent level %d '%v", ii, v)}
+			return nil, Error{k + 1, filename, fmt.Sprintf("Dont know what to do with a line at indent level %d '%v", ii, v)}
 		}
 	}
 

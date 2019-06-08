@@ -12,7 +12,7 @@ import (
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
-// ComplieScenario reads a scenario file and returns a compiled scenario
+// CompileScenario reads a scenario file and returns a compiled scenario
 func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 	lines, err := c.load(filename)
 	if err != nil {
@@ -65,17 +65,17 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 				timestring := v[7:]
 				t, err := time.Parse("02 Jan 2006 15:04", strings.TrimSpace(timestring))
 				if err != nil {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Error parsing datetime '%v': %s", words[1], err.Error())}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Error parsing datetime '%v': %s", words[1], err.Error())}
 				}
 				scn.StartTime = &tspb.Timestamp{Seconds: t.Unix()}
 				continue
 			case "indent":
 				if ww != 2 {
-					return nil, CompilerError{k + 1, filename, "!Indent Command - missing size"}
+					return nil, Error{k + 1, filename, "!Indent Command - missing size"}
 				}
 				i, err := strconv.Atoi(words[1])
 				if err != nil || i < 1 {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
+					return nil, Error{k + 1, filename, fmt.Sprintf("!Indent Command - invalid size '%v'", words[1])}
 				}
 				indents = i
 				continue
@@ -101,7 +101,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 			scn.Teams[currentTeam.Name] = currentTeam
 		case 1: // Player command
 			if currentTeam == nil {
-				return nil, CompilerError{k + 1, filename, "No player side defined at 1 indent above this line"}
+				return nil, Error{k + 1, filename, "No player side defined at 1 indent above this line"}
 			}
 			command := strings.TrimSpace(v)
 			switch strings.ToLower(command) {
@@ -120,12 +120,12 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 				isBriefing = false
 				position = rp.BattlefieldPosition_REAR
 			default:
-				return nil, CompilerError{k + 1, filename, "Invalid command: " + v}
+				return nil, Error{k + 1, filename, "Invalid command: " + v}
 			}
 			continue
 		case 2: // unit or briefing
 			if currentTeam == nil {
-				return nil, CompilerError{k + 1, filename, "No player side defined at 1 indent above this line"}
+				return nil, Error{k + 1, filename, "No player side defined at 1 indent above this line"}
 			}
 			if isBriefing {
 				if currentTeam.Briefing != "" {
@@ -175,7 +175,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 				commandName = strings.TrimSpace(w[0])
 				subUnit = strings.TrimSpace(w[1])
 			default:
-				return nil, CompilerError{k + 1, filename, "Too many - chars, expecting 'MainOOB - SubUnit (arrivals) XX%"}
+				return nil, Error{k + 1, filename, "Too many - chars, expecting 'MainOOB - SubUnit (arrivals) XX%"}
 			}
 			cmd, err := c.CompileOOB(filepath.Join(filepath.Dir(filename), commandName+".oob"))
 			if err != nil {
@@ -191,7 +191,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 					}
 				}
 				if !found {
-					return nil, CompilerError{k + 1, filename, fmt.Sprintf("Failed to find subUnit '%v' in '%v", subUnit, commandName)}
+					return nil, Error{k + 1, filename, fmt.Sprintf("Failed to find subUnit '%v' in '%v", subUnit, commandName)}
 				}
 			}
 			cmd.Arrival = &rp.Arrival{
@@ -205,7 +205,7 @@ func (c *Compiler) CompileScenario(filename string) (*rp.Scenario, error) {
 
 			continue
 		default:
-			return nil, CompilerError{k + 1, filename, fmt.Sprintf("Dont know what to do with a unit at indent level %d '%v", ii, v)}
+			return nil, Error{k + 1, filename, fmt.Sprintf("Dont know what to do with a unit at indent level %d '%v", ii, v)}
 		}
 	}
 	return scn, nil

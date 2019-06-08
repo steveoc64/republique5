@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// NewToken returns a new token with a randomised UUID and a 24hr expiry period
 func NewToken() *Token {
 	return &Token{
 		Id:      uuid.New().String(),

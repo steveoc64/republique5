@@ -1,9 +1,7 @@
 package appwindow
 
 import (
-	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -15,24 +13,27 @@ var isPlaying bool
 
 func (a *App) PlayAudio(arm string) {
 	return
-	dirname := filepath.Join(os.Getenv("HOME"), "republique", arm)
-	files := []string{}
-	filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
-			return err
+	/*
+		dirname := filepath.Join(os.Getenv("HOME"), "republique", arm)
+		files := []string{}
+		filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
+				return err
+			}
+			if !info.IsDir() {
+				files = append(files, path)
+			}
+			return nil
+		})
+		if len(files) < 1 {
+			return
 		}
-		if !info.IsDir() {
-			files = append(files, path)
-		}
-		return nil
-	})
-	if len(files) < 1 {
-		return
-	}
-	i := rand.Intn(len(files))
-	audioFile := files[i]
-	a.playAudio(audioFile)
+		i := rand.Intn(len(files))
+		audioFile := files[i]
+		a.playAudio(audioFile)
+
+	*/
 }
 
 func (a *App) PlaySystemAudio(name string) {

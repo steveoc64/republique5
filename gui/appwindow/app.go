@@ -1,6 +1,7 @@
 package appwindow
 
 import (
+	// ensure that jpep and png engines are imported
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
@@ -20,6 +21,7 @@ import (
 	"fyne.io/fyne/layout"
 )
 
+// App is the top level object to contain the application data
 type App struct {
 	// game state
 	ServerName string
@@ -63,6 +65,7 @@ type App struct {
 	audioPort *oto.Player
 }
 
+// Show creates the application UI
 func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, gameServer rp.GameServiceClient) {
 	a := &App{
 		app:         app,
@@ -79,7 +82,6 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		gameServer:  gameServer,
 		isDarkTheme: true,
 	}
-	a.ToggleTheme()
 	a.loadUI()
 	a.window.CenterOnScreen()
 	a.window.Show()
@@ -87,6 +89,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 	a.Phaser()
 }
 
+// loadUI generates the UI elements
 func (a *App) loadUI() {
 	a.window = a.app.NewWindow("Republique 5.0")
 	a.window.SetOnClosed(func() { os.Exit(0) })
@@ -107,7 +110,7 @@ func (a *App) loadUI() {
 
 	a.layout = layout.NewBorderLayout(a.header.CanvasObject(), a.footer.CanvasObject(), nil, nil)
 	t := widget.NewTabContainer(
-		widget.NewTabItemWithIcon("Briefing", theme.FolderIcon(), a.briefingPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Briefing", theme.FolderOpenIcon(), a.briefingPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.CanvasObject()),
@@ -129,6 +132,8 @@ func (a *App) loadUI() {
 	a.window.Canvas().SetOnTypedKey(a.typedKey)
 }
 
+// MinSize returns the minimum size for the panel objects - helper function for
+// panels to get a consistent sizing hint
 func (a *App) MinSize() fyne.Size {
 	return fyne.NewSize(1280, 900)
 }
@@ -157,6 +162,7 @@ func (a *App) loadImage(name string) *canvas.Image {
 	return nil
 }
 
+// ToggleTheme changes the theme between darkMode and lightMode and back again
 func (a *App) ToggleTheme() {
 	a.isDarkTheme = !a.isDarkTheme
 	if a.isDarkTheme {
@@ -164,5 +170,4 @@ func (a *App) ToggleTheme() {
 	} else {
 		a.app.Settings().SetTheme(theme.LightTheme())
 	}
-	//a.mapPanel.CanvasObject().Show()
 }

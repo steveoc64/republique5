@@ -8,6 +8,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+// GetUnits returns all the units owned by the player with the given token
 func (s *Server) GetUnits(c context.Context, req *rp.TokenMessage) (*rp.Units, error) {
 	s.RLock()
 	defer s.RUnlock()

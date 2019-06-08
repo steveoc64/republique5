@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+// Server object stores the whole game state
 type Server struct {
 	sync.RWMutex
 	log         *logrus.Logger

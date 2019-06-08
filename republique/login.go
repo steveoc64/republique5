@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Login is an RPC that validates the given credentials, and returns a struct with the player data if success
 func (s *Server) Login(c context.Context, req *rp.LoginMessage) (*rp.LoginResponse, error) {
 	s.log.WithFields(logrus.Fields{
 		"Team":   req.TeamCode,
