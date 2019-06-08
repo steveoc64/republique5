@@ -124,7 +124,6 @@ func (u *UnitDetails) setField(name, value string) {
 // Populate refreshes the UnitDetail fields from the given unit data
 func (u *UnitDetails) Populate(unit *rp.Unit) {
 	u.unit = unit
-	println("populating unit", unit.Name)
 	switch unit.GameState.Formation {
 	case rp.Formation_LINE:
 		u.formationImg.Resource = resourceLineJpg
@@ -193,7 +192,6 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 }
 
 func (u *UnitDetails) nextUnit() {
-	println("nextUnit")
 	c := u.app.GetUnitCommander(u.unit.GetId())
 	target := -1
 	if c != nil {
@@ -210,7 +208,6 @@ func (u *UnitDetails) nextUnit() {
 }
 
 func (u *UnitDetails) prevUnit() {
-	println("prevUnit")
 	c := u.app.GetUnitCommander(u.unit.GetId())
 	target := -1
 	if c != nil {
@@ -227,7 +224,6 @@ func (u *UnitDetails) prevUnit() {
 }
 
 func (u *UnitDetails) parent() {
-	println("parent")
 	c := u.app.GetUnitCommander(u.unit.GetId())
 	if c != nil {
 		u.panel.ShowCommand(c)
