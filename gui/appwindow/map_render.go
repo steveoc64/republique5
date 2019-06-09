@@ -19,7 +19,6 @@ type mapRender struct {
 	mw      *MapWidget
 	objects []fyne.CanvasObject
 	img     *image.RGBA
-	canvas  fyne.CanvasObject
 }
 
 func newMapRender(mw *MapWidget) *mapRender {
@@ -28,7 +27,7 @@ func newMapRender(mw *MapWidget) *mapRender {
 	//render := canvas.NewRasterWithPixels(r.paint2)
 	r.render = render
 	r.objects = []fyne.CanvasObject{render}
-	r.ApplyTheme()
+	//r.ApplyTheme()
 	return r
 }
 
@@ -80,6 +79,9 @@ func (r *mapRender) getImage(w, h int) image.Image {
 	if r.img == nil || r.img.Bounds().Size().X != w || r.img.Bounds().Size().Y != h {
 		r.img = r.generateImage(w, h)
 	}
+	if r.mw.hidden {
+		return &image.RGBA{}
+	}
 	return r.img
 }
 
@@ -108,41 +110,95 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 				image.Point{0, 0},
 				draw.Src)
 
-			switch r.mw.mapData.Data[i] {
+			mapChar := r.mw.mapData.Data[i]
+			switch mapChar {
+			case 'H':
+				// small hills
+				r.hills(gc, fx, fy, dx, dy, 1)
 			case 'h':
-				println("hillock", x, y)
-				// draw a silly little triangle in the middle of the grid square
-				gc.BeginPath()
-				gc.SetFillColor(color.RGBA{150, 30, 0, 16})
-				gc.SetStrokeColor(color.RGBA{130, 20, 0, 200})
+				// larger hills
+				r.hills(gc, fx, fy, dx, dy, 2)
+			case 'w':
+				// draw a little circle for woods
+				gc.SetFillColor(map_woods_fill)
+				gc.SetStrokeColor(map_woods_stroke)
 				gc.SetLineWidth(5)
-				gc.MoveTo(fx+0.2*dx, fy+0.6*dy)
-				gc.LineTo(fx+0.5*dx, fy+0.4*dy)
-				gc.LineTo(fx+0.8*dx, fy+0.6*dy)
+				gc.BeginPath()
+				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
+					fy+float64(rand.Intn(100))/100.0*dy,
+					dx*.1, dy*.1,
+					0, 6)
 				gc.Close()
 				gc.FillStroke()
-			case 'H':
-			case 'w':
-				/*
-					println("woods",x,y)
-					gc.SetStrokeColor(color.RGBA{0, 40, 0, 64})
-					gc.SetFillColor(color.RGBA{0, 80, 0, 64})
-					gc.SetLineWidth(5)
-					gc.ArcTo(fx*fmx+fmx/2,fy*fmy+fmy/2,fmx*.6,fmy*.6,0,0)
-					println("arcto",fx*fmx+fmx/2,fy*fmy+fmy/2,fmx*.6,fmy*.6,0,0)
-				*/
+				gc.BeginPath()
+				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
+					fy+float64(rand.Intn(100))/100.0*dy,
+					dx*.15, dy*.15,
+					0, 6)
+				gc.Close()
+				gc.FillStroke()
+				gc.BeginPath()
+				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
+					fy+float64(rand.Intn(100))/100.0*dy,
+					dx*.1, dy*.1,
+					0, 6)
+				gc.Close()
+				gc.FillStroke()
 			case 'W':
-			case 't':
-			case 'T':
-			case 'r':
-			case 'R':
+			case 't', 'T':
+				// draw a little boxes for towns
+				mt := 8
+				if mapChar == 'T' {
+					mt = 16
+				}
+				cc := &image.Uniform{map_town_fill}
+				for ii := 0; ii < mt; ii++ {
+					tx := x*int(dx) + rand.Intn(int(dx))
+					ty := y*int(dy) + rand.Intn(int(dy))
+					draw.Draw(img,
+						image.Rectangle{
+							image.Point{tx, ty},
+							image.Point{tx + rand.Intn(16), ty + rand.Intn(16)},
+						},
+						cc,
+						image.Point{0, 0},
+						draw.Src,
+					)
+				}
 			}
 			i++
 		}
 	}
 
+	// draw rivers
+	i = 0
+	gc.SetFillColor(map_water)
+	gc.SetStrokeColor(map_blue)
+	gc.SetLineWidth(8)
+	gc.BeginPath()
+	gotriver := false
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
+			fx := float64(x) * dx
+			fy := float64(y) * dy
+			switch r.mw.mapData.Data[i] {
+			case 'r':
+				if !gotriver {
+					gotriver = true
+					gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
+				} else {
+					gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+				}
+			}
+			i++
+		}
+	}
+	if gotriver {
+		gc.FillStroke()
+	}
+
 	// grid lines - vertical
-	gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0x08})
+	gc.SetStrokeColor(map_grid)
 	gc.SetLineWidth(1)
 	for x := 0; x < mx; x++ {
 		gc.BeginPath()
@@ -161,4 +217,32 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	}
 
 	return img
+}
+
+func (r *mapRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, count int) {
+	gc.SetFillColor(map_hill_fill)
+	gc.SetStrokeColor(map_hill_stroke)
+	gc.SetLineWidth(5)
+	switch count {
+	case 1:
+		gc.BeginPath()
+		gc.MoveTo(fx+0.2*dx, fy+0.6*dy)
+		gc.LineTo(fx+0.5*dx, fy+0.4*dy)
+		gc.LineTo(fx+0.8*dx, fy+0.6*dy)
+		gc.Close()
+		gc.FillStroke()
+	case 2:
+		gc.BeginPath()
+		gc.MoveTo(fx+0.1*dx, fy+0.5*dy)
+		gc.LineTo(fx+0.4*dx, fy+0.3*dy)
+		gc.LineTo(fx+0.7*dx, fy+0.5*dy)
+		gc.Close()
+		gc.FillStroke()
+		gc.BeginPath()
+		gc.MoveTo(fx+0.3*dx, fy+0.7*dy)
+		gc.LineTo(fx+0.6*dx, fy+0.5*dy)
+		gc.LineTo(fx+0.9*dx, fy+0.7*dy)
+		gc.Close()
+		gc.FillStroke()
+	}
 }

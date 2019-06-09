@@ -73,22 +73,19 @@ func (u *UnitCommand) newItem(label string, rgba color.RGBA, style fyne.TextStyl
 func (u *UnitCommand) build() {
 	u.fields = make(map[string]*canvas.Text)
 	s := fyne.TextStyle{}
-	green := color.RGBA{40, 240, 180, 1}
-	blue := color.RGBA{40, 180, 240, 1}
-	red := color.RGBA{200, 0, 0, 1}
-	u.form.AppendItem(u.newItem("_UnitID", green, fyne.TextStyle{Bold: true}, 48))
-	u.form.AppendItem(u.newItem("Commander", blue, s, 18))
-	u.form.AppendItem(u.newItem("_Grid", blue, s, 18))
-	u.form.AppendItem(u.newItem("_Type", blue, s, 18))
-	u.form.AppendItem(u.newItem("Name", blue, s, 18))
-	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
-	u.form.AppendItem(u.newItem("Strength", blue, s, 18))
-	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
-	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Order", blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Move", blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Rally", blue, s, 18))
-	u.form.AppendItem(u.newItem("Panic State", red, s, 18))
+	u.form.AppendItem(u.newItem("_UnitID", command_green, fyne.TextStyle{Bold: true}, 48))
+	u.form.AppendItem(u.newItem("Commander", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Name", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Notes", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Strength", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Drill", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Reserve", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Order", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Move", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Can Rally", command_blue, s, 18))
+	u.form.AppendItem(u.newItem("Panic State", command_red, s, 18))
 }
 
 // setField sets the text of the given field, by name

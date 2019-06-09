@@ -2,9 +2,10 @@ package appwindow
 
 import (
 	"fmt"
-	"fyne.io/fyne/layout"
 	"image/color"
 	"strings"
+
+	"fyne.io/fyne/layout"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -23,6 +24,7 @@ type UnitDetails struct {
 	scroll           *widget.ScrollContainer
 	fields           map[string]*canvas.Text
 	unit             *rp.Unit
+	id               *canvas.Text
 	hasPrev, hasNext bool
 	prevBtn, nextBtn *TapIcon
 }
@@ -49,11 +51,14 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 			formationLabel,
 			hbox,
 		),
+		id: canvas.NewText("ID", unit_green),
 	}
 	mkbtn := func(res fyne.Resource, f func()) *TapIcon {
 		b := NewTapIcon(res, f, f)
 		return b
 	}
+	u.id.TextSize = 48
+	u.id.TextStyle = fyne.TextStyle{Bold: true}
 	u.prevBtn = mkbtn(resourcePrevSvg, u.prevUnit)
 	u.nextBtn = mkbtn(resourceNextSvg, u.nextUnit)
 	hbox.Append(layout.NewSpacer())
@@ -88,18 +93,16 @@ func (u *UnitDetails) newItem(label string, rgba color.RGBA, style fyne.TextStyl
 func (u *UnitDetails) build() {
 	u.fields = make(map[string]*canvas.Text)
 	s := fyne.TextStyle{}
-	green := color.RGBA{140, 240, 180, 1}
-	blue := color.RGBA{140, 180, 240, 1}
-	u.form.AppendItem(u.newItem("_UnitID", green, fyne.TextStyle{Bold: true}, 48))
-	u.form.AppendItem(u.newItem("Name", blue, s, 18))
-	u.form.AppendItem(u.newItem("_Grid", blue, s, 18))
-	u.form.AppendItem(u.newItem("_Type", blue, s, 18))
-	u.form.AppendItem(u.newItem("Notes", blue, s, 18))
-	u.form.AppendItem(u.newItem("Strength", blue, s, 18))
-	u.form.AppendItem(u.newItem("Skirmishers", blue, s, 18))
-	u.form.AppendItem(u.newItem("Bn Guns", blue, s, 18))
-	u.form.AppendItem(u.newItem("Drill", blue, s, 18))
-	u.form.AppendItem(u.newItem("Reserve", blue, s, 18))
+	u.form.Append("", u.id)
+	u.form.AppendItem(u.newItem("Name", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Notes", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Strength", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Skirmishers", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Bn Guns", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Drill", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Reserve", unit_blue, s, 18))
 }
 
 // setField sets the contents of the field given by name
@@ -135,7 +138,8 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 
 	}
 	//canvas.Refresh(u.formationImg)
-	u.setField("_UnitID", fmt.Sprintf("%d", unit.Id))
+	u.id.Text = fmt.Sprintf("%d", unit.Id)
+	canvas.Refresh(u.id)
 	u.setField("_Grid", fmt.Sprintf("%d,%d",
 		unit.GameState.GetGrid().GetX(),
 		unit.GameState.GetGrid().GetY()))
