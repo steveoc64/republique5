@@ -88,48 +88,56 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	if w == 0 || h == 0 {
 		return img
 	}
-	dx := w / int(r.mw.mapData.X)
-	dy := h / int(r.mw.mapData.Y)
+	dx := float64(w / int(r.mw.mapData.X))
+	dy := float64(h / int(r.mw.mapData.Y))
 	mx := int(r.mw.mapData.X)
 	my := int(r.mw.mapData.Y)
+	gc := draw2dimg.NewGraphicContext(img)
 
 	// grid overlays
-	gc := draw2dimg.NewGraphicContext(img)
 	i := 0
-	for x := 0; x < mx; x++ {
-		for y := 0; y < my; y++ {
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
+			fx := float64(x) * dx
+			fy := float64(y) * dy
 			c := color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
 			draw.Draw(img,
-				image.Rectangle{image.Point{x * dx, y * dy},
-					image.Point{(x + 1) * dx, (y + 1) * dy}},
+				image.Rectangle{image.Point{x * int(dx), y * int(dy)},
+					image.Point{(x + 1) * int(dx), (y + 1) * int(dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
 				draw.Src)
 
-			gc.BeginPath()
 			switch r.mw.mapData.Data[i] {
 			case 'h':
+				println("hillock", x, y)
 				// draw a silly little triangle in the middle of the grid square
-				gc.SetStrokeColor(color.RGBA{50, 40, 30, 64})
+				gc.BeginPath()
+				gc.SetFillColor(color.RGBA{150, 30, 0, 16})
+				gc.SetStrokeColor(color.RGBA{130, 20, 0, 200})
 				gc.SetLineWidth(5)
-				gc.MoveTo(float64(x*mx+mx/3), float64(y*my+2*my/3))
-				gc.LineTo(float64(x*mx+mx/2), float64(y*my+my/3))
-				gc.LineTo(float64(x*mx+2*mx/3), float64(y*my+2*my/3))
+				gc.MoveTo(fx+0.2*dx, fy+0.6*dy)
+				gc.LineTo(fx+0.5*dx, fy+0.4*dy)
+				gc.LineTo(fx+0.8*dx, fy+0.6*dy)
+				gc.Close()
+				gc.FillStroke()
 			case 'H':
 			case 'w':
-				gc.SetStrokeColor(color.RGBA{0, 40, 0, 64})
-				gc.SetFillColor(color.RGBA{0, 80, 0, 64})
-				gc.SetLineWidth(5)
-				gc.C
+				/*
+					println("woods",x,y)
+					gc.SetStrokeColor(color.RGBA{0, 40, 0, 64})
+					gc.SetFillColor(color.RGBA{0, 80, 0, 64})
+					gc.SetLineWidth(5)
+					gc.ArcTo(fx*fmx+fmx/2,fy*fmy+fmy/2,fmx*.6,fmy*.6,0,0)
+					println("arcto",fx*fmx+fmx/2,fy*fmy+fmy/2,fmx*.6,fmy*.6,0,0)
+				*/
 			case 'W':
 			case 't':
 			case 'T':
 			case 'r':
 			case 'R':
 			}
-			gc.Close()
-			gc.FillStroke()
-
+			i++
 		}
 	}
 
@@ -138,16 +146,16 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	gc.SetLineWidth(1)
 	for x := 0; x < mx; x++ {
 		gc.BeginPath()
-		gc.MoveTo(float64(x*dx), 0.0)
-		gc.LineTo(float64(x*dx), float64(h))
+		gc.MoveTo(float64(x)*dx, 0.0)
+		gc.LineTo(float64(x)*dx, float64(h))
 		gc.Close()
 		gc.FillStroke()
 	}
 	// grid lines - horizontal
 	for y := 0; y < my; y++ {
 		gc.BeginPath()
-		gc.MoveTo(0.0, float64(y*dy))
-		gc.LineTo(float64(w), float64(y*dy))
+		gc.MoveTo(0.0, float64(y)*dy)
+		gc.LineTo(float64(w), float64(y)*dy)
 		gc.Close()
 		gc.FillStroke()
 	}
