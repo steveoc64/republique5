@@ -138,8 +138,7 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 	u.setField("_UnitID", fmt.Sprintf("%d", unit.Id))
 	u.setField("_Grid", fmt.Sprintf("%d,%d",
 		unit.GameState.GetGrid().GetX(),
-		unit.GameState.GetGrid().GetY(),
-	))
+		unit.GameState.GetGrid().GetY()))
 	u.setField("_Type", fmt.Sprintf("%s %s - %s %s",
 		upString(unit.Nationality.String()),
 		upString(unit.Arm.String()),

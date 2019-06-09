@@ -81,16 +81,17 @@ func (c *Command) BattleFormation() Formation {
 	return Formation_DEBANDE
 }
 
-func (c *Command) initState(parent *Command, standDown bool) {
+func (c *Command) initState(parent *Command, standDown bool, side MapSide, mx, my int32) {
 	pos := BattlefieldPosition_OFF_BOARD
 	form := Formation_MARCH_COLUMN
 	if parent != nil {
 		pos = parent.GetGameState().GetPosition()
 		form = parent.GetGameState().GetFormation()
 	}
-	if c.Arrival != nil {
-		pos = c.Arrival.GetPosition()
+	if c.Arrival == nil && parent.GetArrival() != nil {
+		c.Arrival = parent.GetArrival()
 	}
+	pos = c.Arrival.GetPosition()
 	switch {
 	case c.GetArrival().GetFrom() > 0:
 		// offboard units are in march column heading to the battle
@@ -115,9 +116,63 @@ func (c *Command) initState(parent *Command, standDown bool) {
 			form = Formation_LINE
 		}
 	}
+	var x, y int32
+	switch c.Arrival.Position {
+	case BattlefieldPosition_CENTRE, BattlefieldPosition_REAR:
+		switch side {
+		case MapSide_FRONT:
+			x = mx / 2
+			y = my
+		case MapSide_TOP:
+			x = mx / 2
+			y = 1
+		case MapSide_RIGHT_FLANK:
+			x = mx
+			y = my / 2
+		case MapSide_LEFT_FLANK:
+			x = 1
+			y = my / 2
+		}
+	case BattlefieldPosition_RIGHT:
+		switch side {
+		case MapSide_FRONT:
+			x = mx
+			y = my - 1
+		case MapSide_TOP:
+			x = 1
+			y = 2
+		case MapSide_RIGHT_FLANK:
+			x = mx
+			y = 1
+		case MapSide_LEFT_FLANK:
+			x = 1
+			y = my
+		}
+	case BattlefieldPosition_LEFT:
+		switch side {
+		case MapSide_FRONT:
+			x = 2
+			y = my
+		case MapSide_TOP:
+			x = mx - 1
+			y = 1
+		case MapSide_RIGHT_FLANK:
+			x = mx
+			y = 1
+		case MapSide_LEFT_FLANK:
+			x = mx
+			y = my
+		}
+	}
 	c.GameState = &CommandGameState{
 		Position:  pos,
 		Formation: form,
-		CanOrder:  true,
+		Grid: &Grid{
+			X: x,
+			Y: y,
+		},
+		Can: &UnitAction{
+			Order: true,
+		},
 	}
 }

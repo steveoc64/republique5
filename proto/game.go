@@ -45,7 +45,7 @@ func (g *Game) InitGameState() {
 	}
 	for _, team := range g.GetScenario().GetTeams() {
 		for _, command := range team.GetCommands() {
-			command.initState(nil, false)
+			command.initState(nil, false, team.Side, g.TableX, g.TableY)
 			for _, unit := range command.Units {
 				unit.initState(command, false)
 			}
@@ -58,7 +58,7 @@ func (g *Game) InitGameState() {
 						standDown = true
 					}
 				}
-				subCommand.initState(command, standDown)
+				subCommand.initState(command, standDown, team.Side, g.TableX, g.TableY)
 				for _, unit := range subCommand.Units {
 					unit.initState(command, standDown)
 				}

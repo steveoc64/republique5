@@ -182,9 +182,14 @@ func (u *Unit) initState(parent *Command, standDown bool) {
 		guns = false
 		sk = 0
 	}
+	pgrid := parent.GetGameState().GetGrid()
 	u.GameState = &UnitGameState{
 		SkirmishersDeployed: sk,
 		Formation:           form,
 		GunsDeployed:        guns,
+		Grid: &Grid{
+			X: pgrid.GetX(),
+			Y: pgrid.GetY(),
+		},
 	}
 }

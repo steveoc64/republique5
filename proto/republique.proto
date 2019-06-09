@@ -107,14 +107,11 @@ message UnitGameState {
   Grid objective = 16;
   Grid moveTo = 17;
   Grid gunTarget = 18;
-  bool hasCharged = 19;
-  string supportingUnit = 20;
-  string engagedUnit = 21;
-  bool canAssault = 22;
-  bool hasAssaulted = 23;
-  UnitAction can = 24;
-  UnitAction has = 25;
-  UnitAction must = 26;
+  string supportingUnit = 19;
+  string engagedUnit = 20;
+  UnitAction can = 21;
+  UnitAction has = 22;
+  UnitAction must = 23;
 }
 
 message UnitAction {
@@ -166,18 +163,12 @@ message CommandGameState {
   bool injured = 6;
   string objectiveName = 7;
   Order orders = 8;
-  string attachedTo = 9;
-  bool hasOrdered = 10;
-  bool hasMoved = 11;
-  bool hasRallied = 12;
-  google.protobuf.Timestamp timestamp = 13;
-  Grid objective = 14;
-  bool canOrder = 15;
-  bool canMove = 16;
-  bool canRally = 17;
-  UnitAction can = 18;
-  UnitAction has = 19;
-  UnitAction must = 20;
+  Grid objective = 9;;
+  string attachedTo = 10;
+  google.protobuf.Timestamp timestamp = 11;
+  UnitAction can = 12;
+  UnitAction has = 13;
+  UnitAction must = 14;
 }
 
 message Arrival {
