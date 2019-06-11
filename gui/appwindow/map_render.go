@@ -102,30 +102,31 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		for x := 0; x < mx; x++ {
 			fx := float64(x) * dx
 			fy := float64(y) * dy
-			c := color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			c := color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
 			draw.Draw(img,
 				image.Rectangle{image.Point{x * int(dx), y * int(dy)},
 					image.Point{int((float64(x) + .5) * dx), int((float64(y) + .5) * dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
 				draw.Src)
-			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
 			draw.Draw(img,
-				image.Rectangle{image.Point{int((float64(x)+0.5) * dx), y * int(dy)},
+				image.Rectangle{image.Point{int((float64(x) + 0.5) * dx), y * int(dy)},
 					image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + .5) * dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
 				draw.Src)
-			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
 			draw.Draw(img,
-				image.Rectangle{image.Point{x * int(dx), int((float64(y)+.5) * dy)},
+				image.Rectangle{image.Point{x * int(dx), int((float64(y) + .5) * dy)},
 					image.Point{int((float64(x) + .5) * dx), int((float64(y) + 1.0) * dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
 				draw.Src)
-			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
+			//c = color.RGBA{uint8(rand.Intn(100)), 200, 50, uint8(rand.Intn(32))}
 			draw.Draw(img,
-				image.Rectangle{image.Point{int((float64(x)+0.5) * dx), int((float64(y)+.5) * dy)},
+				image.Rectangle{image.Point{int((float64(x) + 0.5) * dx), int((float64(y) + .5) * dy)},
 					image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + 1.0) * dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
@@ -217,7 +218,6 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	if gotriver {
 		gc.FillStroke()
 	}
-
 
 	// minor grid lines - vertical
 	gc.SetStrokeColor(map_grid_minor)

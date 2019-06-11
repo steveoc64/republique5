@@ -147,6 +147,7 @@ func (u *UnitCommand) populateUnits() {
 	for _, unit := range u.command.GetUnits() {
 		u.unitList.Append(u.newUnitLabel(unit))
 	}
+	widget.Refresh(u.unitList)
 }
 
 func (u *UnitCommand) newUnitLabel(unit *rp.Unit) *TapLabel {
