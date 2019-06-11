@@ -65,12 +65,18 @@ func (mw *MapWidget) Visible() bool {
 func (mw *MapWidget) Show() {
 	println("widget show")
 	mw.hidden = false
+	for _, obj := range widget.Renderer(mw).Objects() {
+		obj.Show()
+	}
 }
 
 // Hide sets the mapWidget to be not visible
 func (mw *MapWidget) Hide() {
 	println("widget hide")
 	mw.hidden = true
+	for _, obj := range widget.Renderer(mw).Objects() {
+		obj.Hide()
+	}
 }
 
 // ApplyTheme applies the theme to the mapWidget

@@ -64,7 +64,7 @@ func (u *UnitOverview) commanderAction(command *rp.Command) {
 // commanderButton returns a new commanderButton
 func (u *UnitOverview) newCommanderButton(command *rp.Command, corps bool) *widget.Button {
 	orderButton := theme.RadioButtonCheckedIcon()
-	if command.GameState.CanOrder {
+	if command.GameState.GetCan().GetOrder() {
 		orderButton = theme.RadioButtonIcon()
 	}
 	if corps {

@@ -17,9 +17,11 @@ help:
 	@echo proto compile dump newgame serve info oob ui
 
 protobuf:
+	my-protoc.sh
 	$(MAKE) -C proto
+	neds-protoc.sh
 
-compiler: 
+compiler:
 	$(MAKE) -C cmd/republique
 
 compile:cmd/republique

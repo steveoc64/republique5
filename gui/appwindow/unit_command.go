@@ -133,9 +133,9 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 		upString(command.GetDrill().String()),
 		upString(command.GetCommandRating().String())))
 	u.setField("Reserve", fmt.Sprintf("%v", command.GetReserve()))
-	u.setField("Can Order", fmt.Sprintf("%v", command.GetGameState().GetCanOrder()))
-	u.setField("Can Move", fmt.Sprintf("%v", command.GetGameState().GetCanMove()))
-	u.setField("Can Rally", fmt.Sprintf("%v", command.GetGameState().GetCanRally()))
+	u.setField("Can Order", fmt.Sprintf("%v", command.GetGameState().GetCan().GetOrder()))
+	u.setField("Can Move", fmt.Sprintf("%v", command.GetGameState().GetCan().GetMove()))
+	u.setField("Can Rally", fmt.Sprintf("%v", command.GetGameState().GetCan().GetRally()))
 	u.setField("Panic State", fmt.Sprintf("%v", command.GetGameState().GetPanicState()))
 
 	u.command = command
