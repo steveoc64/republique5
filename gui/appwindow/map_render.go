@@ -105,7 +105,28 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			c := color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
 			draw.Draw(img,
 				image.Rectangle{image.Point{x * int(dx), y * int(dy)},
-					image.Point{(x + 1) * int(dx), (y + 1) * int(dy)}},
+					image.Point{int((float64(x) + .5) * dx), int((float64(y) + .5) * dy)}},
+				&image.Uniform{c},
+				image.Point{0, 0},
+				draw.Src)
+			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			draw.Draw(img,
+				image.Rectangle{image.Point{int((float64(x)+0.5) * dx), y * int(dy)},
+					image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + .5) * dy)}},
+				&image.Uniform{c},
+				image.Point{0, 0},
+				draw.Src)
+			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			draw.Draw(img,
+				image.Rectangle{image.Point{x * int(dx), int((float64(y)+.5) * dy)},
+					image.Point{int((float64(x) + .5) * dx), int((float64(y) + 1.0) * dy)}},
+				&image.Uniform{c},
+				image.Point{0, 0},
+				draw.Src)
+			c = color.RGBA{uint8(rand.Intn(64)), 200, 50, uint8(rand.Intn(16))}
+			draw.Draw(img,
+				image.Rectangle{image.Point{int((float64(x)+0.5) * dx), int((float64(y)+.5) * dy)},
+					image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + 1.0) * dy)}},
 				&image.Uniform{c},
 				image.Point{0, 0},
 				draw.Src)
@@ -197,9 +218,29 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		gc.FillStroke()
 	}
 
-	// grid lines - vertical
-	gc.SetStrokeColor(map_grid)
+
+	// minor grid lines - vertical
+	gc.SetStrokeColor(map_grid_minor)
 	gc.SetLineWidth(1)
+	for x := 0; x < mx*2; x++ {
+		gc.BeginPath()
+		gc.MoveTo(float64(x)*(dx/2), 0.0)
+		gc.LineTo(float64(x)*(dx/2), float64(h))
+		gc.Close()
+		gc.FillStroke()
+	}
+	// minor grid lines - horizontal
+	for y := 0; y < my*2; y++ {
+		gc.BeginPath()
+		gc.MoveTo(0.0, float64(y)*(dy/2))
+		gc.LineTo(float64(w), float64(y)*(dy/2))
+		gc.Close()
+		gc.FillStroke()
+	}
+
+	// major grid lines - vertical
+	gc.SetStrokeColor(map_grid)
+	gc.SetLineWidth(2)
 	for x := 0; x < mx; x++ {
 		gc.BeginPath()
 		gc.MoveTo(float64(x)*dx, 0.0)
@@ -207,7 +248,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		gc.Close()
 		gc.FillStroke()
 	}
-	// grid lines - horizontal
+	// major grid lines - horizontal
 	for y := 0; y < my; y++ {
 		gc.BeginPath()
 		gc.MoveTo(0.0, float64(y)*dy)
