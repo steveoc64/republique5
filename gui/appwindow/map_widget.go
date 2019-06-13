@@ -5,23 +5,57 @@ import (
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
+	"image/color"
 )
+
+type gridData struct {
+	x,y int
+	back []color.RGBA
+	value []byte
+}
+
+func newGridData(x,y int) *gridData {
+	return &gridData{
+		x: x,
+		y: y,
+		back: make([]color.RGBA, x*y*4),
+		value: make([]byte, x*y),
+	}
+}
+
+func (g *gridData) Color(x,y int) color.RGBA {
+	i := y*g.x + x
+	if i < 0 || y > len(g.back)-1 {
+		return nil
+	}
+	return g.back[i]
+}
+
+func (g *gridData) Value(x,y int) byte {
+	i := y*g.x + x
+	if i < 0 || y > len(g.value)-1 {
+		return nil
+	}
+	return g.value[i]
+}
 
 // MapWidget is a complete map viewer widget
 // ... or will be when it grows up
 type MapWidget struct {
+	app *App
 	size     fyne.Size
 	position fyne.Position
 	hidden   bool
 	mapData  *rp.MapData
 
-	app *App
+	grid *gridData
 }
 
 func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
 	mw := &MapWidget{
 		app:     app,
 		mapData: mapData,
+		grid: newGridData(mapData.X, mapData.Y)
 	}
 	mw.Resize(mw.MinSize())
 	return mw
