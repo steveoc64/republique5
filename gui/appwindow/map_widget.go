@@ -1,40 +1,41 @@
 package appwindow
 
 import (
+	"image/color"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
-	"image/color"
 )
 
 type gridData struct {
-	x,y int
-	back []color.RGBA
+	x, y  int32
+	back  []color.RGBA
 	value []byte
 }
 
-func newGridData(x,y int) *gridData {
+func newGridData(x, y int32) *gridData {
 	return &gridData{
-		x: x,
-		y: y,
-		back: make([]color.RGBA, x*y*4),
+		x:     x,
+		y:     y,
+		back:  make([]color.RGBA, x*y*4),
 		value: make([]byte, x*y),
 	}
 }
 
-func (g *gridData) Color(x,y int) color.RGBA {
+func (g *gridData) Color(x, y int32) color.RGBA {
 	i := y*g.x + x
-	if i < 0 || y > len(g.back)-1 {
-		return nil
+	if i < 0 || y > int32(len(g.back))-1 {
+		return color.RGBA{}
 	}
 	return g.back[i]
 }
 
-func (g *gridData) Value(x,y int) byte {
+func (g *gridData) Value(x, y int32) byte {
 	i := y*g.x + x
-	if i < 0 || y > len(g.value)-1 {
-		return nil
+	if i < 0 || y > int32(len(g.value))-1 {
+		return ' '
 	}
 	return g.value[i]
 }
@@ -42,20 +43,20 @@ func (g *gridData) Value(x,y int) byte {
 // MapWidget is a complete map viewer widget
 // ... or will be when it grows up
 type MapWidget struct {
-	app *App
+	app      *App
 	size     fyne.Size
 	position fyne.Position
 	hidden   bool
 	mapData  *rp.MapData
 
-	grid *gridData
+	//grid *gridData
 }
 
 func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
 	mw := &MapWidget{
 		app:     app,
 		mapData: mapData,
-		grid: newGridData(mapData.X, mapData.Y)
+		//grid:    newGridData(mapData.X, mapData.Y),
 	}
 	mw.Resize(mw.MinSize())
 	return mw
@@ -68,7 +69,6 @@ func (mw *MapWidget) Size() fyne.Size {
 
 // Resize resizes the mapWidget
 func (mw *MapWidget) Resize(size fyne.Size) {
-	println("mw resize to", size.Width, size.Height)
 	mw.size = size
 	widget.Renderer(mw).Layout(mw.size)
 	canvas.Refresh(mw)
@@ -97,7 +97,6 @@ func (mw *MapWidget) Visible() bool {
 
 // Show sets the mapWidget to be visible
 func (mw *MapWidget) Show() {
-	println("widget show")
 	mw.hidden = false
 	for _, obj := range widget.Renderer(mw).Objects() {
 		obj.Show()
@@ -106,7 +105,6 @@ func (mw *MapWidget) Show() {
 
 // Hide sets the mapWidget to be not visible
 func (mw *MapWidget) Hide() {
-	println("widget hide")
 	mw.hidden = true
 	for _, obj := range widget.Renderer(mw).Objects() {
 		obj.Hide()

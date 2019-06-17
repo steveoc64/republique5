@@ -57,7 +57,6 @@ func (u *UnitOverview) build() {
 
 // commanderAction is the click handler for each commander button
 func (u *UnitOverview) commanderAction(command *rp.Command) {
-	println("clicked action for", command.LabelString())
 	u.panel.ShowCommand(command)
 }
 
@@ -81,7 +80,6 @@ func (u *UnitOverview) newCommanderButton(command *rp.Command, corps bool) *widg
 
 // unitAction is the click handler for a unit button
 func (u *UnitOverview) unitAction(unit *rp.Unit) {
-	println("clicked action for unit", unit.Name)
 	u.panel.ShowUnit(unit)
 }
 

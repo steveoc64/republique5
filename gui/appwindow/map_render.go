@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"image/draw"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"k8s.io/apimachinery/pkg/util/rand"
 
@@ -48,7 +47,6 @@ func (r *mapRender) Destroy() {
 
 // Layout does .. the layout ?
 func (r *mapRender) Layout(size fyne.Size) {
-	println("renderer layout", size.Width, size.Height)
 	r.render.Resize(size)
 }
 
@@ -67,15 +65,10 @@ func (r *mapRender) Objects() []fyne.CanvasObject {
 
 // Refresh paints the map
 func (r *mapRender) Refresh() {
-	println("maprender refresh")
 	canvas.Refresh(r.mw)
 }
 
 func (r *mapRender) getImage(w, h int) image.Image {
-	println("been asked to getImage and hidden =", r.mw.hidden, w, h)
-	if r.img != nil {
-		spew.Dump(r.img.Bounds())
-	}
 	if r.img == nil || r.img.Bounds().Size().X != w || r.img.Bounds().Size().Y != h {
 		r.img = r.generateImage(w, h)
 	}

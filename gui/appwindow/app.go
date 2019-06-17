@@ -83,8 +83,8 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		isDarkTheme: true,
 	}
 	a.loadUI()
-	a.window.CenterOnScreen()
 	a.window.Show()
+	a.window.CenterOnScreen()
 	a.PlayAudio("artillery")
 	a.Phaser()
 }
@@ -92,7 +92,6 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 // loadUI generates the UI elements
 func (a *App) loadUI() {
 	a.window = a.app.NewWindow("Republique 5.0")
-	a.window.SetOnClosed(func() { os.Exit(0) })
 	a.header = newHeaderBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
 	a.img = canvas.NewImageFromResource(resourceBannerJpg)
@@ -127,7 +126,7 @@ func (a *App) loadUI() {
 		t,
 	)
 	a.window.SetContent(a.container)
-
+	a.window.SetOnClosed(func() { os.Exit(0) })
 	a.window.Canvas().SetOnTypedRune(a.typedRune)
 	a.window.Canvas().SetOnTypedKey(a.typedKey)
 }
