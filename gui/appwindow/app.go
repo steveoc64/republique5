@@ -83,8 +83,8 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		isDarkTheme: true,
 	}
 	a.loadUI()
-	a.window.Show()
 	a.window.CenterOnScreen()
+	a.window.Show()
 	a.PlayAudio("artillery")
 	a.Phaser()
 }
