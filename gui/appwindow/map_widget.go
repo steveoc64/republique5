@@ -2,6 +2,8 @@ package appwindow
 
 import (
 	"image/color"
+	"math/rand"
+	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -16,12 +18,16 @@ type gridData struct {
 }
 
 func newGridData(x, y int32) *gridData {
-	return &gridData{
+	g := &gridData{
 		x:     x,
 		y:     y,
-		back:  make([]color.RGBA, x*y*4),
+		back:  make([]color.RGBA, x*y),
 		value: make([]byte, x*y),
 	}
+	for i := 0; i < int(x*y); i++ {
+		g.back[i] = color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
+	}
+	return g
 }
 
 func (g *gridData) Color(x, y int32) color.RGBA {
@@ -48,15 +54,14 @@ type MapWidget struct {
 	position fyne.Position
 	hidden   bool
 	mapData  *rp.MapData
-
-	//grid *gridData
+	grid     *gridData
 }
 
 func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
 	mw := &MapWidget{
 		app:     app,
 		mapData: mapData,
-		//grid:    newGridData(mapData.X, mapData.Y),
+		grid:    newGridData(mapData.X, mapData.Y),
 	}
 	mw.Resize(mw.MinSize())
 	return mw
@@ -118,5 +123,6 @@ func (mw *MapWidget) ApplyTheme() {
 
 // CreateRenderer builds a new renderer
 func (mw *MapWidget) CreateRenderer() fyne.WidgetRenderer {
+	rand.Seed(time.Now().UnixNano())
 	return newMapRender(mw)
 }

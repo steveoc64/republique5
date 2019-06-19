@@ -2,6 +2,7 @@ package republique
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -116,52 +117,73 @@ func (c *Command) initState(parent *Command, standDown bool, side MapSide, mx, m
 			form = Formation_LINE
 		}
 	}
+
+	randomizeCentre := func(x int32) int32 {
+		allow := x - 4
+		if allow < 2 {
+			return 2
+		}
+		return int32(3 + rand.Intn(int(allow)))
+	}
+	randomizeLow := func(x int32) int32 {
+		if x < 5 {
+			return 1
+		}
+		return int32(1 + rand.Intn(2))
+	}
+	randomizeHigh := func(x int32) int32 {
+		if x < 5 {
+			return x
+		}
+		return int32(x - int32(rand.Intn(2)))
+	}
+
 	var x, y int32
 	switch c.Arrival.Position {
 	case BattlefieldPosition_CENTRE, BattlefieldPosition_REAR:
 		switch side {
 		case MapSide_FRONT:
-			x = mx / 2
+			x = randomizeCentre(mx)
 			y = my
 		case MapSide_TOP:
-			x = mx / 2
+			x = randomizeCentre(mx)
 			y = 1
 		case MapSide_RIGHT_FLANK:
 			x = mx
-			y = my / 2
+			y = randomizeCentre(my)
 		case MapSide_LEFT_FLANK:
 			x = 1
-			y = my / 2
+			y = randomizeCentre(my)
 		}
 	case BattlefieldPosition_RIGHT:
 		switch side {
 		case MapSide_FRONT:
-			x = mx
-			y = my - 1
+			x = randomizeHigh(mx)
+			y = my
 		case MapSide_TOP:
-			x = 1
-			y = 2
+			x = randomizeLow(mx)
+			y = 1
 		case MapSide_RIGHT_FLANK:
 			x = mx
-			y = 1
+			y = randomizeLow(my)
 		case MapSide_LEFT_FLANK:
 			x = 1
-			y = my
+			y = randomizeHigh(my)
 		}
 	case BattlefieldPosition_LEFT:
 		switch side {
 		case MapSide_FRONT:
-			x = 2
+			x = randomizeLow(mx)
 			y = my
 		case MapSide_TOP:
-			x = mx - 1
+			x = randomizeHigh(mx)
 			y = 1
 		case MapSide_RIGHT_FLANK:
 			x = mx
-			y = 1
+			y = randomizeLow(my)
 		case MapSide_LEFT_FLANK:
-			x = mx
-			y = my
+			x = 1
+			y = randomizeHigh(my)
 		}
 	}
 	c.GameState = &CommandGameState{

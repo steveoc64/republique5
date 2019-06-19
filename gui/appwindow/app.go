@@ -84,7 +84,10 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 	}
 	a.loadUI()
 	a.window.CenterOnScreen()
-	a.window.Show()
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		a.window.Show()
+	}()
 	a.PlayAudio("artillery")
 	a.Phaser()
 }
