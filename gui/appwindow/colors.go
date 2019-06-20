@@ -18,4 +18,7 @@ var (
 	map_woods_stroke = color.RGBA{20, 20, 20, 200}
 	map_town_fill    = color.RGBA{64, 64, 64, 200}
 	map_town_stroke  = color.RGBA{32, 32, 32, 200}
+	map_unit_fill    = color.RGBA{0, 0, 128, 200}
+	map_unit_stroke  = color.RGBA{0, 0, 0, 0xFF}
+	denote_unit      = color.RGBA{200, 200, 200, 0xff}
 )

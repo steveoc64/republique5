@@ -4,7 +4,12 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"math"
 	"math/rand"
+
+	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dkit"
+	republique "github.com/steveoc64/republique5/proto"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -86,6 +91,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	mx := int(r.mw.mapData.X)
 	my := int(r.mw.mapData.Y)
 	gc := draw2dimg.NewGraphicContext(img)
+	twopi := math.Pi * 2
 
 	paintBlock := func(x, y int) {
 		i := x + mx*y
@@ -104,50 +110,19 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			draw.Src)
 	}
 
-	// grid overlays
-	i := 0
+	// paint the background blocks
 	for y := 0; y < my; y++ {
 		for x := 0; x < mx; x++ {
 			paintBlock(x, y)
+		}
+	}
+
+	// grid overlays, hills and trees
+	i := 0
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
 			fx := float64(x) * dx
 			fy := float64(y) * dy
-
-			forces := r.mw.grid.Units(int32(x), int32(y))
-			if len(forces.commands) > 0 || len(forces.units) > 0 {
-				println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x, y)
-			}
-			/*
-				c := color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
-				draw.Draw(img,
-					image.Rectangle{image.Point{x * int(dx), y * int(dy)},
-						image.Point{int((float64(x) + .5) * dx), int((float64(y) + .5) * dy)}},
-					&image.Uniform{c},
-					image.Point{0, 0},
-					draw.Src)
-				c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
-				draw.Draw(img,
-					image.Rectangle{image.Point{int((float64(x) + 0.5) * dx), y * int(dy)},
-						image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + .5) * dy)}},
-					&image.Uniform{c},
-					image.Point{0, 0},
-					draw.Src)
-				c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
-				draw.Draw(img,
-					image.Rectangle{image.Point{x * int(dx), int((float64(y) + .5) * dy)},
-						image.Point{int((float64(x) + .5) * dx), int((float64(y) + 1.0) * dy)}},
-					&image.Uniform{c},
-					image.Point{0, 0},
-					draw.Src)
-				c = color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
-				//c = color.RGBA{uint8(rand.Intn(100)), 200, 50, uint8(rand.Intn(32))}
-				draw.Draw(img,
-					image.Rectangle{image.Point{int((float64(x) + 0.5) * dx), int((float64(y) + .5) * dy)},
-						image.Point{int((float64(x) + 1.0) * dx), int((float64(y) + 1.0) * dy)}},
-					&image.Uniform{c},
-					image.Point{0, 0},
-					draw.Src)
-			*/
-
 			mapChar := r.mw.mapData.Data[i]
 			switch mapChar {
 			case 'h':
@@ -165,21 +140,21 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
 					fy+float64(rand.Intn(100))/100.0*dy,
 					dx*.1, dy*.1,
-					0, 6)
+					0, twopi)
 				gc.Close()
 				gc.FillStroke()
 				gc.BeginPath()
 				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
 					fy+float64(rand.Intn(100))/100.0*dy,
 					dx*.15, dy*.15,
-					0, 6)
+					0, twopi)
 				gc.Close()
 				gc.FillStroke()
 				gc.BeginPath()
 				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
 					fy+float64(rand.Intn(100))/100.0*dy,
 					dx*.1, dy*.1,
-					0, 6)
+					0, twopi)
 				gc.Close()
 				gc.FillStroke()
 			case 'W':
@@ -235,28 +210,6 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		gc.FillStroke()
 	}
 
-	// minor grid lines - vertical
-	/*
-		gc.SetStrokeColor(map_grid_minor)
-		gc.SetLineWidth(1)
-		for x := 0; x < mx*2; x++ {
-			gc.BeginPath()
-			gc.MoveTo(float64(x)*(dx/2), 0.0)
-			gc.LineTo(float64(x)*(dx/2), float64(h))
-			gc.Close()
-			gc.FillStroke()
-		}
-		// minor grid lines - horizontal
-		for y := 0; y < my*2; y++ {
-			gc.BeginPath()
-			gc.MoveTo(0.0, float64(y)*(dy/2))
-			gc.LineTo(float64(w), float64(y)*(dy/2))
-			gc.Close()
-			gc.FillStroke()
-		}
-
-	*/
-
 	// major grid lines - vertical
 	gc.SetStrokeColor(map_grid)
 	gc.SetLineWidth(2)
@@ -274,6 +227,67 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		gc.LineTo(float64(w), float64(y)*dy)
 		gc.Close()
 		gc.FillStroke()
+	}
+
+	// paint the units
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
+			forces := r.mw.grid.Units(int32(x), int32(y))
+			if len(forces.commands) > 0 || len(forces.units) > 0 {
+				println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x+1, y+1)
+			}
+			// draw the commands - 3 per line
+			if cnt := len(forces.commands); cnt > 0 {
+				fx := float64(x) * dx
+				fy := float64(y) * dy
+				blocksize := dx / 3.0
+				radius := dx / 10
+				xx := 0.0
+				yy := 0.0
+				for i := 0; i < cnt; i++ {
+					if (i % 3) == 0 {
+						xx = 0.0
+						yy += blocksize
+					}
+					gc.SetFillColor(map_unit_fill)
+					gc.SetStrokeColor(map_unit_stroke)
+					gc.SetLineWidth(2)
+					gc.BeginPath()
+					draw2dkit.RoundedRectangle(gc,
+						fx+xx+2, fy+yy+2,
+						fx+xx+blocksize-4, fy+yy+blocksize,
+						radius, radius)
+					gc.Close()
+					gc.FillStroke()
+
+					// denote the type
+					gc.SetStrokeColor(denote_unit)
+					gc.SetFillColor(denote_unit)
+					gc.SetLineWidth(dx / 30)
+					gc.SetLineCap(draw2d.RoundCap)
+					cmd := forces.commands[i]
+					if len(cmd.Units) > 0 {
+						switch cmd.Arm {
+						case republique.Arm_CAVALRY:
+							gc.MoveTo(fx+xx+blocksize-6, fy+yy+4)
+							gc.LineTo(fx+xx+4, fy+yy+blocksize-6)
+							gc.Stroke()
+						case republique.Arm_INFANTRY:
+							gc.MoveTo(fx+xx+blocksize-6, fy+yy+4)
+							gc.LineTo(fx+xx+4, fy+yy+blocksize-6)
+							gc.Stroke()
+							gc.MoveTo(fx+xx+4, fy+yy+4)
+							gc.LineTo(fx+xx+blocksize-6, fy+yy+blocksize-6)
+							gc.Stroke()
+						case republique.Arm_ARTILLERY:
+							draw2dkit.Circle(gc, fx+xx+(blocksize/2)+2, fy+yy+(blocksize/2)+2, dx/20)
+							gc.Fill()
+						}
+					}
+					xx += blocksize
+				}
+			}
+		}
 	}
 
 	return img

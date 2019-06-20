@@ -98,6 +98,7 @@ func (c *Command) initState(parent *Command, standDown bool, side MapSide, mx, m
 		// offboard units are in march column heading to the battle
 		pos = BattlefieldPosition_OFF_BOARD
 		form = Formation_MARCH_COLUMN
+		c.Arrival.ComputedTurn = int32(rand.Intn(int(c.Arrival.To-c.Arrival.From)) + int(c.Arrival.From))
 	case c.GetArrival().GetContact():
 		// on-board units in contact are in battle formation
 		form = c.BattleFormation()

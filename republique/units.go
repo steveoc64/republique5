@@ -23,7 +23,9 @@ func (s *Server) GetUnits(c context.Context, req *rp.TokenMessage) (*rp.Units, e
 	for _, commander := range player.GetCommanders() {
 		c := team.GetCommandByCommanderName(commander)
 		if c != nil {
-			commands.Commands = append(commands.Commands, c)
+			if c.Arrival.ComputedTurn <= s.game.TurnNumber {
+				commands.Commands = append(commands.Commands, c)
+			}
 		}
 	}
 	memdebug.Print(t1, "Got units")

@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
@@ -68,7 +70,7 @@ func (g *gridData) addCommand(c *rp.Command) {
 	if i < 0 || i > int32(len(g.units))-1 {
 		return
 	}
-	println("addCommand", i, c, len(g.units))
+	println("addCommand", i, c.Arm.String(), c.Id, c.Rank.String(), c.Name, len(g.units), c.Arrival.From, c.Arrival.ComputedTurn)
 	g.units[i].commands = append(g.units[i].commands, c)
 }
 
@@ -177,4 +179,10 @@ func (mw *MapWidget) ApplyTheme() {
 func (mw *MapWidget) CreateRenderer() fyne.WidgetRenderer {
 	rand.Seed(time.Now().UnixNano())
 	return newMapRender(mw)
+}
+
+// Tapped is called when the user taps the map widget
+func (mw *MapWidget) Tapped(event *fyne.PointEvent) {
+	//render := widget.Renderer(mw).(*mapRender)
+	spew.Dump(event, "tapped")
 }
