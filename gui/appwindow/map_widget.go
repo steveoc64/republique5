@@ -11,10 +11,16 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
+type gridForces struct {
+	commands []*rp.Command
+	units    []*rp.Unit
+}
+
 type gridData struct {
 	x, y  int32
 	back  []color.RGBA
 	value []byte
+	units []gridForces
 }
 
 func newGridData(x, y int32) *gridData {
@@ -23,6 +29,7 @@ func newGridData(x, y int32) *gridData {
 		y:     y,
 		back:  make([]color.RGBA, x*y),
 		value: make([]byte, x*y),
+		units: make([]gridForces, x*y),
 	}
 	for i := 0; i < int(x*y); i++ {
 		g.back[i] = color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
@@ -32,7 +39,7 @@ func newGridData(x, y int32) *gridData {
 
 func (g *gridData) Color(x, y int32) color.RGBA {
 	i := y*g.x + x
-	if i < 0 || y > int32(len(g.back))-1 {
+	if i < 0 || i > int32(len(g.back))-1 {
 		return color.RGBA{}
 	}
 	return g.back[i]
@@ -40,10 +47,39 @@ func (g *gridData) Color(x, y int32) color.RGBA {
 
 func (g *gridData) Value(x, y int32) byte {
 	i := y*g.x + x
-	if i < 0 || y > int32(len(g.value))-1 {
+	if i < 0 || i > int32(len(g.value))-1 {
 		return ' '
 	}
 	return g.value[i]
+}
+
+func (g *gridData) Units(x, y int32) gridForces {
+	i := y*g.x + x
+	if i < 0 || i > int32(len(g.units))-1 {
+		return gridForces{}
+	}
+	return g.units[i]
+}
+
+func (g *gridData) addCommand(c *rp.Command) {
+	x := c.GetGameState().GetGrid().GetX() - 1
+	y := c.GetGameState().GetGrid().GetY() - 1
+	i := y*g.x + x
+	if i < 0 || i > int32(len(g.units))-1 {
+		return
+	}
+	println("addCommand", i, c, len(g.units))
+	g.units[i].commands = append(g.units[i].commands, c)
+}
+
+func (g *gridData) addUnit(c *rp.Unit) {
+	x := c.GetGameState().GetGrid().GetX() - 1
+	y := c.GetGameState().GetGrid().GetY() - 1
+	i := y*g.x + x
+	if i < 0 || i > int32(len(g.units))-1 {
+		return
+	}
+	g.units[i].units = append(g.units[i].units, c)
 }
 
 // MapWidget is a complete map viewer widget
@@ -63,6 +99,22 @@ func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
 		mapData: mapData,
 		grid:    newGridData(mapData.X, mapData.Y),
 	}
+
+	// generate the forces list in the grid
+	for _, c := range app.Commands {
+		mw.grid.addCommand(c)
+		for _, u := range c.Units {
+			mw.grid.addUnit(u)
+		}
+		for _, s := range c.Subcommands {
+			mw.grid.addCommand(s)
+			for _, u := range s.Units {
+				mw.grid.addUnit(u)
+			}
+		}
+	}
+
+	// set size
 	mw.Resize(mw.MinSize())
 	return mw
 }

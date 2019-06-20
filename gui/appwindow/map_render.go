@@ -111,6 +111,11 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			paintBlock(x, y)
 			fx := float64(x) * dx
 			fy := float64(y) * dy
+
+			forces := r.mw.grid.Units(int32(x), int32(y))
+			if len(forces.commands) > 0 || len(forces.units) > 0 {
+				println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x, y)
+			}
 			/*
 				c := color.RGBA{uint8(rand.Intn(200)), uint8(rand.Intn(200)), 50, uint8(rand.Intn(32))}
 				draw.Draw(img,

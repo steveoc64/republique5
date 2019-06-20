@@ -24,8 +24,6 @@ func (u *UnitsPanel) CanvasObject() fyne.CanvasObject {
 
 // newUnitsPanel returns a new UnitsPanel, including the UI
 func newUnitsPanel(app *App) *UnitsPanel {
-	app.GetUnits()
-
 	u := &UnitsPanel{
 		app: app,
 	}

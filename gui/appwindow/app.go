@@ -94,6 +94,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 
 // loadUI generates the UI elements
 func (a *App) loadUI() {
+	a.GetUnits()
 	a.window = a.app.NewWindow("Republique 5.0")
 	a.header = newHeaderBar(a)
 	a.footer = newFooterBar(a, a.endTurn)
