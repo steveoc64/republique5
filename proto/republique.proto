@@ -36,6 +36,7 @@ message GameTimeResponse {
 }
 
 message LoginMessage {
+  bytes hash = 1;
   string teamCode = 2;
   string playerCode = 3;
 }

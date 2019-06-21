@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/steveoc64/memdebug"
+	"math/rand"
 	"os"
+	"time"
+
+	"github.com/steveoc64/memdebug"
 
 	"github.com/sirupsen/logrus"
 )
@@ -21,6 +24,7 @@ commands:
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	memdebug.Profile()
 	defer memdebug.WriteProfile()
 	// get the command verb and process

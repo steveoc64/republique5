@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -181,9 +182,13 @@ func (c *login) login() error {
 		log.Fatalf("fail to dial: %v", err)
 	}
 	gameServer := rp.NewGameServiceClient(conn)
+	pwd := []byte(c.codeStrings[0] + c.codeStrings[1])
+	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
+	if err != nil {
+		log.Println(err)
+	}
 	rsp, err := gameServer.Login(context.Background(), &rp.LoginMessage{
-		TeamCode:   c.codeStrings[0],
-		PlayerCode: c.codeStrings[1],
+		Hash: hash,
 	})
 	if err != nil {
 		return err

@@ -1,10 +1,5 @@
 package republique
 
-import (
-	"math/rand"
-	"time"
-)
-
 // GenerateIDs loops through all the commanders and units in a game
 // and stamps unique sequential IDs on each unit.
 // This should only be used after compilation.
@@ -45,7 +40,6 @@ func (g *Game) GenerateIDs() {
 // This is only intended to be run on loading a game in the game server.
 // It will return with no changes if the game has already started.
 func (g *Game) InitGameState() {
-	rand.Seed(time.Now().UnixNano())
 	if g.TurnNumber > 0 {
 		return
 	}

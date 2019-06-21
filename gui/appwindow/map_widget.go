@@ -3,7 +3,6 @@ package appwindow
 import (
 	"image/color"
 	"math/rand"
-	"time"
 
 	"github.com/davecgh/go-spew/spew"
 
@@ -177,7 +176,6 @@ func (mw *MapWidget) ApplyTheme() {
 
 // CreateRenderer builds a new renderer
 func (mw *MapWidget) CreateRenderer() fyne.WidgetRenderer {
-	rand.Seed(time.Now().UnixNano())
 	return newMapRender(mw)
 }
 
