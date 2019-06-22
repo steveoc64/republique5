@@ -4,5 +4,25 @@ language: go
 sudo: false
 
 go:
-  - "1.12"
-  - tip
+  - "1.11.x"
+  - "1.12.x"
+
+go_import_path: fyne.io/fyne
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - libgl1-mesa-dev
+      - xorg-dev
+
+# Disable travis default install step (go get ${gobuild_args} ./...)
+install: true
+
+before_script:
+  - NO_VENDOR=$(find . -iname '*.go' -type f | grep -v /vendor/)
+  - go get golang.org/x/lint/golint
+  - go get github.com/mattn/goveralls
