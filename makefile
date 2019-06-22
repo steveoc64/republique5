@@ -1,6 +1,10 @@
 SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui
 
-all: $(SUBDIRS)
+all: deps $(SUBDIRS)
+
+deps:
+	go get -u ./...
+
 $(SUBDIRS):
 	$(MAKE) -C $@
 
