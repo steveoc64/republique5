@@ -28,3 +28,7 @@ before_script:
   - go get github.com/mattn/goveralls
   - go get fyne.io/fyne
 
+script:
+  - env GO111MODULE=on go build
+  - env GO111MODULE=on go test
+
