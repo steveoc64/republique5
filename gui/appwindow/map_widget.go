@@ -1,8 +1,6 @@
 package appwindow
 
 import (
-	"github.com/davecgh/go-spew/spew"
-
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/widget"
@@ -114,15 +112,19 @@ func (mw *MapWidget) Tapped(event *fyne.PointEvent) {
 
 // TappedSecondary is called when the user right-taps the map widget
 func (mw *MapWidget) TappedSecondary(event *fyne.PointEvent) {
-	spew.Dump(event, "tappedSecondary")
+	if cmd := mw.grid.CommandAt(event.Position); cmd != nil {
+		mw.app.unitsPanel.ShowCommand(cmd)
+		mw.app.Tab(TAB_UNITS)
+	}
 }
 
 // Select selects the command with the given ID
 func (mw *MapWidget) Select(id int32) (*rp.Command, bool) {
 	if cmd, ok := mw.grid.Select(id); ok {
 		widget.Renderer(mw).Refresh()
-		mw.unitDesc.SetText(cmd.LongDescription())
+		mw.app.mapPanel.SetCommand(cmd)
 		return cmd, ok
 	}
+	mw.app.mapPanel.SetCommand(nil)
 	return nil, false
 }

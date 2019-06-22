@@ -24,6 +24,9 @@ func (c *Command) LabelString() string {
 
 // LongDoscription returns a long description string for the command
 func (c *Command) LongDescription() string {
+	if c == nil {
+		return ""
+	}
 	s := fmt.Sprintf("[%d] %s - %s (+%d) %s",
 		c.Id,
 		c.Name,
