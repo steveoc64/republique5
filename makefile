@@ -1,6 +1,6 @@
 SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui
 
-all: protobuf $(SUBDIRS)
+all: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
