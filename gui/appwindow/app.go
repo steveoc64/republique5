@@ -46,6 +46,7 @@ type App struct {
 	img         *canvas.Image
 	layout      fyne.Layout
 	container   *fyne.Container
+	tabs        *widget.TabContainer
 	isDarkTheme bool
 
 	// panels in the tab container
@@ -92,6 +93,23 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 	a.Phaser()
 }
 
+const (
+	TAB_BRIEFING = iota
+	TAB_UNITS
+	TAB_ORDERS
+	TAB_ACTIONS
+	TAB_MAP
+	TAB_FORMATION
+	TAB_ADVANCE
+	TAB_WITHDRAW
+	TAB_SURRENDER
+)
+
+func (a *App) Tab(tab int) {
+	println("setting tab to", tab)
+	a.tabs.SelectTabIndex(tab)
+}
+
 // loadUI generates the UI elements
 func (a *App) loadUI() {
 	a.GetUnits()
@@ -124,6 +142,7 @@ func (a *App) loadUI() {
 		widget.NewTabItemWithIcon("Surrender", theme.CancelIcon(), a.surrenderPanel.CanvasObject()),
 	)
 	t.SetTabLocation(widget.TabLocationLeading)
+	a.tabs = t
 	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil),
 		a.header.Box,
 		a.footer.Box,

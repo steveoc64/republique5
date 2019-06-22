@@ -2,9 +2,11 @@ package appwindow
 
 import (
 	"fmt"
-	"fyne.io/fyne/layout"
+	"fyne.io/fyne/theme"
 	"image/color"
 	"strings"
+
+	"fyne.io/fyne/layout"
 
 	"fyne.io/fyne/canvas"
 
@@ -54,6 +56,12 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 	return u
 }
 
+func (u *UnitCommand) gotoMap() {
+	println("goto map", u.command.Name, u.command.Id)
+	u.app.mapPanel.mapWidget.Select(u.command.Id)
+	u.app.Tab(TAB_MAP)
+}
+
 // newItem creates a new form item
 func (u *UnitCommand) newItem(label string, rgba color.RGBA, style fyne.TextStyle, fontSize int) *widget.FormItem {
 	t := canvas.NewText(label, rgba)
@@ -86,6 +94,7 @@ func (u *UnitCommand) build() {
 	u.form.AppendItem(u.newItem("Can Move", command_blue, s, 18))
 	u.form.AppendItem(u.newItem("Can Rally", command_blue, s, 18))
 	u.form.AppendItem(u.newItem("Panic State", command_red, s, 18))
+	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
 }
 
 // setField sets the text of the given field, by name
