@@ -24,7 +24,7 @@ func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
 	mw := &MapWidget{
 		app:     app,
 		mapData: mapData,
-		grid:    newGridData(mapData.X, mapData.Y),
+		grid:    newGridData(mapData.X, mapData.Y, mapData.Data),
 	}
 
 	// generate the forces list in the grid

@@ -1,10 +1,11 @@
 package appwindow
 
 import (
-	"fyne.io/fyne"
 	"image"
 	"image/color"
 	"math/rand"
+
+	"fyne.io/fyne"
 
 	rp "github.com/steveoc64/republique5/proto"
 )
@@ -41,22 +42,54 @@ func (g *gridForces) Select(id int32) bool {
 }
 
 type gridData struct {
-	x, y  int32
-	back  []color.RGBA
-	value []byte
-	units []gridForces
+	x, y   int32
+	back   []color.RGBA
+	value  []byte
+	units  []gridForces
+	things []thingDataArray
 }
 
-func newGridData(x, y int32) *gridData {
+type thingData struct {
+	x    int
+	y    int
+	size int
+}
+
+type thingDataArray []thingData
+
+func newGridData(x, y int32, values string) *gridData {
 	g := &gridData{
-		x:     x,
-		y:     y,
-		back:  make([]color.RGBA, x*y),
-		value: make([]byte, x*y),
-		units: make([]gridForces, x*y),
+		x:      x,
+		y:      y,
+		back:   make([]color.RGBA, x*y),
+		value:  []byte(values),
+		units:  make([]gridForces, x*y),
+		things: make([]thingDataArray, x*y),
 	}
 	for i := 0; i < int(x*y); i++ {
 		g.back[i] = color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
+		switch g.value[i] {
+		case 'w', 't':
+			trees := []thingData{}
+			for t := 0; t < 10+rand.Intn(20); t++ {
+				trees = append(trees, thingData{
+					x:    rand.Intn(100),
+					y:    rand.Intn(100),
+					size: 2 + rand.Intn(10),
+				})
+			}
+			g.things[i] = trees
+		case 'W', 'T':
+			trees := []thingData{}
+			for t := 0; t < 25+rand.Intn(40); t++ {
+				trees = append(trees, thingData{
+					x:    rand.Intn(100),
+					y:    rand.Intn(100),
+					size: 2 + rand.Intn(10),
+				})
+			}
+			g.things[i] = trees
+		}
 	}
 	return g
 }

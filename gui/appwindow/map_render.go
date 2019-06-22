@@ -1,15 +1,13 @@
 package appwindow
 
 import (
+	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dkit"
+	republique "github.com/steveoc64/republique5/proto"
 	"image"
 	"image/color"
 	"image/draw"
 	"math"
-	"math/rand"
-
-	"github.com/llgcode/draw2d"
-	"github.com/llgcode/draw2d/draw2dkit"
-	republique "github.com/steveoc64/republique5/proto"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -139,52 +137,36 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			case 'H':
 				// larger hills
 				r.hills(gc, fx, fy, dx, dy, 2)
-			case 'w':
+			case 'w', 'W':
 				// draw a little circle for woods
-				gc.SetFillColor(map_woods_fill)
-				gc.SetStrokeColor(map_woods_stroke)
-				gc.SetLineWidth(1)
-				gc.BeginPath()
-				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
-					fy+float64(rand.Intn(100))/100.0*dy,
-					dx*.1, dy*.1,
-					0, twopi)
-				gc.Close()
-				gc.FillStroke()
-				gc.BeginPath()
-				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
-					fy+float64(rand.Intn(100))/100.0*dy,
-					dx*.15, dy*.15,
-					0, twopi)
-				gc.Close()
-				gc.FillStroke()
-				gc.BeginPath()
-				gc.ArcTo(fx+float64(rand.Intn(100))/100.0*dx,
-					fy+float64(rand.Intn(100))/100.0*dy,
-					dx*.1, dy*.1,
-					0, twopi)
-				gc.Close()
-				gc.FillStroke()
-			case 'W':
+				for _, v := range r.mw.grid.things[i] {
+					println("trees", v.x, v.y, v.size)
+					gc.SetFillColor(map_woods_fill)
+					//gc.SetStrokeColor(map_woods_stroke)
+					gc.SetLineWidth(2)
+					cx := fx + dx*float64(v.x)/100.0
+					cy := fy + dy*float64(v.y)/100.0
+					rx := dx * float64(v.size) / 100.0
+					ry := dy * float64(v.size) / 100.0
+					gc.BeginPath()
+					gc.ArcTo(cx, cy, rx, ry, 0.0, twopi)
+					gc.Close()
+					gc.Fill()
+				}
 			case 't', 'T':
 				// draw a little boxes for towns
-				mt := 8
-				if mapChar == 'T' {
-					mt = 16
-				}
-				cc := &image.Uniform{map_town_fill}
-				for ii := 0; ii < mt; ii++ {
-					tx := x*int(dx) + rand.Intn(int(dx))
-					ty := y*int(dy) + rand.Intn(int(dy))
-					draw.Draw(img,
-						image.Rectangle{
-							image.Point{tx, ty},
-							image.Point{tx + rand.Intn(16), ty + rand.Intn(16)},
-						},
-						cc,
-						image.Point{0, 0},
-						draw.Src,
-					)
+				for _, v := range r.mw.grid.things[i] {
+					println("buildings", v.x, v.y, v.size)
+					gc.SetFillColor(map_town_fill)
+					gc.SetStrokeColor(map_town_stroke)
+					gc.SetLineWidth(1)
+					x1 := fx + dx*float64(v.x)/100.0
+					y1 := fy + dy*float64(v.y)/100.0
+					x2 := x1 + dx*float64(v.size)/100.0
+					y2 := y1 + dy*float64(v.size)/100.0
+					gc.BeginPath()
+					draw2dkit.Rectangle(gc, x1, y1, x2, y2)
+					gc.FillStroke()
 				}
 			}
 			i++
@@ -316,32 +298,31 @@ func (r *mapRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, 
 	gc.SetFillColor(map_hill_fill)
 	gc.SetStrokeColor(map_hill_stroke)
 	gc.SetLineWidth(2)
-	count = rand.Intn(2) + 1
 	switch count {
 	case 1:
 		gc.BeginPath()
 		gc.MoveTo(fx+0.1*dx, fy+0.5*dy)
 		gc.QuadCurveTo(fx+0.3*dx, fy+0.2*dy, fx+0.7*dx, fy+0.5*dy)
-		gc.Close()
+		//gc.Close()
 		gc.FillStroke()
 		gc.MoveTo(fx+0.3*dx, fy+0.7*dy)
 		gc.QuadCurveTo(fx+0.5*dx, fy+0.4*dy, fx+0.9*dx, fy+0.7*dy)
-		gc.Close()
+		//gc.Close()
 		gc.FillStroke()
 	case 2:
 		gc.BeginPath()
 		gc.MoveTo(fx+0.4*dx, fy+0.3*dy)
 		gc.QuadCurveTo(fx+0.6*dx, fy+0.1*dy, fx+0.8*dx, fy+0.3*dy)
-		gc.Close()
+		//gc.Close()
 		gc.FillStroke()
 		gc.BeginPath()
 		gc.MoveTo(fx+0.1*dx, fy+0.5*dy)
 		gc.QuadCurveTo(fx+0.3*dx, fy+0.2*dy, fx+0.7*dx, fy+0.5*dy)
-		gc.Close()
+		//gc.Close()
 		gc.FillStroke()
 		gc.MoveTo(fx+0.3*dx, fy+0.7*dy)
 		gc.QuadCurveTo(fx+0.5*dx, fy+0.4*dy, fx+0.9*dx, fy+0.7*dy)
-		gc.Close()
+		//gc.Close()
 		gc.FillStroke()
 	}
 }

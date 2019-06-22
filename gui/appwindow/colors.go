@@ -12,11 +12,11 @@ var (
 	map_grid_minor           = color.RGBA{0x44, 0x44, 0x44, 0xFF}
 	map_blue                 = color.RGBA{30, 60, 200, 200}
 	map_deep_blue            = color.RGBA{10, 30, 100, 200}
-	map_hill_fill            = color.RGBA{100, 70, 10, 200}
-	map_hill_stroke          = color.RGBA{130, 20, 0, 200}
+	map_hill_fill            = color.RGBA{0x71, 0x66, 0x60, 0xAA}
+	map_hill_stroke          = color.RGBA{0x32, 0x2d, 0x2a, 0xff}
 	map_woods_fill           = color.RGBA{0, 40, 0, 64}
-	map_woods_stroke         = color.RGBA{20, 20, 20, 200}
-	map_town_fill            = color.RGBA{64, 64, 64, 200}
+	map_woods_stroke         = color.RGBA{40, 20, 20, 0xFF}
+	map_town_fill            = color.RGBA{0x5A, 0x51, 0x4C, 0xFF}
 	map_town_stroke          = color.RGBA{32, 32, 32, 200}
 	map_unit_fill            = color.RGBA{0, 0, 128, 200}
 	map_unit_stroke          = color.RGBA{0, 0, 0, 0xFF}
