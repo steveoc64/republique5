@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"fmt"
+	"fyne.io/fyne/theme"
 	"image/color"
 	"strings"
 
@@ -103,6 +104,13 @@ func (u *UnitDetails) build() {
 	u.form.AppendItem(u.newItem("Bn Guns", unit_blue, s, 18))
 	u.form.AppendItem(u.newItem("Drill", unit_blue, s, 18))
 	u.form.AppendItem(u.newItem("Reserve", unit_blue, s, 18))
+	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
+}
+
+func (u *UnitDetails) gotoMap() {
+	c := u.app.GetUnitCommander(u.unit.GetId())
+	u.app.mapPanel.mapWidget.Select(c.Id)
+	u.app.Tab(TAB_MAP)
 }
 
 // setField sets the contents of the field given by name

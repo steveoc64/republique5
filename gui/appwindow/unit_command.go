@@ -57,7 +57,6 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 }
 
 func (u *UnitCommand) gotoMap() {
-	println("goto map", u.command.Name, u.command.Id)
 	u.app.mapPanel.mapWidget.Select(u.command.Id)
 	u.app.Tab(TAB_MAP)
 }
