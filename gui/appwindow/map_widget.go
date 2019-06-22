@@ -1,9 +1,6 @@
 package appwindow
 
 import (
-	"image/color"
-	"math/rand"
-
 	"github.com/davecgh/go-spew/spew"
 
 	"fyne.io/fyne"
@@ -11,77 +8,6 @@ import (
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
 )
-
-type gridForces struct {
-	commands []*rp.Command
-	units    []*rp.Unit
-}
-
-type gridData struct {
-	x, y  int32
-	back  []color.RGBA
-	value []byte
-	units []gridForces
-}
-
-func newGridData(x, y int32) *gridData {
-	g := &gridData{
-		x:     x,
-		y:     y,
-		back:  make([]color.RGBA, x*y),
-		value: make([]byte, x*y),
-		units: make([]gridForces, x*y),
-	}
-	for i := 0; i < int(x*y); i++ {
-		g.back[i] = color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
-	}
-	return g
-}
-
-func (g *gridData) Color(x, y int32) color.RGBA {
-	i := y*g.x + x
-	if i < 0 || i > int32(len(g.back))-1 {
-		return color.RGBA{}
-	}
-	return g.back[i]
-}
-
-func (g *gridData) Value(x, y int32) byte {
-	i := y*g.x + x
-	if i < 0 || i > int32(len(g.value))-1 {
-		return ' '
-	}
-	return g.value[i]
-}
-
-func (g *gridData) Units(x, y int32) gridForces {
-	i := y*g.x + x
-	if i < 0 || i > int32(len(g.units))-1 {
-		return gridForces{}
-	}
-	return g.units[i]
-}
-
-func (g *gridData) addCommand(c *rp.Command) {
-	x := c.GetGameState().GetGrid().GetX() - 1
-	y := c.GetGameState().GetGrid().GetY() - 1
-	i := y*g.x + x
-	if i < 0 || i > int32(len(g.units))-1 {
-		return
-	}
-	println("addCommand", i, c.Arm.String(), c.Id, c.Rank.String(), c.Name, len(g.units), c.Arrival.From, c.Arrival.ComputedTurn)
-	g.units[i].commands = append(g.units[i].commands, c)
-}
-
-func (g *gridData) addUnit(c *rp.Unit) {
-	x := c.GetGameState().GetGrid().GetX() - 1
-	y := c.GetGameState().GetGrid().GetY() - 1
-	i := y*g.x + x
-	if i < 0 || i > int32(len(g.units))-1 {
-		return
-	}
-	g.units[i].units = append(g.units[i].units, c)
-}
 
 // MapWidget is a complete map viewer widget
 // ... or will be when it grows up
@@ -181,6 +107,15 @@ func (mw *MapWidget) CreateRenderer() fyne.WidgetRenderer {
 
 // Tapped is called when the user taps the map widget
 func (mw *MapWidget) Tapped(event *fyne.PointEvent) {
-	//render := widget.Renderer(mw).(*mapRender)
-	spew.Dump(event, "tapped")
+	cmd := mw.grid.CommandAt(event.Position)
+	if cmd != nil {
+		if mw.grid.Select(cmd.Id) {
+			widget.Renderer(mw).Refresh()
+		}
+	}
+}
+
+// TappedSecondary is called when the user right-taps the map widget
+func (t *MapWidget) TappedSecondary(event *fyne.PointEvent) {
+	spew.Dump(event, "tappedSecondary")
 }

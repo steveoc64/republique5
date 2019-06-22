@@ -21,6 +21,7 @@ type mapRender struct {
 	mw      *MapWidget
 	objects []fyne.CanvasObject
 	img     *image.RGBA
+	dirty   bool
 }
 
 func newMapRender(mw *MapWidget) *mapRender {
@@ -31,6 +32,10 @@ func newMapRender(mw *MapWidget) *mapRender {
 	r.objects = []fyne.CanvasObject{render}
 	//r.ApplyTheme()
 	return r
+}
+
+func (r *mapRender) Scale() float32 {
+	return fyne.CurrentApp().Driver().CanvasForObject(r.render).Scale()
 }
 
 // ApplyTheme applies the theme
@@ -68,12 +73,14 @@ func (r *mapRender) Objects() []fyne.CanvasObject {
 
 // Refresh paints the map
 func (r *mapRender) Refresh() {
-	canvas.Refresh(r.mw)
+	r.dirty = true
+	canvas.Refresh(r.render)
 }
 
 func (r *mapRender) getImage(w, h int) image.Image {
-	if r.img == nil || r.img.Bounds().Size().X != w || r.img.Bounds().Size().Y != h {
+	if r.dirty || r.img == nil || r.img.Bounds().Size().X != w || r.img.Bounds().Size().Y != h {
 		r.img = r.generateImage(w, h)
+		r.dirty = false
 	}
 	if r.mw.hidden {
 		return &image.RGBA{}
@@ -82,6 +89,7 @@ func (r *mapRender) getImage(w, h int) image.Image {
 }
 
 func (r *mapRender) generateImage(w, h int) *image.RGBA {
+	scale := float64(r.Scale())
 	img := image.NewRGBA(image.Rect(0, 0, w, h))
 	if w == 0 || h == 0 {
 		return img
@@ -233,9 +241,11 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 	for y := 0; y < my; y++ {
 		for x := 0; x < mx; x++ {
 			forces := r.mw.grid.Units(int32(x), int32(y))
-			if len(forces.commands) > 0 || len(forces.units) > 0 {
-				println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x+1, y+1)
-			}
+			/*
+				if len(forces.commands) > 0 || len(forces.units) > 0 {
+					println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x+1, y+1)
+				}
+			*/
 			// draw the commands - 3 per line
 			if cnt := len(forces.commands); cnt > 0 {
 				fx := float64(x) * dx
@@ -249,10 +259,19 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 						xx = 0.0
 						yy += blocksize
 					}
+					icon := forces.commands[i]
 					gc.SetFillColor(map_unit_fill)
 					gc.SetStrokeColor(map_unit_stroke)
 					gc.SetLineWidth(2)
 					gc.BeginPath()
+					if icon.selected {
+						gc.SetFillColor(map_unit_selected_fill)
+						gc.SetStrokeColor(map_unit_selected_stroke)
+					}
+					forces.commands[i].rect = image.Rectangle{
+						Min: image.Point{X: int((fx + xx) / scale), Y: int((fy + yy) / scale)},
+						Max: image.Point{X: int((fx + xx + blocksize) / scale), Y: int((fy + yy + blocksize) / scale)},
+					}
 					draw2dkit.RoundedRectangle(gc,
 						fx+xx+2, fy+yy+2,
 						fx+xx+blocksize-4, fy+yy+blocksize,
@@ -265,7 +284,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 					gc.SetFillColor(denote_unit)
 					gc.SetLineWidth(dx / 30)
 					gc.SetLineCap(draw2d.RoundCap)
-					cmd := forces.commands[i]
+					cmd := icon.cmd
 					if len(cmd.Units) > 0 {
 						switch cmd.Arm {
 						case republique.Arm_CAVALRY:
