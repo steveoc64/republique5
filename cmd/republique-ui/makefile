@@ -1,6 +1,6 @@
 all:  install
 
-install: bundle.go
+install:
 	go install ./...
 
 run: install
@@ -8,7 +8,6 @@ run: install
 
 bundle.go: *.jpg
 	#fyne bundle republique.png > bundle.go
-	go get fyne.io/fyne
 	fyne bundle icon.jpg > bundle.go
 
 build: bundle.go

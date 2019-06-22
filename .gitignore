@@ -9,7 +9,6 @@ main
 rsheet
 *.xml
 *.tar.gz
-bundle.go
 
 # Test binary, build with `go test -c`
 *.test
