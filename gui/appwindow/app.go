@@ -21,6 +21,18 @@ import (
 	"fyne.io/fyne/layout"
 )
 
+const (
+	TAB_BRIEFING = iota
+	TAB_UNITS
+	TAB_ORDERS
+	TAB_ACTIONS
+	TAB_MAP
+	TAB_FORMATION
+	TAB_ADVANCE
+	TAB_WITHDRAW
+	TAB_SURRENDER
+)
+
 // App is the top level object to contain the application data
 type App struct {
 	// game state
@@ -92,18 +104,6 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 	a.PlayAudio("artillery")
 	a.Phaser()
 }
-
-const (
-	TAB_BRIEFING = iota
-	TAB_UNITS
-	TAB_ORDERS
-	TAB_ACTIONS
-	TAB_MAP
-	TAB_FORMATION
-	TAB_ADVANCE
-	TAB_WITHDRAW
-	TAB_SURRENDER
-)
 
 func (a *App) Tab(tab int) {
 	println("setting tab to", tab)

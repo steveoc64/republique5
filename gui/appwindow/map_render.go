@@ -140,7 +140,6 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			case 'w', 'W':
 				// draw a little circle for woods
 				for _, v := range r.mw.grid.things[i] {
-					println("trees", v.x, v.y, v.size)
 					gc.SetFillColor(map_woods_fill)
 					//gc.SetStrokeColor(map_woods_stroke)
 					gc.SetLineWidth(2)
@@ -156,7 +155,6 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 			case 't', 'T':
 				// draw a little boxes for towns
 				for _, v := range r.mw.grid.things[i] {
-					println("buildings", v.x, v.y, v.size)
 					gc.SetFillColor(map_town_fill)
 					gc.SetStrokeColor(map_town_stroke)
 					gc.SetLineWidth(1)

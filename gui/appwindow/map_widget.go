@@ -117,7 +117,8 @@ func (mw *MapWidget) TappedSecondary(event *fyne.PointEvent) {
 
 // Select selects the command with the given ID
 func (mw *MapWidget) Select(id int32) {
-	if mw.grid.Select(id) {
+	if cmd, ok := mw.grid.Select(id); ok {
 		widget.Renderer(mw).Refresh()
+		println("selected command", cmd.Id)
 	}
 }

@@ -2,15 +2,19 @@ package appwindow
 
 import (
 	"context"
-	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
+
+	"fyne.io/fyne"
+	"fyne.io/fyne/widget"
 )
 
 // MapPanel is the UI for the map
 type MapPanel struct {
 	app       *App
 	content   *fyne.Container
+	box       *widget.Box
 	mapWidget *MapWidget
+	unitDesc  *widget.Label
 }
 
 // CanvasObject returns the top level UI element for the map
@@ -35,10 +39,15 @@ func newMapPanel(app *App) *MapPanel {
 		app: app,
 	}
 
+	m.box = widget.NewVBox()
 	m.mapWidget = newMapWidget(app, app.MapData)
 	m.mapWidget.Hide()
 	m.content = fyne.NewContainerWithLayout(layout.NewGridLayout(1))
 	m.content.AddObject(m.mapWidget)
+
+	m.box.Append(m.content)
+	m.box.Append(widget.NewLabel("unit details here"))
+
 	return m
 }
 

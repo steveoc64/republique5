@@ -30,15 +30,15 @@ func (g *gridForces) CommandAt(p fyne.Position) *rp.Command {
 	return nil
 }
 
-func (g *gridForces) Select(id int32) bool {
-	gotSome := false
+func (g *gridForces) Select(id int32) (gotCommand *rp.Command, gotSome bool) {
 	for _, v := range g.commands {
 		v.selected = (v.cmd.Id == id)
 		if v.selected {
 			gotSome = true
+			gotCommand = v.cmd
 		}
 	}
-	return gotSome
+	return gotCommand, gotSome
 }
 
 type gridData struct {
@@ -103,12 +103,14 @@ func (g *gridData) CommandAt(p fyne.Position) *rp.Command {
 	return nil
 }
 
-func (g *gridData) Select(id int32) bool {
-	gotSome := false
+func (g *gridData) Select(id int32) (gotCommand *rp.Command, gotSome bool) {
 	for _, v := range g.units {
-		gotSome = gotSome || v.Select(id)
+		if cmd, ok := v.Select(id); ok {
+			gotSome = true
+			gotCommand = cmd
+		}
 	}
-	return gotSome
+	return gotCommand, gotSome
 }
 
 func (g *gridData) Color(x, y int32) color.RGBA {
