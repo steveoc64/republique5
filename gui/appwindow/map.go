@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"context"
+
 	"fyne.io/fyne/layout"
 
 	"fyne.io/fyne"
@@ -12,8 +13,8 @@ import (
 type MapPanel struct {
 	app       *App
 	content   *fyne.Container
-	box       *widget.Box
 	mapWidget *MapWidget
+	hbox      *widget.Box
 	unitDesc  *widget.Label
 }
 
@@ -37,16 +38,24 @@ func newMapPanel(app *App) *MapPanel {
 	}
 	m := &MapPanel{
 		app: app,
+		unitDesc: widget.NewLabelWithStyle(
+			"No Unit Selected",
+			fyne.TextAlignCenter,
+			fyne.TextStyle{Bold: true, Italic: true},
+		),
 	}
 
-	m.box = widget.NewVBox()
-	m.mapWidget = newMapWidget(app, app.MapData)
-	m.mapWidget.Hide()
-	m.content = fyne.NewContainerWithLayout(layout.NewGridLayout(1))
-	m.content.AddObject(m.mapWidget)
+	m.hbox = widget.NewHBox(
+		layout.NewSpacer(),
+		m.unitDesc,
+		layout.NewSpacer(),
+	)
 
-	m.box.Append(m.content)
-	m.box.Append(widget.NewLabel("unit details here"))
+	m.mapWidget = newMapWidget(app, app.MapData, m.unitDesc)
+	m.content = fyne.NewContainerWithLayout(layout.NewBorderLayout(nil, m.hbox, nil, nil),
+		m.mapWidget,
+		m.hbox,
+	)
 
 	return m
 }

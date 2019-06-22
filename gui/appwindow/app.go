@@ -53,10 +53,10 @@ type App struct {
 	gameServer rp.GameServiceClient
 
 	// fyne layout and widgets
-	app         fyne.App
-	window      fyne.Window
-	img         *canvas.Image
-	layout      fyne.Layout
+	app    fyne.App
+	window fyne.Window
+	img    *canvas.Image
+	//layout      fyne.Layout
 	container   *fyne.Container
 	tabs        *widget.TabContainer
 	isDarkTheme bool
@@ -129,8 +129,7 @@ func (a *App) loadUI() {
 	a.withdrawPanel = newWithdrawPanel(a)
 	a.surrenderPanel = newSurrenderPanel(a)
 
-	a.layout = layout.NewBorderLayout(a.header.CanvasObject(), a.footer.CanvasObject(), nil, nil)
-	t := widget.NewTabContainer(
+	a.tabs = widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Briefing", theme.FolderOpenIcon(), a.briefingPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
@@ -141,12 +140,11 @@ func (a *App) loadUI() {
 		widget.NewTabItemWithIcon("Withdraw", theme.MailReplyIcon(), a.withdrawPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Surrender", theme.CancelIcon(), a.surrenderPanel.CanvasObject()),
 	)
-	t.SetTabLocation(widget.TabLocationLeading)
-	a.tabs = t
-	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.Box, a.footer.Box, nil, nil),
-		a.header.Box,
-		a.footer.Box,
-		t,
+	a.tabs.SetTabLocation(widget.TabLocationLeading)
+	a.container = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.header.CanvasObject(), a.footer.CanvasObject(), nil, nil),
+		a.header.CanvasObject(),
+		a.footer.CanvasObject(),
+		a.tabs,
 	)
 	a.window.SetContent(a.container)
 	a.window.SetOnClosed(func() { os.Exit(0) })

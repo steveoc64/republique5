@@ -22,6 +22,18 @@ func (c *Command) LabelString() string {
 	return s
 }
 
+// LongDoscription returns a long description string for the command
+func (c *Command) LongDescription() string {
+	s := fmt.Sprintf("[%d] %s - %s (+%d) %s",
+		c.Id,
+		c.Name,
+		c.CommanderName,
+		c.CommanderBonus,
+		c.GetCommandStrengthLabel())
+
+	return s
+}
+
 // CommandStrength is the number of troops in a command
 type CommandStrength struct {
 	Infantry int32

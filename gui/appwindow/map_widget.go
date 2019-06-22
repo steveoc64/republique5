@@ -18,13 +18,15 @@ type MapWidget struct {
 	hidden   bool
 	mapData  *rp.MapData
 	grid     *gridData
+	unitDesc *widget.Label
 }
 
-func newMapWidget(app *App, mapData *rp.MapData) *MapWidget {
+func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWidget {
 	mw := &MapWidget{
-		app:     app,
-		mapData: mapData,
-		grid:    newGridData(mapData.X, mapData.Y, mapData.Data),
+		app:      app,
+		mapData:  mapData,
+		grid:     newGridData(mapData.X, mapData.Y, mapData.Data),
+		unitDesc: unitDesc,
 	}
 
 	// generate the forces list in the grid
@@ -116,9 +118,11 @@ func (mw *MapWidget) TappedSecondary(event *fyne.PointEvent) {
 }
 
 // Select selects the command with the given ID
-func (mw *MapWidget) Select(id int32) {
+func (mw *MapWidget) Select(id int32) (*rp.Command, bool) {
 	if cmd, ok := mw.grid.Select(id); ok {
 		widget.Renderer(mw).Refresh()
-		println("selected command", cmd.Id)
+		mw.unitDesc.SetText(cmd.LongDescription())
+		return cmd, ok
 	}
+	return nil, false
 }
