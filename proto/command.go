@@ -265,7 +265,7 @@ func (c *Command) SetObjective(x, y int32) []*Grid {
 		return nil // cant add to objective
 	}
 	// add to path
-	c.GameState.Objective = nil
+	c.GameState.Objective = c.newObjective()
 	c.GameState.Objective = append(c.GameState.Objective, &Grid{X: x, Y: y})
 	return c.GameState.Objective
 }

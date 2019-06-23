@@ -241,6 +241,54 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 						yy += blocksize
 					}
 					icon := forces.commands[i]
+					if icon.cmd == nil {
+						continue
+					}
+					// draw the lines of action
+					gc.SetStrokeColor(map_unit_orders_stroke)
+					gc.SetLineWidth(18)
+					gc.SetLineJoin(draw2d.BevelJoin)
+					gc.SetLineCap(draw2d.RoundCap)
+					gc.MoveTo(fx+xx+(blocksize/2), fy+yy+(blocksize/2))
+					doPath := true
+					switch icon.cmd.GetGameState().GetOrders() {
+					case republique.Order_MOVE, republique.Order_MARCH:
+						gc.SetStrokeColor(map_unit_orders_march)
+						//gc.SetLineDash([]float64{0.2, 0.4, 0.6, 0.8}, 0.0)
+						gc.SetLineWidth(dx / 6)
+					case republique.Order_ATTACK:
+						gc.SetStrokeColor(map_unit_orders_attack)
+						gc.SetLineWidth(dx / 3)
+					case republique.Order_ENGAGE:
+						gc.SetStrokeColor(map_unit_orders_engage)
+						gc.SetLineWidth(dx / 4)
+					case republique.Order_CHARGE:
+						gc.SetStrokeColor(map_unit_orders_charge)
+						gc.SetLineWidth(dx / 2)
+					case republique.Order_FIRE:
+						gc.SetFillColor(map_unit_orders_fire)
+						if len(icon.cmd.GetGameState().GetObjective()) == 2 {
+							target := icon.cmd.GameState.Objective[1]
+							gc.LineTo(float64(target.X-1)*dx, float64(target.Y-1)*dy+0.5*dy)
+							gc.LineTo(float64(target.X)*dx, float64(target.Y-1)*dy+0.5*dy)
+							gc.Close()
+							gc.Fill()
+							doPath = false
+						}
+					case republique.Order_PURSUIT:
+						gc.SetStrokeColor(map_unit_orders_pursuit)
+						gc.SetLineWidth(dx / 6)
+					}
+					if doPath {
+						for k, path := range icon.cmd.GetGameState().Objective {
+							if k > 0 { // burn the first one
+								gc.LineTo(float64(path.X)*dx-(0.5*dx), float64(path.Y)*dy-(0.5*dy))
+							}
+						}
+						gc.Stroke()
+					}
+
+					// draw the basic rect
 					gc.SetFillColor(map_unit_fill)
 					gc.SetStrokeColor(map_unit_stroke)
 					gc.SetLineWidth(2)
@@ -261,7 +309,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 					gc.FillStroke()
 
 					// denote order status
-					if icon.cmd != nil && icon.cmd.GetGameState().GetCan().GetOrder() {
+					if icon.cmd.GetGameState().GetCan().GetOrder() {
 						gc.SetFillColor(map_unit_can_order)
 						if icon.cmd.GetGameState().GetHas().GetOrder() &&
 							icon.cmd.GetGameState().GetOrders() != republique.Order_RESTAGE {

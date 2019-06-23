@@ -279,7 +279,14 @@ func (m *MapPanel) Tap(x, y int32) {
 		return
 	case rp.Order_MARCH:
 		// march to location if not too far
-		if distance > 8 {
+		maxd := int32(9)
+		switch m.command.Arm {
+		case rp.Arm_ARTILLERY:
+			maxd = 8
+		case rp.Arm_CAVALRY:
+			maxd = 11
+		}
+		if distance > maxd {
 			println("too far", distance)
 			return
 		}
@@ -303,7 +310,14 @@ func (m *MapPanel) Tap(x, y int32) {
 		path = m.command.SetObjective(x, y)
 	case rp.Order_CHARGE:
 		// check the range
-		if distance > 8 {
+		if distance > 9 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.SetObjective(x, y)
+	case rp.Order_PURSUIT:
+		// check the range
+		if distance > 12 {
 			println("too far", distance)
 			return
 		}
@@ -317,6 +331,7 @@ func (m *MapPanel) Tap(x, y int32) {
 		path = m.command.SetObjective(x, y)
 	}
 	spew.Dump(m.command.GameState.Orders.String(), "path", path)
+	widget.Renderer(m.mapWidget).Refresh()
 }
 
 // GetMap fetches the map from the server
