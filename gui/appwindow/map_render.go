@@ -5,6 +5,9 @@ import (
 	"image/color"
 	"image/draw"
 	"math"
+	"time"
+
+	"github.com/steveoc64/memdebug"
 
 	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dkit"
@@ -88,8 +91,10 @@ func (r *mapRender) getImage(w, h int) image.Image {
 }
 
 func (r *mapRender) generateImage(w, h int) *image.RGBA {
+	t1 := time.Now()
 	scale := float64(r.Scale())
-	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	img := r.img
+	img = image.NewRGBA(image.Rect(0, 0, w, h))
 	if w == 0 || h == 0 {
 		return img
 	}
@@ -351,6 +356,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		}
 	}
 
+	memdebug.Print(t1, "rendered page")
 	return img
 }
 

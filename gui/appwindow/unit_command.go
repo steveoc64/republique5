@@ -2,9 +2,10 @@ package appwindow
 
 import (
 	"fmt"
-	"fyne.io/fyne/theme"
 	"image/color"
 	"strings"
+
+	"fyne.io/fyne/theme"
 
 	"fyne.io/fyne/layout"
 
@@ -17,16 +18,18 @@ import (
 
 // UnitCommand holds the UI for veiwing units overview
 type UnitCommand struct {
-	app            *App
-	panel          *UnitsPanel
-	box            *widget.Box
-	form           *widget.Form
-	scroll         *widget.ScrollContainer
-	fields         map[string]*canvas.Text
-	formationImg   *canvas.Image
-	formationLabel *widget.Label
-	unitList       *widget.Box
-	command        *rp.Command
+	app                         *App
+	panel                       *UnitsPanel
+	box                         *widget.Box
+	form                        *widget.Form
+	scroll                      *widget.ScrollContainer
+	fields                      map[string]*canvas.Text
+	formationImg                *canvas.Image
+	formationLabel              *widget.Label
+	unitList                    *widget.Box
+	command                     *rp.Command
+	hasPrev, hasNext, hasParent bool
+	prevBtn, nextBtn, parentBtn *TapIcon
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -45,9 +48,25 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 		formationLabel: widget.NewLabelWithStyle("Formation", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		unitList:       widget.NewVBox(),
 	}
+	mkbtn := func(res fyne.Resource, f func()) *TapIcon {
+		b := NewTapIcon(res, f, f)
+		return b
+	}
 	u.formationImg.FillMode = canvas.ImageFillOriginal
+	u.prevBtn = mkbtn(resourcePrevSvg, u.prevUnit)
+	u.nextBtn = mkbtn(resourceNextSvg, u.nextUnit)
+	u.parentBtn = mkbtn(resourceParentSvg, u.parent)
+
+	hbox := widget.NewHBox()
+	hbox.Append(layout.NewSpacer())
+	hbox.Append(u.prevBtn)
+	hbox.Append(u.parentBtn)
+	hbox.Append(u.nextBtn)
+	hbox.Append(layout.NewSpacer())
+
 	//u.box.Append(u.formationImg)
 	u.box.Append(u.formationLabel)
+	u.box.Append(hbox)
 	u.box.Append(fyne.NewContainerWithLayout(layout.NewGridLayout(2), u.form, u.unitList))
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
@@ -147,13 +166,53 @@ func (u *UnitCommand) Populate(command *rp.Command) {
 	u.setField("Panic State", fmt.Sprintf("%v", command.GetGameState().GetPanicState()))
 
 	u.command = command
+	u.populateSubCommands()
 	u.populateUnits()
+
+	// calc if has next prev
+	c := u.app.GetUnitCommander(u.command.GetId())
+	if c == nil {
+		u.hasNext = false
+		u.hasPrev = false
+		u.hasParent = false
+	} else {
+		u.hasParent = true
+		for i, v := range c.Subcommands {
+			if v.Id == u.command.Id {
+				u.hasPrev = i != 0
+				u.hasNext = i < (len(c.Subcommands) - 1)
+				break
+			}
+		}
+	}
+	if u.hasPrev {
+		u.prevBtn.Enable()
+	} else {
+		u.prevBtn.Disable()
+	}
+	if u.hasNext {
+		u.nextBtn.Enable()
+	} else {
+		u.nextBtn.Disable()
+	}
+	if u.hasParent {
+		u.parentBtn.Enable()
+	} else {
+		u.parentBtn.Disable()
+	}
 }
 
 func (u *UnitCommand) populateUnits() {
-	u.unitList.Children = []fyne.CanvasObject{}
 	for _, unit := range u.command.GetUnits() {
 		u.unitList.Append(u.newUnitLabel(unit))
+	}
+	widget.Refresh(u.unitList)
+}
+
+func (u *UnitCommand) populateSubCommands() {
+	u.unitList.Children = []fyne.CanvasObject{}
+	for _, unit := range u.command.GetSubcommands() {
+		u.unitList.Append(u.newCommandLabel(unit))
 	}
 	widget.Refresh(u.unitList)
 }
@@ -165,4 +224,52 @@ func (u *UnitCommand) newUnitLabel(unit *rp.Unit) *TapLabel {
 	}
 	lbl := NewTapLabel(unit.ShortLabel(), fyne.TextAlignLeading, st, t, t)
 	return lbl
+}
+
+func (u *UnitCommand) newCommandLabel(cmd *rp.Command) *TapLabel {
+	st := fyne.TextStyle{Italic: cmd.Arm == rp.Arm_CAVALRY, Bold: cmd.Arm == rp.Arm_ARTILLERY, Monospace: cmd.Arm == rp.Arm_INFANTRY}
+	t := func() {
+		u.panel.ShowCommand(cmd)
+	}
+	lbl := NewTapLabel(cmd.LabelString(), fyne.TextAlignLeading, st, t, t)
+	return lbl
+}
+
+func (u *UnitCommand) nextUnit() {
+	c := u.app.GetUnitCommander(u.command.GetId())
+	target := -1
+	if c != nil {
+		for i, unit := range c.Subcommands {
+			if i == target {
+				u.Populate(unit)
+				return
+			}
+			if unit.Id == u.command.Id {
+				target = i + 1
+			}
+		}
+	}
+}
+
+func (u *UnitCommand) prevUnit() {
+	c := u.app.GetUnitCommander(u.command.GetId())
+	target := -1
+	if c != nil {
+		for i, unit := range c.Subcommands {
+			if unit.Id == u.command.Id {
+				target = i - 1
+				break
+			}
+		}
+		if target != -1 {
+			u.Populate(c.Subcommands[target])
+		}
+	}
+}
+
+func (u *UnitCommand) parent() {
+	c := u.app.GetUnitCommander(u.command.GetId())
+	if c != nil {
+		u.panel.ShowCommand(c)
+	}
 }
