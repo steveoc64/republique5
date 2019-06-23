@@ -71,11 +71,9 @@ func (c *login) clear() {
 func (c *login) digit(d int) {
 	c.failed.Hide()
 	if c.mode >= len(c.accessCodes) {
-		println("somehow mode =", c.mode)
 		return
 	}
 	if c.i >= 4 {
-		println("i is", c.i)
 		return
 	}
 	c.accessCodes[c.mode][c.i] = d

@@ -2,9 +2,11 @@ package appwindow
 
 import (
 	"fmt"
-	"fyne.io/fyne/theme"
 	"image/color"
+	"k8s.io/apimachinery/pkg/util/rand"
 	"strings"
+
+	"fyne.io/fyne/theme"
 
 	"fyne.io/fyne/layout"
 
@@ -28,6 +30,7 @@ type UnitDetails struct {
 	id               *canvas.Text
 	hasPrev, hasNext bool
 	prevBtn, nextBtn *TapIcon
+	plot             *PlotWidget
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -52,7 +55,8 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 			formationLabel,
 			hbox,
 		),
-		id: canvas.NewText("ID", unit_green),
+		id:   canvas.NewText("ID", unit_green),
+		plot: newPlotWidget(app, "Unit History"),
 	}
 	mkbtn := func(res fyne.Resource, f func()) *TapIcon {
 		b := NewTapIcon(res, f, f)
@@ -67,7 +71,8 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 	hbox.Append(mkbtn(resourceParentSvg, u.parent))
 	hbox.Append(u.nextBtn)
 	hbox.Append(layout.NewSpacer())
-	u.box.Append(u.form)
+	//u.box.Append(u.form)
+	u.box.Append(fyne.NewContainerWithLayout(layout.NewGridLayout(2), u.form, u.plot))
 	u.scroll = widget.NewScrollContainer(u.box)
 	u.scroll.Resize(app.MinSize())
 	u.build()
@@ -189,6 +194,26 @@ func (u *UnitDetails) Populate(unit *rp.Unit) {
 	} else {
 		u.nextBtn.Disable()
 	}
+
+	// fill in the plot with random crap
+	u.plot.title = unit.Name
+	data := []int{}
+	n := rand.Intn(10) + 6
+	for i := 0; i < n; i++ {
+		data = append(data, rand.Intn(10))
+	}
+	u.plot.AddSet(timedata{
+		name:   "Strength",
+		values: data,
+	})
+	data = []int{}
+	for i := 0; i < n; i++ {
+		data = append(data, rand.Intn(10))
+	}
+	u.plot.AddSet(timedata{
+		name:   "Morale",
+		values: data,
+	})
 }
 
 func (u *UnitDetails) nextUnit() {

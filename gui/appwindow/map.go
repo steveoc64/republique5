@@ -181,7 +181,7 @@ func (m *MapPanel) pursuitOrder() {
 	m.setOrder(rp.Order_PURSUIT)
 }
 
-func (m *MapPanel) undoOrder() {
+func (m *MapPanel) clearOrder() {
 	m.setOrder(rp.Order_RESTAGE)
 	m.SetCommand(nil)
 }
@@ -225,7 +225,7 @@ func newMapPanel(app *App) *MapPanel {
 		layout.NewSpacer(),
 		m.unitDesc,
 		layout.NewSpacer(),
-		widget.NewButtonWithIcon("Undo", theme.CancelIcon(), m.undoOrder),
+		widget.NewButtonWithIcon("Clear", theme.CancelIcon(), m.clearOrder),
 		widget.NewButtonWithIcon("Done", theme.CheckButtonCheckedIcon(), m.doneOrder),
 	)
 	m.hbox2 = widget.NewHBox(
