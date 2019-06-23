@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"context"
+	"github.com/davecgh/go-spew/spew"
 
 	"fyne.io/fyne/theme"
 
@@ -10,18 +11,6 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
-)
-
-const (
-	ORDER_NONE = iota
-	ORDER_MARRCH
-	ORDER_DEFEND
-	ORDER_ENGAGE
-	ORDER_ATTACK
-	ORDER_FIRE
-	ORDER_CHARGE
-	ORDER_RALLY
-	ORDER_PURSUIT
 )
 
 // MapPanel is the UI for the map
@@ -34,7 +23,7 @@ type MapPanel struct {
 	hbox2        *widget.Box
 	borderLayout fyne.Layout
 	command      *rp.Command
-	order        int
+	order        rp.Order
 	unitDesc     *widget.Label
 	marchBtn     *widget.Button
 	defendBtn    *widget.Button
@@ -53,14 +42,15 @@ func (m *MapPanel) CanvasObject() fyne.CanvasObject {
 
 func (m *MapPanel) SetCommand(cmd *rp.Command) {
 	m.command = cmd
-	m.setOrder(ORDER_NONE)
 	if cmd == nil {
+		m.setOrder(rp.Order_RESTAGE)
 		m.mapWidget.grid.Select(0)
 		widget.Renderer(m.mapWidget).Refresh()
 		m.hbox2.Hide()
 		m.unitDesc.SetText("")
 		return
 	}
+	spew.Dump("Set command", cmd.GameState.GetOrders().String(), "path", cmd.GetGameState().GetObjective())
 	m.hbox2.Show()
 	m.unitDesc.SetText(cmd.LongDescription())
 	switch cmd.GetRank() {
@@ -113,6 +103,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 			m.pursuitBtn.Hide()
 		}
 	}
+	m.setOrder(cmd.GetGameState().GetOrders())
 }
 
 func (m *MapPanel) unitInfo() {
@@ -122,9 +113,9 @@ func (m *MapPanel) unitInfo() {
 	}
 }
 
-func (m *MapPanel) setOrder(o int) {
+func (m *MapPanel) setOrder(o rp.Order) {
 	if m.order == o {
-		m.order = ORDER_NONE
+		m.order = rp.Order_RESTAGE
 	} else {
 		m.order = o
 	}
@@ -137,58 +128,65 @@ func (m *MapPanel) setOrder(o int) {
 	m.rallyBtn.SetIcon(theme.RadioButtonIcon())
 	m.pursuitBtn.SetIcon(theme.RadioButtonIcon())
 	switch m.order {
-	case ORDER_MARRCH:
+	case rp.Order_MARCH:
 		m.marchBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_DEFEND:
+	case rp.Order_DEFEND:
 		m.defendBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_ENGAGE:
+	case rp.Order_ENGAGE:
 		m.engageBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_ATTACK:
+	case rp.Order_ATTACK:
 		m.attackBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_CHARGE:
+	case rp.Order_CHARGE:
 		m.chargeBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_FIRE:
+	case rp.Order_FIRE:
 		m.fireBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_RALLY:
+	case rp.Order_RALLY:
 		m.rallyBtn.SetIcon(theme.RadioButtonCheckedIcon())
-	case ORDER_PURSUIT:
+	case rp.Order_PURSUIT:
 		m.pursuitBtn.SetIcon(theme.RadioButtonCheckedIcon())
+	}
+	if m.command != nil {
+		m.command.SetOrder(m.order)
 	}
 }
 func (m *MapPanel) marchOrder() {
-	m.setOrder(ORDER_MARRCH)
+	m.setOrder(rp.Order_MARCH)
 }
 
 func (m *MapPanel) defendOrder() {
-	m.setOrder(ORDER_DEFEND)
+	m.setOrder(rp.Order_DEFEND)
 }
 
 func (m *MapPanel) engageOrder() {
-	m.setOrder(ORDER_ENGAGE)
+	m.setOrder(rp.Order_ENGAGE)
 }
 
 func (m *MapPanel) attackOrder() {
-	m.setOrder(ORDER_ATTACK)
+	m.setOrder(rp.Order_ATTACK)
 }
 
 func (m *MapPanel) chargeOrder() {
-	m.setOrder(ORDER_CHARGE)
+	m.setOrder(rp.Order_CHARGE)
 }
 
 func (m *MapPanel) fireOrder() {
-	m.setOrder(ORDER_FIRE)
+	m.setOrder(rp.Order_FIRE)
 }
 
 func (m *MapPanel) rallyOrder() {
-	m.setOrder(ORDER_RALLY)
+	m.setOrder(rp.Order_RALLY)
 }
 
 func (m *MapPanel) pursuitOrder() {
-	m.setOrder(ORDER_PURSUIT)
+	m.setOrder(rp.Order_PURSUIT)
 }
 
 func (m *MapPanel) undoOrder() {
-	m.setOrder(ORDER_NONE)
+	m.setOrder(rp.Order_RESTAGE)
+	m.SetCommand(nil)
+}
+
+func (m *MapPanel) doneOrder() {
 	m.SetCommand(nil)
 }
 
@@ -228,6 +226,7 @@ func newMapPanel(app *App) *MapPanel {
 		m.unitDesc,
 		layout.NewSpacer(),
 		widget.NewButtonWithIcon("Undo", theme.CancelIcon(), m.undoOrder),
+		widget.NewButtonWithIcon("Done", theme.CheckButtonCheckedIcon(), m.doneOrder),
 	)
 	m.hbox2 = widget.NewHBox(
 		layout.NewSpacer(),
@@ -255,6 +254,69 @@ func newMapPanel(app *App) *MapPanel {
 	m.hbox2.Hide()
 
 	return m
+}
+
+// Tap tells the map controller that a tap occurred at a spot
+func (m *MapPanel) Tap(x, y int32) {
+	println("got a map tap at", x, y)
+	if x < 1 || x > m.app.MapData.X || y < 0 || y > m.app.MapData.Y {
+		// out of bounds
+		return
+	}
+
+	if m.command == nil {
+		// no command set
+		return
+	}
+
+	dx := (m.command.GameState.Grid.GetX() - x)
+	dy := (m.command.GameState.Grid.GetY() - y)
+	distance := dx*dx + dy*dy
+	path := []*rp.Grid{}
+	switch m.order {
+	case rp.Order_RESTAGE:
+		// nothing to do
+		return
+	case rp.Order_MARCH:
+		// march to location if not too far
+		if distance > 8 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.AddToObjective(x, y)
+	case rp.Order_DEFEND:
+		// defend at current location
+		return
+	case rp.Order_ENGAGE:
+		// can engage out to 2 grids
+		if distance > 4 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.AddToObjective(x, y)
+	case rp.Order_ATTACK:
+		// can attack out to 1 grid
+		if distance > 2 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.SetObjective(x, y)
+	case rp.Order_CHARGE:
+		// check the range
+		if distance > 8 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.AddToObjective(x, y)
+	case rp.Order_FIRE:
+		// can fire out to adj grid
+		if distance > 4 {
+			println("too far", distance)
+			return
+		}
+		path = m.command.SetObjective(x, y)
+	}
+	spew.Dump(m.command.GameState.Orders.String(), "path", path)
 }
 
 // GetMap fetches the map from the server

@@ -1,13 +1,14 @@
 package appwindow
 
 import (
-	"github.com/llgcode/draw2d"
-	"github.com/llgcode/draw2d/draw2dkit"
-	republique "github.com/steveoc64/republique5/proto"
 	"image"
 	"image/color"
 	"image/draw"
 	"math"
+
+	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dkit"
+	republique "github.com/steveoc64/republique5/proto"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -262,10 +263,13 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 					// denote order status
 					if icon.cmd != nil && icon.cmd.GetGameState().GetCan().GetOrder() {
 						gc.SetFillColor(map_unit_can_order)
-						if icon.cmd.GetGameState().GetHas().GetOrder() {
-							gc.SetFillColor(map_unit_can_order)
+						if icon.cmd.GetGameState().GetHas().GetOrder() &&
+							icon.cmd.GetGameState().GetOrders() != republique.Order_RESTAGE {
+							gc.SetFillColor(map_unit_has_order)
 						}
-						draw2dkit.Rectangle(gc, fx+xx+2, fy+yy+blocksize-10, fx+xx+blocksize-4, fy+yy+blocksize-4)
+						draw2dkit.Rectangle(gc,
+							fx+xx+2, fy+yy+blocksize-10,
+							fx+xx+blocksize-4, fy+yy+blocksize-4)
 						gc.Fill()
 					}
 
@@ -333,4 +337,17 @@ func (r *mapRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, 
 		//gc.Close()
 		gc.FillStroke()
 	}
+}
+
+func (r *mapRender) ConvertToGrid(event *fyne.PointEvent) (int32, int32) {
+	if r.img == nil {
+		return 0, 0
+	}
+	scale := r.Scale()
+	size := r.img.Bounds()
+	dx := (float32(size.Max.X) / scale) / float32(r.mw.grid.x)
+	dy := (float32(size.Max.Y) / scale) / float32(r.mw.grid.y)
+	x := int32(float32(event.Position.X) / dx)
+	y := int32(float32(event.Position.Y) / dy)
+	return x + 1, y + 1
 }

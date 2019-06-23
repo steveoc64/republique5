@@ -164,7 +164,7 @@ message CommandGameState {
   bool injured = 6;
   string objectiveName = 7;
   Order orders = 8;
-  Grid objective = 9;;
+  repeated Grid objective = 9;;
   string attachedTo = 10;
   google.protobuf.Timestamp timestamp = 11;
   UnitAction can = 12;
@@ -329,6 +329,11 @@ enum Order {
   WITHDRAW = 4;
   ATTACK = 5;
   RALLY = 6;
+  ENGAGE = 7;
+  PURSUIT = 8;
+  ADVANCE = 9;
+  CHARGE = 10;
+  FIRE = 11;
 }
 
 enum Nationality {

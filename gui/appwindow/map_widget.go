@@ -107,7 +107,14 @@ func (mw *MapWidget) CreateRenderer() fyne.WidgetRenderer {
 
 // Tapped is called when the user taps the map widget
 func (mw *MapWidget) Tapped(event *fyne.PointEvent) {
-	mw.Select(mw.grid.CommandAt(event.Position).GetId())
+	cmd := mw.grid.CommandAt(event.Position)
+	if cmd != nil {
+		mw.Select(cmd.GetId())
+		return
+	}
+	// clicked outside of that, so tell the map about it in terms of the grid
+	x, y := widget.Renderer(mw).(*mapRender).ConvertToGrid(event)
+	mw.app.mapPanel.Tap(x, y)
 }
 
 // TappedSecondary is called when the user right-taps the map widget

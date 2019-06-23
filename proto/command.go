@@ -214,3 +214,67 @@ func (c *Command) initState(parent *Command, standDown bool, side MapSide, mx, m
 		},
 	}
 }
+
+// SetOrder sets the order for the command
+func (c *Command) SetOrder(order Order) {
+	if !c.GetGameState().GetCan().GetOrder() {
+		return // cant set order
+	}
+	if c.GameState.GetOrders() != order {
+		// is a change of orders, so set new objective path
+		c.GameState.Objective = c.newObjective()
+	}
+	c.GameState.Orders = order
+	if c.GetGameState().Has == nil {
+		c.GameState.Has = &UnitAction{
+			Order: true,
+		}
+	}
+}
+
+func (c *Command) newObjective() []*Grid {
+	return []*Grid{
+		&Grid{
+			X: c.GameState.Grid.X,
+			Y: c.GameState.Grid.Y,
+		},
+	}
+}
+
+// AddToObjective adds a grid to the path for the command order
+func (c *Command) AddToObjective(x, y int32) []*Grid {
+	if !c.GetGameState().GetCan().GetOrder() {
+		return nil // cant add to objective
+	}
+	if c.GameState.Objective == nil {
+		c.GameState.Objective = c.newObjective()
+	}
+	// ignore if its the same as the last element
+	g := c.GameState.Objective[len(c.GameState.Objective)-1]
+	if g.X == x && g.Y == y {
+		return c.GameState.Objective
+	}
+	// add to path
+	c.GameState.Objective = append(c.GameState.Objective, &Grid{X: x, Y: y})
+	return c.GameState.Objective
+}
+
+// SetObjective sets the grid path
+func (c *Command) SetObjective(x, y int32) []*Grid {
+	if !c.GetGameState().GetCan().GetOrder() {
+		return nil // cant add to objective
+	}
+	// add to path
+	c.GameState.Objective = nil
+	c.GameState.Objective = append(c.GameState.Objective, &Grid{X: x, Y: y})
+	return c.GameState.Objective
+}
+
+// ClearOrder clears the order and objective path for a command
+func (c *Command) ClearOrder() {
+	c.GameState.Orders = Order_RESTAGE
+	c.GameState.Objective = nil
+	if c.GameState.Has != nil {
+		c.GameState.Has.Order = false
+	}
+}
