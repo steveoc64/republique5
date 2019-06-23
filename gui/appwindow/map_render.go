@@ -235,7 +235,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 				xx := 0.0
 				yy := 0.0
 				for i := 0; i < cnt; i++ {
-					if (i % 3) == 0 {
+					if i > 0 && (i%3) == 0 {
 						xx = 0.0
 						yy += blocksize
 					}
@@ -258,6 +258,16 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 						radius, radius)
 					gc.Close()
 					gc.FillStroke()
+
+					// denote order status
+					if icon.cmd != nil && icon.cmd.GetGameState().GetCan().GetOrder() {
+						gc.SetFillColor(map_unit_can_order)
+						if icon.cmd.GetGameState().GetHas().GetOrder() {
+							gc.SetFillColor(map_unit_can_order)
+						}
+						draw2dkit.Rectangle(gc, fx+xx+2, fy+yy+blocksize-10, fx+xx+blocksize-4, fy+yy+blocksize-4)
+						gc.Fill()
+					}
 
 					// denote the type
 					gc.SetStrokeColor(denote_unit)

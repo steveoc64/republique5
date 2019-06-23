@@ -23,4 +23,6 @@ var (
 	map_unit_selected_fill   = color.RGBA{0, 0x44, 0xFF, 0xFF}
 	map_unit_selected_stroke = color.RGBA{0xFF, 0xAA, 0, 0xFF}
 	denote_unit              = color.RGBA{200, 200, 200, 0xff}
+	map_unit_can_order       = color.RGBA{0x61, 0xf4, 0x1c, 0xff}
+	map_unit_has_order       = color.RGBA{0xf4, 0x9f, 0x16, 0xff}
 )
