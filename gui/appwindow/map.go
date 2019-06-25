@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"context"
+
 	"github.com/davecgh/go-spew/spew"
 
 	"fyne.io/fyne/theme"
@@ -258,8 +259,12 @@ func newMapPanel(app *App) *MapPanel {
 
 // Tap tells the map controller that a tap occurred at a spot
 func (m *MapPanel) Tap(x, y int32) {
+	if m.app.MapData.Side == rp.MapSide_TOP {
+		x = m.app.MapData.X - x + 1
+		y = m.app.MapData.Y - y + 1
+	}
 	println("got a map tap at", x, y)
-	if x < 1 || x > m.app.MapData.X || y < 0 || y > m.app.MapData.Y {
+	if x < 1 || x > m.app.MapData.X || y < 1 || y > m.app.MapData.Y {
 		// out of bounds
 		return
 	}
@@ -269,8 +274,18 @@ func (m *MapPanel) Tap(x, y int32) {
 		return
 	}
 
-	dx := (m.command.GameState.Grid.GetX() - x)
-	dy := (m.command.GameState.Grid.GetY() - y)
+	unitX := m.command.GameState.Grid.GetX()
+	unitY := m.command.GameState.Grid.GetY()
+	/*
+		if m.app.MapData.Side == rp.MapSide_TOP {
+			unitX = m.app.MapData.X - unitX + 1
+			unitY = m.app.MapData.Y - unitY + 1
+		}
+
+	*/
+
+	dx := (unitX - x)
+	dy := (unitY - y)
 	distance := dx*dx + dy*dy
 	path := []*rp.Grid{}
 	switch m.order {

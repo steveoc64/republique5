@@ -107,6 +107,15 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	my := int(r.mw.mapData.Y)
 	gc := draw2dimg.NewGraphicContext(img)
 	twopi := math.Pi * 2
+	mapSide := r.mw.app.MapData.Side
+
+	convertXY := func(x, y int) (int, int) {
+		switch mapSide {
+		case republique.MapSide_TOP:
+			return mx - x - 1, my - y - 1
+		}
+		return x, y
+	}
 
 	paintBlock := func(x, y int) {
 		i := x + mx*y
@@ -134,8 +143,9 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 
 	// grid overlays, hills and trees
 	i := 0
-	for y := 0; y < my; y++ {
-		for x := 0; x < mx; x++ {
+	for ya := 0; ya < my; ya++ {
+		for xa := 0; xa < mx; xa++ {
+			x, y := convertXY(xa, ya)
 			fx := float64(x) * dx
 			fy := float64(y) * dy
 			mapChar := r.mw.mapData.Data[i]
@@ -187,8 +197,9 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	gc.SetLineWidth(20)
 	gc.BeginPath()
 	gotriver := false
-	for y := 0; y < my; y++ {
-		for x := 0; x < mx; x++ {
+	for ya := 0; ya < my; ya++ {
+		for xa := 0; xa < mx; xa++ {
+			x, y := convertXY(xa, ya)
 			fx := float64(x) * dx
 			fy := float64(y) * dy
 			switch r.mw.mapData.Data[i] {
@@ -249,11 +260,21 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 	mx := int(r.mw.mapData.X)
 	my := int(r.mw.mapData.Y)
 	gc := draw2dimg.NewGraphicContext(img)
+	mapSide := r.mw.app.MapData.Side
+
+	convertXY := func(x, y int) (int, int) {
+		switch mapSide {
+		case republique.MapSide_TOP:
+			return mx - x - 1, my - y - 1
+		}
+		return x, y
+	}
 
 	// paint the units
-	for y := 0; y < my; y++ {
-		for x := 0; x < mx; x++ {
-			forces := r.mw.grid.Units(int32(x), int32(y))
+	for ya := 0; ya < my; ya++ {
+		for xa := 0; xa < mx; xa++ {
+			x, y := convertXY(xa, ya)
+			forces := r.mw.grid.Units(int32(xa), int32(ya))
 			// draw the commands - 3 per line
 			if cnt := len(forces.commands); cnt > 0 {
 				fx := float64(x) * dx
@@ -296,8 +317,9 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 						gc.SetFillColor(map_unit_orders_fire)
 						if len(icon.cmd.GetGameState().GetObjective()) == 2 {
 							target := icon.cmd.GameState.Objective[1]
-							gc.LineTo(float64(target.X-1)*dx, float64(target.Y-1)*dy+0.5*dy)
-							gc.LineTo(float64(target.X)*dx, float64(target.Y-1)*dy+0.5*dy)
+							tx, ty := convertXY(int(target.X), int(target.Y))
+							gc.LineTo(float64(tx-1)*dx, float64(ty-1)*dy+0.5*dy)
+							gc.LineTo(float64(tx)*dx, float64(ty-1)*dy+0.5*dy)
 							gc.Close()
 							gc.Fill()
 							doPath = false
@@ -309,7 +331,13 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					if doPath {
 						for k, path := range icon.cmd.GetGameState().Objective {
 							if k > 0 { // burn the first one
-								gc.LineTo(float64(path.X)*dx-(0.5*dx), float64(path.Y)*dy-(0.5*dy))
+								px, py := int(path.X), int(path.Y)
+								switch mapSide {
+								case republique.MapSide_TOP:
+									px = mx - px + 1
+									py = my - py + 1
+								}
+								gc.LineTo(float64(px)*dx-(0.5*dx), float64(py)*dy-(0.5*dy))
 							}
 						}
 						gc.Stroke()
@@ -379,11 +407,12 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 	}
 
 	// paint the enemy
-	for y := 0; y < my; y++ {
-		for x := 0; x < mx; x++ {
+	for ya := 0; ya < my; ya++ {
+		for xa := 0; xa < mx; xa++ {
+			x, y := convertXY(xa, ya)
 			e := []*republique.Command{}
 			for _, enemy := range r.mw.app.Enemy {
-				if enemy.GameState.Grid.X == int32(x+1) && enemy.GameState.Grid.Y == int32(y+1) {
+				if enemy.GameState.Grid.X == int32(xa+1) && enemy.GameState.Grid.Y == int32(ya+1) {
 					e = append(e, enemy)
 				}
 			}
