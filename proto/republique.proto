@@ -12,6 +12,7 @@ service GameService {
   rpc GameTime(TokenMessage) returns (GameTimeResponse) {}
 
   rpc GetUnits(TokenMessage) returns (Units) {}
+  rpc GetEnemy(TokenMessage) returns (Units) {}
   rpc GetMap(TokenMessage) returns (MapData) {}
 }
 

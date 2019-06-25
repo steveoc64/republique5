@@ -226,7 +226,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 		gc.FillStroke()
 	}
 
-	memdebug.Print(t1, "rendered page")
+	memdebug.Print(t1, "rendered terrain")
 	return img
 }
 
@@ -243,7 +243,7 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 		r.background,
 		image.Point{0, 0},
 		draw.Src)
-	memdebug.Print(t1, "blit")
+	memdebug.Print(t1, "blit terrain")
 	dx := float64(w / int(r.mw.mapData.X))
 	dy := float64(h / int(r.mw.mapData.Y))
 	mx := int(r.mw.mapData.X)
@@ -378,7 +378,64 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 		}
 	}
 
-	memdebug.Print(t1, "rendered page foreground")
+	// paint the enemy
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
+			e := []*republique.Command{}
+			for _, enemy := range r.mw.app.Enemy {
+				if enemy.GameState.Grid.X == int32(x+1) && enemy.GameState.Grid.Y == int32(y+1) {
+					e = append(e, enemy)
+				}
+			}
+			fx := float64(x) * dx
+			fy := float64(y) * dy
+			blocksize := dx / 3.0
+			radius := dx / 10
+			xx := 0.0
+			yy := 0.0
+			for i, enemy := range e {
+				if i > 0 && (i%3) == 0 {
+					xx = 0.0
+					yy += blocksize
+				}
+				// draw the basic rect
+				gc.SetFillColor(map_enemy_fill)
+				gc.SetStrokeColor(map_unit_stroke)
+				gc.SetLineWidth(2)
+				gc.BeginPath()
+				draw2dkit.RoundedRectangle(gc,
+					fx+xx+2, fy+yy+2,
+					fx+xx+blocksize-4, fy+yy+blocksize,
+					radius, radius)
+				gc.Close()
+				gc.FillStroke()
+
+				// denote the type
+				gc.SetStrokeColor(denote_unit)
+				gc.SetFillColor(denote_unit)
+				gc.SetLineWidth(dx / 30)
+				gc.SetLineCap(draw2d.RoundCap)
+				switch enemy.Arm {
+				case republique.Arm_CAVALRY:
+					gc.MoveTo(fx+xx+blocksize-6, fy+yy+4)
+					gc.LineTo(fx+xx+4, fy+yy+blocksize-6)
+					gc.Stroke()
+				case republique.Arm_INFANTRY:
+					gc.MoveTo(fx+xx+blocksize-6, fy+yy+4)
+					gc.LineTo(fx+xx+4, fy+yy+blocksize-6)
+					gc.Stroke()
+					gc.MoveTo(fx+xx+4, fy+yy+4)
+					gc.LineTo(fx+xx+blocksize-6, fy+yy+blocksize-6)
+					gc.Stroke()
+				case republique.Arm_ARTILLERY:
+					draw2dkit.Circle(gc, fx+xx+(blocksize/2)+2, fy+yy+(blocksize/2)+2, dx/20)
+					gc.Fill()
+				}
+				xx += blocksize
+			}
+		}
+	}
+	memdebug.Print(t1, "rendered units")
 	return img
 }
 

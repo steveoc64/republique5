@@ -19,6 +19,7 @@ var (
 	map_town_fill            = color.RGBA{0x5A, 0x51, 0x4C, 0xFF}
 	map_town_stroke          = color.RGBA{32, 32, 32, 200}
 	map_unit_fill            = color.RGBA{0, 0, 128, 200}
+	map_enemy_fill           = color.RGBA{0x88, 0, 0, 200}
 	map_unit_stroke          = color.RGBA{0, 0, 0, 0xFF}
 	map_unit_selected_fill   = color.RGBA{0, 0x44, 0xFF, 0xFF}
 	map_unit_selected_stroke = color.RGBA{0xFF, 0xAA, 0, 0xFF}

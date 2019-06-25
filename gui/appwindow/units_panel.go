@@ -2,6 +2,7 @@ package appwindow
 
 import (
 	"context"
+	"github.com/davecgh/go-spew/spew"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
@@ -60,5 +61,11 @@ func (a *App) GetUnits() error {
 		return err
 	}
 	a.Commands = u.Commands
+	u, err = a.gameServer.GetEnemy(context.Background(), &a.Token)
+	if err != nil {
+		return err
+	}
+	a.Enemy = u.Commands
+	spew.Dump("enemy units", a.Enemy)
 	return nil
 }

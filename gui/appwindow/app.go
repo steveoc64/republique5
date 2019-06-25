@@ -42,6 +42,7 @@ type App struct {
 	Briefing   string
 	Commanders []string
 	Commands   []*rp.Command
+	Enemy      []*rp.Command
 	TeamName   string
 	Token      rp.TokenMessage
 	Expires    time.Time
