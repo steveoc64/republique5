@@ -19,11 +19,12 @@ import (
 )
 
 type mapRender struct {
-	render  *canvas.Raster
-	mw      *MapWidget
-	objects []fyne.CanvasObject
-	img     *image.RGBA
-	dirty   bool
+	render     *canvas.Raster
+	mw         *MapWidget
+	objects    []fyne.CanvasObject
+	background *image.RGBA
+	foreground *image.RGBA
+	dirty      bool
 }
 
 func newMapRender(mw *MapWidget) *mapRender {
@@ -80,21 +81,23 @@ func (r *mapRender) Refresh() {
 }
 
 func (r *mapRender) getImage(w, h int) image.Image {
-	if r.dirty || r.img == nil || r.img.Bounds().Size().X != w || r.img.Bounds().Size().Y != h {
-		r.img = r.generateImage(w, h)
+	if r.background == nil || r.background.Bounds().Size().X != w || r.background.Bounds().Size().Y != h {
+		r.background = r.generateBackground(w, h)
+		r.dirty = true
+	}
+	if r.dirty {
+		r.foreground = r.generateForeground(w, h)
 		r.dirty = false
 	}
 	if r.mw.hidden {
 		return &image.RGBA{}
 	}
-	return r.img
+	return r.foreground
 }
 
-func (r *mapRender) generateImage(w, h int) *image.RGBA {
+func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	t1 := time.Now()
-	scale := float64(r.Scale())
-	img := r.img
-	img = image.NewRGBA(image.Rect(0, 0, w, h))
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
 	if w == 0 || h == 0 {
 		return img
 	}
@@ -223,15 +226,34 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		gc.FillStroke()
 	}
 
+	memdebug.Print(t1, "rendered page")
+	return img
+}
+
+func (r *mapRender) generateForeground(w, h int) *image.RGBA {
+	t1 := time.Now()
+	scale := float64(r.Scale())
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	if w == 0 || h == 0 {
+		return img
+	}
+	// blit the background across to the foreground
+	draw.Draw(img,
+		r.background.Rect,
+		r.background,
+		image.Point{0, 0},
+		draw.Src)
+	memdebug.Print(t1, "blit")
+	dx := float64(w / int(r.mw.mapData.X))
+	dy := float64(h / int(r.mw.mapData.Y))
+	mx := int(r.mw.mapData.X)
+	my := int(r.mw.mapData.Y)
+	gc := draw2dimg.NewGraphicContext(img)
+
 	// paint the units
 	for y := 0; y < my; y++ {
 		for x := 0; x < mx; x++ {
 			forces := r.mw.grid.Units(int32(x), int32(y))
-			/*
-				if len(forces.commands) > 0 || len(forces.units) > 0 {
-					println("there are ", len(forces.commands), "commands and", len(forces.units), "units at", x+1, y+1)
-				}
-			*/
 			// draw the commands - 3 per line
 			if cnt := len(forces.commands); cnt > 0 {
 				fx := float64(x) * dx
@@ -356,7 +378,7 @@ func (r *mapRender) generateImage(w, h int) *image.RGBA {
 		}
 	}
 
-	memdebug.Print(t1, "rendered page")
+	memdebug.Print(t1, "rendered page foreground")
 	return img
 }
 
@@ -394,11 +416,11 @@ func (r *mapRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, 
 }
 
 func (r *mapRender) ConvertToGrid(event *fyne.PointEvent) (int32, int32) {
-	if r.img == nil {
+	if r.background == nil {
 		return 0, 0
 	}
 	scale := r.Scale()
-	size := r.img.Bounds()
+	size := r.background.Bounds()
 	dx := (float32(size.Max.X) / scale) / float32(r.mw.grid.x)
 	dy := (float32(size.Max.Y) / scale) / float32(r.mw.grid.y)
 	x := int32(float32(event.Position.X) / dx)
