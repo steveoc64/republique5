@@ -1,4 +1,4 @@
-SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui
+SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui cmd/mapedit
 
 all: protobuf $(SUBDIRS)
 
