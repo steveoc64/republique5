@@ -30,9 +30,8 @@ func New(app fyne.App, x int, y int, data string) {
 		data: widget.NewMultiLineEntry(),
 		m:    NewMapEditorWidget(),
 	}
-	m.form.OnSubmit = m.Submit
-	m.w.SetContent(widget.NewVBox(m.form, m.m))
 
+	box := widget.NewVBox(m.form)
 	m.form.AppendItem(&widget.FormItem{
 		Text:   "X",
 		Widget: m.x,
@@ -45,14 +44,13 @@ func New(app fyne.App, x int, y int, data string) {
 		Text:   "Map Data",
 		Widget: m.data,
 	})
-	m.form.AppendItem(&widget.FormItem{
-		Text:   "",
-		Widget: widget.NewButton("Submit", m.Submit),
-	})
-	m.form.AppendItem(&widget.FormItem{
-		Text:   "",
-		Widget: widget.NewButton("Quit", m.Quit),
-	})
+	box.Append(widget.NewButton("Update Map", m.Submit))
+	box.Append(m.m)
+	box.Append(widget.NewButton("Quit", m.Quit))
+	m.w.SetContent(box)
+
+	m.data.OnChanged = m.ChangeData
+
 	m.x.SetText(fmt.Sprintf("%d", x))
 	m.y.SetText(fmt.Sprintf("%d", y))
 	m.data.SetText(data)
@@ -87,4 +85,8 @@ func (m *mapeditor) Quit() {
 	}
 	print("\n")
 	m.app.Quit()
+}
+
+func (m *mapeditor) ChangeData(newData string) {
+	m.m.SetData(newData)
 }

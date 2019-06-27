@@ -190,6 +190,33 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		}
 	}
 
+	// draw rivers
+	i = 0
+	gc.SetFillColor(map_deep_blue)
+	gc.SetStrokeColor(map_blue)
+	gc.SetLineWidth(20)
+	gc.BeginPath()
+	gotriver := false
+	for y := 0; y < my; y++ {
+		for x := 0; x < mx; x++ {
+			fx := float64(x) * dx
+			fy := float64(y) * dy
+			switch r.m.data[i] {
+			case 'r':
+				if !gotriver {
+					gotriver = true
+					gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
+				} else {
+					gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+				}
+			}
+			i++
+		}
+	}
+	if gotriver {
+		gc.FillStroke()
+	}
+
 	// major grid lines - vertical
 	gc.SetStrokeColor(map_grid)
 	gc.SetLineWidth(2)
