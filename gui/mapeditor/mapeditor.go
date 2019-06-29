@@ -59,7 +59,11 @@ func New(app fyne.App, x int, y int, data string) {
 	m.w.Show()
 	m.w.CenterOnScreen()
 
-	m.w.Canvas().SetOnTypedKey(m.m.Key)
+	m.w.Canvas().SetOnTypedKey(func(e *fyne.KeyEvent) {
+		m.m.Key(e)
+		m.x.SetText(fmt.Sprintf("%d", m.m.x))
+		m.y.SetText(fmt.Sprintf("%d", m.m.y))
+	})
 	m.w.Canvas().SetOnTypedRune(func(r rune) {
 		m.m.Rune(r)
 		m.data.SetText(m.m.datastring)

@@ -228,7 +228,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		fx := (float64(k.x) + 0.5) * dx
 		fy := (float64(k.y) + 0.5) * dy
 		if len(v.adjacent) == 0 {
-			draw2dkit.Circle(gc, fx, fy, dx/4)
+			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
 		}
 		for _, vv := range v.adjacent {
 			gc.MoveTo(fx, fy)
