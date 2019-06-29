@@ -246,7 +246,6 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 			if k.x == r.m.x-1 {
 				fx2 = float64(r.m.x) * dx
 			}
-			fy2 := float64(k.y) * dy
 			bump := 0.0
 			for _, vv := range v.adjacent {
 				switch {
@@ -256,7 +255,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 					bump = dy / -2
 				}
 				gc.MoveTo(fx, fy)
-				gc.LineTo(fx2, fy2+bump)
+				gc.LineTo(fx2, fy+bump)
 				gc.Stroke()
 				doneEdge = true
 				break
@@ -269,7 +268,6 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				if k.y == r.m.y-1 {
 					fy2 = float64(r.m.y) * dy
 				}
-				fx2 := float64(k.x) * dx
 				bump := 0.0
 				for _, vv := range v.adjacent {
 					switch {
@@ -279,7 +277,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 						bump = dx / -2
 					}
 					gc.MoveTo(fx, fy)
-					gc.LineTo(fx2+bump, fy2)
+					gc.LineTo(fx+bump, fy2)
 					gc.Stroke()
 					break
 				}

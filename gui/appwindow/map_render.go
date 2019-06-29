@@ -191,31 +191,99 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// draw rivers
-	i = 0
+	if false {
+		i = 0
+		gc.SetFillColor(map_deep_blue)
+		gc.SetStrokeColor(map_blue)
+		gc.SetLineWidth(20)
+		gc.BeginPath()
+		gotriver := false
+		for ya := 0; ya < my; ya++ {
+			for xa := 0; xa < mx; xa++ {
+				x, y := convertXY(xa, ya)
+				fx := float64(x) * dx
+				fy := float64(y) * dy
+				switch r.mw.mapData.Data[i] {
+				case 'r':
+					if !gotriver {
+						gotriver = true
+						gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
+					} else {
+						gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+					}
+				}
+				i++
+			}
+		}
+		if gotriver {
+			gc.FillStroke()
+		}
+	}
+
+	// do the river segments
 	gc.SetFillColor(map_deep_blue)
 	gc.SetStrokeColor(map_blue)
 	gc.SetLineWidth(20)
-	gc.BeginPath()
-	gotriver := false
-	for ya := 0; ya < my; ya++ {
-		for xa := 0; xa < mx; xa++ {
-			x, y := convertXY(xa, ya)
-			fx := float64(x) * dx
-			fy := float64(y) * dy
-			switch r.mw.mapData.Data[i] {
-			case 'r':
-				if !gotriver {
-					gotriver = true
-					gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
-				} else {
-					gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+	for k, v := range r.mw.rivers {
+		gc.BeginPath()
+		fx := (float64(k.x) + 0.5) * dx
+		fy := (float64(k.y) + 0.5) * dy
+		if len(v.adjacent) == 0 {
+			draw2dkit.Circle(gc, fx, fy, dx/4)
+		}
+		for _, vv := range v.adjacent {
+			gc.MoveTo(fx, fy)
+			fx2 := (float64(vv.x) + 0.5) * dx
+			fy2 := (float64(vv.y) + 0.5) * dy
+			gc.LineTo(fx2, fy2)
+		}
+		gc.FillStroke()
+
+		// if we are on an edge, then complete the river
+		doneEdge := false
+		switch k.x {
+		case 0, r.mw.grid.x - 1:
+			fx2 := 0.0
+			if k.x == r.mw.grid.x-1 {
+				fx2 = float64(r.mw.grid.x) * dx
+			}
+			bump := dx / -4
+			for _, vv := range v.adjacent {
+				switch {
+				case vv.y < k.y:
+					bump += dy / 2
+				case vv.y > k.y:
+					bump += dy / -2
+				}
+				gc.MoveTo(fx, fy)
+				gc.LineTo(fx2, fy+bump)
+				gc.Stroke()
+				doneEdge = true
+				break
+			}
+		}
+		if !doneEdge {
+			switch k.y {
+			case 0, r.mw.grid.y - 1:
+				fy2 := 0.0
+				if k.y == r.mw.grid.y-1 {
+					fy2 = float64(r.mw.grid.y) * dy
+				}
+				bump := dx / -4
+				for _, vv := range v.adjacent {
+					switch {
+					case vv.x < k.x:
+						bump += dx / 2
+					case vv.x > k.x:
+						bump += dx / -2
+					}
+					gc.MoveTo(fx, fy)
+					gc.LineTo(fx+bump, fy2)
+					gc.Stroke()
+					break
 				}
 			}
-			i++
 		}
-	}
-	if gotriver {
-		gc.FillStroke()
 	}
 
 	// major grid lines - vertical

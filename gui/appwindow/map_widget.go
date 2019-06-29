@@ -17,6 +17,7 @@ type MapWidget struct {
 	mapData  *rp.MapData
 	grid     *gridData
 	unitDesc *widget.Label
+	rivers   map[riverPoint]*river
 }
 
 func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWidget {
@@ -40,6 +41,7 @@ func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWid
 			}
 		}
 	}
+	mw.calcRiver()
 
 	// set size
 	mw.Resize(mw.MinSize())
