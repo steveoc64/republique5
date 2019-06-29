@@ -9,6 +9,7 @@ var (
 	command_blue             = color.RGBA{40, 180, 240, 128}
 	command_red              = color.RGBA{200, 0, 0, 128}
 	map_grid                 = color.RGBA{0x44, 0x44, 0x44, 0xFF}
+	map_select               = color.RGBA{0xff, 0, 0, 0xff}
 	map_grid_minor           = color.RGBA{0x44, 0x44, 0x44, 0xFF}
 	map_blue                 = color.RGBA{30, 60, 200, 200}
 	map_deep_blue            = color.RGBA{10, 30, 100, 200}

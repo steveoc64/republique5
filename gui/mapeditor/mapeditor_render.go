@@ -191,30 +191,100 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// draw rivers
-	i = 0
+	if false {
+		i = 0
+		gc.SetFillColor(map_deep_blue)
+		gc.SetStrokeColor(map_blue)
+		gc.SetLineWidth(20)
+		gc.BeginPath()
+		gotriver := false
+		for y := 0; y < my; y++ {
+			for x := 0; x < mx; x++ {
+				fx := float64(x) * dx
+				fy := float64(y) * dy
+				switch r.m.data[i] {
+				case 'r':
+					if !gotriver {
+						gotriver = true
+						gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
+					} else {
+						gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+					}
+				}
+				i++
+			}
+		}
+		if gotriver {
+			gc.FillStroke()
+		}
+	}
+
+	// do the river segments
 	gc.SetFillColor(map_deep_blue)
 	gc.SetStrokeColor(map_blue)
 	gc.SetLineWidth(20)
-	gc.BeginPath()
-	gotriver := false
-	for y := 0; y < my; y++ {
-		for x := 0; x < mx; x++ {
-			fx := float64(x) * dx
-			fy := float64(y) * dy
-			switch r.m.data[i] {
-			case 'r':
-				if !gotriver {
-					gotriver = true
-					gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
-				} else {
-					gc.LineTo(fx+0.5*dx, fy+0.5*dy)
+	for k, v := range r.m.rivers {
+		gc.BeginPath()
+		fx := (float64(k.x) + 0.5) * dx
+		fy := (float64(k.y) + 0.5) * dy
+		if len(v.adjacent) == 0 {
+			draw2dkit.Circle(gc, fx, fy, dx/4)
+		}
+		for _, vv := range v.adjacent {
+			gc.MoveTo(fx, fy)
+			fx2 := (float64(vv.x) + 0.5) * dx
+			fy2 := (float64(vv.y) + 0.5) * dy
+			gc.LineTo(fx2, fy2)
+		}
+		gc.FillStroke()
+
+		// if we are on an edge, then complete the river
+		doneEdge := false
+		switch k.x {
+		case 0, r.m.x - 1:
+			fx2 := 0.0
+			if k.x == r.m.x-1 {
+				fx2 = float64(r.m.x) * dx
+			}
+			fy2 := float64(k.y) * dy
+			bump := 0.0
+			for _, vv := range v.adjacent {
+				switch {
+				case vv.y < k.y:
+					bump = dy / 2
+				case vv.y > k.y:
+					bump = dy / -2
+				}
+				gc.MoveTo(fx, fy)
+				gc.LineTo(fx2, fy2+bump)
+				gc.Stroke()
+				doneEdge = true
+				break
+			}
+		}
+		if !doneEdge {
+			switch k.y {
+			case 0, r.m.y - 1:
+				fy2 := 0.0
+				if k.y == r.m.y-1 {
+					fy2 = float64(r.m.y) * dy
+				}
+				fx2 := float64(k.x) * dx
+				bump := 0.0
+				for _, vv := range v.adjacent {
+					switch {
+					case vv.x < k.x:
+						bump = dx / 2
+					case vv.x > k.x:
+						bump = dx / -2
+					}
+					gc.MoveTo(fx, fy)
+					gc.LineTo(fx2+bump, fy2)
+					gc.Stroke()
+					break
 				}
 			}
-			i++
 		}
-	}
-	if gotriver {
-		gc.FillStroke()
 	}
 
 	// major grid lines - vertical
@@ -235,6 +305,14 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		gc.Close()
 		gc.FillStroke()
 	}
+
+	// highlight current grid
+	gc.SetStrokeColor(map_select)
+	gc.SetLineWidth(8)
+	x1 := float64(r.m.cx-1) * dx
+	y1 := float64(r.m.cy-1) * dy
+	draw2dkit.Rectangle(gc, x1, y1, x1+dx, y1+dy)
+	gc.Stroke()
 
 	return img
 }
@@ -272,7 +350,7 @@ func (r *mapEditorRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy flo
 	}
 }
 
-func (r *mapEditorRender) ConvertToGrid(event *fyne.PointEvent) (int32, int32) {
+func (r *mapEditorRender) ConvertToGrid(event *fyne.PointEvent) (int, int) {
 	if r.background == nil {
 		return 0, 0
 	}
@@ -280,7 +358,7 @@ func (r *mapEditorRender) ConvertToGrid(event *fyne.PointEvent) (int32, int32) {
 	size := r.background.Bounds()
 	dx := (float32(size.Max.X) / scale) / float32(r.m.x)
 	dy := (float32(size.Max.Y) / scale) / float32(r.m.y)
-	x := int32(float32(event.Position.X) / dx)
-	y := int32(float32(event.Position.Y) / dy)
+	x := int(float32(event.Position.X) / dx)
+	y := int(float32(event.Position.Y) / dy)
 	return x + 1, y + 1
 }

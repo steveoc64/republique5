@@ -58,6 +58,12 @@ func New(app fyne.App, x int, y int, data string) {
 	m.m.SetData(data)
 	m.w.Show()
 	m.w.CenterOnScreen()
+
+	m.w.Canvas().SetOnTypedKey(m.m.Key)
+	m.w.Canvas().SetOnTypedRune(func(r rune) {
+		m.m.Rune(r)
+		m.data.SetText(m.m.datastring)
+	})
 }
 
 func (m *mapeditor) Submit() {

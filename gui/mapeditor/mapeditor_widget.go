@@ -16,22 +16,97 @@ type MapEditorWidget struct {
 	datastring string
 	x          int
 	y          int
+	cx         int
+	cy         int
+	rivers     map[riverPoint]*river
+}
+
+type riverPoint struct {
+	x int
+	y int
+}
+type river struct {
+	adjacent []riverPoint
+}
+
+func (m *MapEditorWidget) calcRiver() {
+	m.rivers = make(map[riverPoint]*river)
+
+	abs := func(i int) int {
+		if i < 0 {
+			return -1 * i
+		}
+		return i
+	}
+
+	i := 0
+	// create all the riverpoints
+	for y := 0; y < m.y; y++ {
+		for x := 0; x < m.x; x++ {
+			if m.data[i] == 'r' {
+				m.rivers[riverPoint{x, y}] = &river{
+					adjacent: []riverPoint{},
+				}
+			}
+			i++
+		}
+	}
+
+	// get the adjacent points
+	for k, v := range m.rivers {
+		for kk, _ := range m.rivers {
+			dx := abs(k.x - kk.x)
+			dy := abs(k.y - kk.y)
+			if (dx == 1 && (dy == 1 || dy == 0)) ||
+				(dy == 1 && (dx == 1 || dx == 0)) {
+				v.adjacent = append(v.adjacent, kk)
+			}
+		}
+	}
 }
 
 // NewMapEditorWidget creates and returns a new map editor widget
 func NewMapEditorWidget() *MapEditorWidget {
-	e := &MapEditorWidget{}
+	e := &MapEditorWidget{
+		cx: 1,
+		cy: 1,
+	}
 	return e
+}
+
+func (m *MapEditorWidget) checkXY() bool {
+	if m.cx < 1 {
+		m.cx = 1
+		return false
+	}
+	if m.cy < 1 {
+		m.cy = 1
+		return false
+	}
+	if m.cx > m.x {
+		m.cx = m.x
+		return false
+	}
+	if m.cy > m.y {
+		m.cy = m.y
+		return false
+	}
+	return true
+}
+
+func (m *MapEditorWidget) repaint() {
+	if r, ok := widget.Renderer(m).(*mapEditorRender); ok {
+		r.dirty = true
+		r.Refresh()
+	}
 }
 
 func (m *MapEditorWidget) SetMapSize(x, y int) {
 	m.x = x
 	m.y = y
 	m.SetData(m.datastring)
-	if r, ok := widget.Renderer(m).(*mapEditorRender); ok {
-		r.dirty = true
-		r.Refresh()
-	}
+	m.checkXY()
+	m.repaint()
 }
 
 func (m *MapEditorWidget) SetData(data string) {
@@ -55,10 +130,40 @@ func (m *MapEditorWidget) SetData(data string) {
 			ii++
 		}
 	}
-	if r, ok := widget.Renderer(m).(*mapEditorRender); ok {
-		r.dirty = true
-		r.Refresh()
+	m.calcRiver()
+	m.repaint()
+}
+
+func (m *MapEditorWidget) setChar(b rune) {
+	i := (m.cy-1)*m.x + (m.cx - 1)
+	if i < 0 || i >= len(m.data) {
+		println("error", m.cx, m.cy, m.x, m.y)
+		return
 	}
+	switch b {
+	case 'h', 'w', 't':
+		if m.data[i] == byte(b) {
+			b = b + 'A' - 'a'
+		}
+	}
+	m.data[i] = byte(b)
+	data := ""
+	i = 0
+	for y := 0; y < m.y; y++ {
+		for x := 0; x < m.x; x++ {
+			switch m.data[i] {
+			case 0:
+				m.data[i] = ' '
+			}
+			data = data + string(m.data[i])
+			i++
+		}
+		data = data + "\n"
+	}
+	m.datastring = data
+
+	m.calcRiver()
+	m.repaint()
 }
 
 func (m *MapEditorWidget) Hide() {
@@ -105,4 +210,46 @@ func (m *MapEditorWidget) Visible() bool {
 
 func (m *MapEditorWidget) CreateRenderer() fyne.WidgetRenderer {
 	return newMapEditorRender(m)
+}
+
+func (m *MapEditorWidget) Key(event *fyne.KeyEvent) {
+	switch event.Name {
+	case "Right":
+		m.cx++
+		if m.cx > m.x {
+			m.SetMapSize(m.x+1, m.y)
+			return
+		}
+	case "Left":
+		m.cx--
+	case "Up":
+		m.cy--
+	case "Down":
+		m.cy++
+		if m.cy > m.y {
+			m.SetMapSize(m.x, m.y+1)
+			return
+		}
+	}
+	if !m.checkXY() {
+		return
+	}
+	m.repaint()
+}
+
+func (m *MapEditorWidget) Rune(r rune) {
+	switch r {
+	case 'h', 'H', ' ', 't', 'T', 'w', 'W', 'r':
+		m.setChar(r)
+	}
+}
+
+// Tapped is called when the user taps the map widget
+func (m *MapEditorWidget) Tapped(event *fyne.PointEvent) {
+	m.cx, m.cy = widget.Renderer(m).(*mapEditorRender).ConvertToGrid(event)
+	m.repaint()
+}
+
+// TappedSecondary is called when the user right-taps the map widget
+func (m *MapEditorWidget) TappedSecondary(event *fyne.PointEvent) {
 }
