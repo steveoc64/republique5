@@ -25,8 +25,15 @@ type riverPoint struct {
 	x int
 	y int
 }
+
+type riverConnect struct {
+	point riverPoint
+	done  bool
+}
+
 type river struct {
-	adjacent []riverPoint
+	//adjacent []*riverConnect
+	adjacent map[riverPoint]bool
 }
 
 func (m *MapEditorWidget) calcRiver() {
@@ -45,7 +52,7 @@ func (m *MapEditorWidget) calcRiver() {
 		for x := 0; x < m.x; x++ {
 			if m.data[i] == 'r' {
 				m.rivers[riverPoint{x, y}] = &river{
-					adjacent: []riverPoint{},
+					adjacent: []*riverConnect{},
 				}
 			}
 			i++
@@ -59,7 +66,8 @@ func (m *MapEditorWidget) calcRiver() {
 			dy := abs(k.y - kk.y)
 			if (dx == 1 && (dy == 1 || dy == 0)) ||
 				(dy == 1 && (dx == 1 || dx == 0)) {
-				v.adjacent = append(v.adjacent, kk)
+				// TODO - check here if the opposite exists
+				v.adjacent = append(v.adjacent, &riverConnect{point: kk})
 			}
 		}
 	}

@@ -190,35 +190,6 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		}
 	}
 
-	// draw rivers
-	if false {
-		i = 0
-		gc.SetFillColor(map_deep_blue)
-		gc.SetStrokeColor(map_blue)
-		gc.SetLineWidth(20)
-		gc.BeginPath()
-		gotriver := false
-		for y := 0; y < my; y++ {
-			for x := 0; x < mx; x++ {
-				fx := float64(x) * dx
-				fy := float64(y) * dy
-				switch r.m.data[i] {
-				case 'r':
-					if !gotriver {
-						gotriver = true
-						gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
-					} else {
-						gc.LineTo(fx+0.5*dx, fy+0.5*dy)
-					}
-				}
-				i++
-			}
-		}
-		if gotriver {
-			gc.FillStroke()
-		}
-	}
-
 	// do the river segments
 	gc.SetFillColor(map_deep_blue)
 	gc.SetStrokeColor(map_blue)
@@ -230,10 +201,10 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		if len(v.adjacent) == 0 {
 			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
 		}
-		for _, vv := range v.adjacent {
+		for kk, vv := range v.adjacent {
 			gc.MoveTo(fx, fy)
-			fx2 := (float64(vv.x) + 0.5) * dx
-			fy2 := (float64(vv.y) + 0.5) * dy
+			fx2 := (float64(kk.x) + 0.5) * dx
+			fy2 := (float64(kk.y) + 0.5) * dy
 			gc.LineTo(fx2, fy2)
 		}
 		gc.FillStroke()
@@ -249,9 +220,9 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 			bump := 0.0
 			for _, vv := range v.adjacent {
 				switch {
-				case vv.y < k.y:
+				case vv.point.y < k.y:
 					bump = dy / 2
-				case vv.y > k.y:
+				case vv.point.y > k.y:
 					bump = dy / -2
 				}
 				gc.MoveTo(fx, fy)
@@ -271,9 +242,9 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				bump := 0.0
 				for _, vv := range v.adjacent {
 					switch {
-					case vv.x < k.x:
+					case vv.point.x < k.x:
 						bump = dx / 2
-					case vv.x > k.x:
+					case vv.point.x > k.x:
 						bump = dx / -2
 					}
 					gc.MoveTo(fx, fy)
