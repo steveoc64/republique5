@@ -1,10 +1,11 @@
 package appwindow
 
 import (
+	"strings"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"strings"
 )
 
 // OrdersPanel is the UI for placing commander orders
@@ -27,10 +28,11 @@ func newOrdersPanel(app *App) *OrdersPanel {
 		Header: widget.NewLabel("Orders for: " + strings.Join(app.Commanders, ", ")),
 		Notes:  widget.NewLabel("No orders yet"),
 	}
-	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
+	h.Box = fyne.NewContainerWithLayout(layout.NewBorderLayout(h.Header, nil, nil, nil),
 		h.Header,
 		h.Notes,
 	)
 	h.Box.Show()
+
 	return h
 }

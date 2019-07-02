@@ -4,10 +4,15 @@ import "image/color"
 
 var (
 	unit_green               = color.RGBA{140, 240, 180, 128}
+	unit_dark_green          = color.RGBA{0, 0x44, 0x22, 0xFF}
 	unit_blue                = color.RGBA{140, 180, 240, 128}
+	unit_dark_blue           = color.RGBA{0, 0x22, 0x44, 0xFF}
 	command_green            = color.RGBA{40, 240, 180, 128}
+	command_dark_green       = color.RGBA{0, 0x88, 0x44, 0xff}
 	command_blue             = color.RGBA{40, 180, 240, 128}
+	command_dark_blue        = color.RGBA{0, 0x44, 0x88, 0xff}
 	command_red              = color.RGBA{200, 0, 0, 128}
+	command_dark_red         = color.RGBA{200, 0, 0, 255}
 	map_grid                 = color.RGBA{0x44, 0x44, 0x44, 0xFF}
 	map_grid_minor           = color.RGBA{0x44, 0x44, 0x44, 0xFF}
 	map_blue                 = color.RGBA{30, 60, 200, 200}

@@ -2,7 +2,6 @@ package appwindow
 
 import (
 	"context"
-	"github.com/davecgh/go-spew/spew"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
@@ -16,6 +15,7 @@ type UnitsPanel struct {
 	Overview *UnitOverview
 	Command  *UnitCommand
 	Details  *UnitDetails
+	dark     bool
 }
 
 // CanvasObject returns the top level widget in the UnitsPanel
@@ -26,7 +26,8 @@ func (u *UnitsPanel) CanvasObject() fyne.CanvasObject {
 // newUnitsPanel returns a new UnitsPanel, including the UI
 func newUnitsPanel(app *App) *UnitsPanel {
 	u := &UnitsPanel{
-		app: app,
+		app:  app,
+		dark: app.isDarkTheme,
 	}
 	u.Overview = newUnitOverview(app, u)
 	u.Command = newUnitCommand(app, u)
@@ -54,6 +55,18 @@ func (u *UnitsPanel) ShowUnit(unit *rp.Unit) {
 	u.Details.Populate(unit)
 }
 
+func (u *UnitsPanel) darkTheme() {
+	u.dark = true
+	u.Details.darkTheme()
+	u.Command.darkTheme()
+}
+
+func (u *UnitsPanel) lightTheme() {
+	u.dark = false
+	u.Details.lightTheme()
+	u.Command.lightTheme()
+}
+
 // GetUnits fetches the units from the server
 func (a *App) GetUnits() error {
 	u, err := a.gameServer.GetUnits(context.Background(), &a.Token)
@@ -66,6 +79,5 @@ func (a *App) GetUnits() error {
 		return err
 	}
 	a.Enemy = u.Commands
-	spew.Dump("enemy units", a.Enemy)
 	return nil
 }

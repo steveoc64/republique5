@@ -188,8 +188,10 @@ func (a *App) ToggleTheme() {
 	a.isDarkTheme = !a.isDarkTheme
 	if a.isDarkTheme {
 		a.app.Settings().SetTheme(theme.DarkTheme())
+		a.unitsPanel.darkTheme()
 	} else {
 		a.app.Settings().SetTheme(theme.LightTheme())
+		a.unitsPanel.lightTheme()
 	}
 }
 

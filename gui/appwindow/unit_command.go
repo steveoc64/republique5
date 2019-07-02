@@ -115,6 +115,36 @@ func (u *UnitCommand) build() {
 	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
 }
 
+func (u *UnitCommand) darkTheme() {
+	for _, v := range u.form.Items {
+		if t, ok := v.Widget.(*canvas.Text); ok {
+			switch t.Color {
+			case command_dark_blue:
+				t.Color = command_blue
+			case command_dark_green:
+				t.Color = command_green
+			case command_dark_red:
+				t.Color = command_red
+			}
+		}
+	}
+}
+
+func (u *UnitCommand) lightTheme() {
+	for _, v := range u.form.Items {
+		if t, ok := v.Widget.(*canvas.Text); ok {
+			switch t.Color {
+			case command_blue:
+				t.Color = command_dark_blue
+			case command_green:
+				t.Color = command_dark_green
+			case command_red:
+				t.Color = command_dark_red
+			}
+		}
+	}
+}
+
 // setField sets the text of the given field, by name
 func (u *UnitCommand) setField(name, value string) {
 	if t, ok := u.fields[name]; ok {

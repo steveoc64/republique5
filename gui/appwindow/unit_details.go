@@ -112,6 +112,32 @@ func (u *UnitDetails) build() {
 	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
 }
 
+func (u *UnitDetails) darkTheme() {
+	for _, v := range u.form.Items {
+		if t, ok := v.Widget.(*canvas.Text); ok {
+			switch t.Color {
+			case unit_dark_blue:
+				t.Color = unit_blue
+			case unit_dark_green:
+				t.Color = unit_green
+			}
+		}
+	}
+}
+
+func (u *UnitDetails) lightTheme() {
+	for _, v := range u.form.Items {
+		if t, ok := v.Widget.(*canvas.Text); ok {
+			switch t.Color {
+			case unit_blue:
+				t.Color = unit_dark_blue
+			case unit_green:
+				t.Color = unit_dark_green
+			}
+		}
+	}
+}
+
 func (u *UnitDetails) gotoMap() {
 	c := u.app.GetUnitCommander(u.unit.GetId())
 	u.app.mapPanel.mapWidget.Select(c.Id)
