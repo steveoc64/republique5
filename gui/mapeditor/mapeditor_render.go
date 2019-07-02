@@ -19,6 +19,9 @@ type mapEditorRender struct {
 	objects    []fyne.CanvasObject
 	background *image.RGBA
 	dirty      bool
+	bgcolors   []color.RGBA
+	x          int
+	y          int
 }
 
 func newMapEditorRender(m *MapEditorWidget) *mapEditorRender {
@@ -28,7 +31,17 @@ func newMapEditorRender(m *MapEditorWidget) *mapEditorRender {
 	render := canvas.NewRaster(r.getImage)
 	r.render = render
 	r.objects = []fyne.CanvasObject{render}
+	r.generateBGColors()
 	return r
+}
+
+func (r *mapEditorRender) generateBGColors() {
+	println("generating new color set", r.m.x, r.m.y)
+	r.bgcolors = []color.RGBA{}
+	for i := 0; i < r.m.x*r.m.y; i++ {
+		c := color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
+		r.bgcolors = append(r.bgcolors, c)
+	}
 }
 
 func (r *mapEditorRender) Scale() float32 {
@@ -74,9 +87,14 @@ func (r *mapEditorRender) Refresh() {
 }
 
 func (r *mapEditorRender) getImage(w, h int) image.Image {
+	if r.x != r.m.x || r.y != r.m.y {
+		r.generateBGColors()
+	}
 	if r.dirty || r.background == nil || r.background.Bounds().Size().X != w || r.background.Bounds().Size().Y != h {
 		r.background = r.generateBackground(w, h)
 	}
+	r.x = r.m.x
+	r.y = r.m.y
 	return r.background
 }
 
@@ -94,8 +112,8 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 	twopi := math.Pi * 2
 
 	paintBlock := func(x, y int) {
-		//i := x + mx*y
-		c := color.RGBA{uint8(rand.Intn(40) + 160), uint8(rand.Intn(40) + 180), uint8(rand.Intn(40) + 100), 200}
+		i := x + (y * x)
+		c := r.bgcolors[i]
 		draw.Draw(img,
 			image.Rectangle{
 				image.Point{x * int(dx), y * int(dy)},
