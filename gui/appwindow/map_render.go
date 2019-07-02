@@ -230,58 +230,62 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 		fy := (float64(k.y) + 0.5) * dy
 		if len(v.adjacent) == 0 {
 			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
+			gc.FillStroke()
+			continue
 		}
-		for _, vv := range v.adjacent {
-			gc.MoveTo(fx, fy)
-			fx2 := (float64(vv.x) + 0.5) * dx
-			fy2 := (float64(vv.y) + 0.5) * dy
-			gc.LineTo(fx2, fy2)
+		for kk, _ := range v.adjacent {
+			// double check that this segment isnt already done
+			if other, ok := r.mw.rivers[riverPoint{kk.x, kk.y}]; ok {
+				if toMe, okk := other.adjacent[riverPoint{k.x, k.y}]; okk {
+					if !toMe {
+						gc.MoveTo(fx, fy)
+						fx2 := (float64(kk.x) + 0.5) * dx
+						fy2 := (float64(kk.y) + 0.5) * dy
+						gc.LineTo(fx2, fy2)
+						v.adjacent[kk] = true
+					}
+				}
+			}
 		}
-		gc.FillStroke()
+		gc.Stroke()
 
 		// if we are on an edge, then complete the river
-		doneEdge := false
-		switch k.x {
-		case 0, r.mw.grid.x - 1:
+		switch {
+		case k.x == 0, k.x == r.mw.grid.x-1:
 			fx2 := 0.0
 			if k.x == r.mw.grid.x-1 {
 				fx2 = float64(r.mw.grid.x) * dx
 			}
 			bump := dx / -4
-			for _, vv := range v.adjacent {
+			for kk, _ := range v.adjacent {
 				switch {
-				case vv.y < k.y:
+				case kk.y < k.y:
 					bump += dy / 2
-				case vv.y > k.y:
+				case kk.y > k.y:
 					bump += dy / -2
 				}
 				gc.MoveTo(fx, fy)
 				gc.LineTo(fx2, fy+bump)
 				gc.Stroke()
-				doneEdge = true
 				break
 			}
-		}
-		if !doneEdge {
-			switch k.y {
-			case 0, r.mw.grid.y - 1:
-				fy2 := 0.0
-				if k.y == r.mw.grid.y-1 {
-					fy2 = float64(r.mw.grid.y) * dy
+		case k.y == 0, k.y == r.mw.grid.y-1:
+			fy2 := 0.0
+			if k.y == r.mw.grid.y-1 {
+				fy2 = float64(r.mw.grid.y) * dy
+			}
+			bump := dx / -4
+			for kk, _ := range v.adjacent {
+				switch {
+				case kk.x < k.x:
+					bump += dx / 2
+				case kk.x > k.x:
+					bump += dx / -2
 				}
-				bump := dx / -4
-				for _, vv := range v.adjacent {
-					switch {
-					case vv.x < k.x:
-						bump += dx / 2
-					case vv.x > k.x:
-						bump += dx / -2
-					}
-					gc.MoveTo(fx, fy)
-					gc.LineTo(fx+bump, fy2)
-					gc.Stroke()
-					break
-				}
+				gc.MoveTo(fx, fy)
+				gc.LineTo(fx+bump, fy2)
+				gc.Stroke()
+				break
 			}
 		}
 	}

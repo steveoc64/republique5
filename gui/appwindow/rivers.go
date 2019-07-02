@@ -6,7 +6,7 @@ type riverPoint struct {
 }
 
 type river struct {
-	adjacent []riverPoint
+	adjacent map[riverPoint]bool
 }
 
 func (m *MapWidget) calcRiver() {
@@ -25,7 +25,7 @@ func (m *MapWidget) calcRiver() {
 		for x := int32(0); x < m.grid.x; x++ {
 			if m.grid.value[i] == 'r' {
 				m.rivers[riverPoint{x, y}] = &river{
-					adjacent: []riverPoint{},
+					adjacent: make(map[riverPoint]bool),
 				}
 			}
 			i++
@@ -39,7 +39,7 @@ func (m *MapWidget) calcRiver() {
 			dy := abs(k.y - kk.y)
 			if (dx == 1 && (dy == 1 || dy == 0)) ||
 				(dy == 1 && (dx == 1 || dx == 0)) {
-				v.adjacent = append(v.adjacent, kk)
+				v.adjacent[riverPoint{kk.x, kk.y}] = false
 			}
 		}
 	}

@@ -26,13 +26,7 @@ type riverPoint struct {
 	y int
 }
 
-type riverConnect struct {
-	point riverPoint
-	done  bool
-}
-
 type river struct {
-	//adjacent []*riverConnect
 	adjacent map[riverPoint]bool
 }
 
@@ -66,8 +60,7 @@ func (m *MapEditorWidget) calcRiver() {
 			dy := abs(k.y - kk.y)
 			if (dx == 1 && (dy == 1 || dy == 0)) ||
 				(dy == 1 && (dx == 1 || dx == 0)) {
-				// TODO - check here if the opposite exists
-				v.adjacent[riverPoint{kk.x,kk.y}] = false
+				v.adjacent[riverPoint{kk.x, kk.y}] = false
 			}
 		}
 	}

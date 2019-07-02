@@ -7,8 +7,6 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"github.com/llgcode/draw2d/draw2dimg"
@@ -202,18 +200,24 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 		fy := (float64(k.y) + 0.5) * dy
 		if len(v.adjacent) == 0 {
 			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
+			gc.FillStroke()
+			continue
 		}
-		for kk, vv := range v.adjacent {
-			spew.Dump("vv is", vv)
-			//if !vv { // vv is a bool that says whether that segment is painted or not
-				gc.MoveTo(fx, fy)
-				fx2 := (float64(kk.x) + 0.5) * dx
-				fy2 := (float64(kk.y) + 0.5) * dy
-				gc.LineTo(fx2, fy2)
-				//v.adjacent[kk] = true // todo - need a global map of x,y pairs for the river segments !
-			//}
+		for kk, _ := range v.adjacent {
+			// double check that this segment isnt already done
+			if other, ok := r.m.rivers[riverPoint{kk.x, kk.y}]; ok {
+				if toMe, okk := other.adjacent[riverPoint{k.x, k.y}]; okk {
+					if !toMe {
+						gc.MoveTo(fx, fy)
+						fx2 := (float64(kk.x) + 0.5) * dx
+						fy2 := (float64(kk.y) + 0.5) * dy
+						gc.LineTo(fx2, fy2)
+						v.adjacent[kk] = true
+					}
+				}
+			}
 		}
-		gc.FillStroke()
+		gc.Stroke()
 
 		// if we are on an edge, then complete the river
 		switch {
