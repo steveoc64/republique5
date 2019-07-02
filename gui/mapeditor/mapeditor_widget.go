@@ -52,7 +52,7 @@ func (m *MapEditorWidget) calcRiver() {
 		for x := 0; x < m.x; x++ {
 			if m.data[i] == 'r' {
 				m.rivers[riverPoint{x, y}] = &river{
-					adjacent: []*riverConnect{},
+					adjacent: make(map[riverPoint]bool),
 				}
 			}
 			i++
@@ -67,7 +67,7 @@ func (m *MapEditorWidget) calcRiver() {
 			if (dx == 1 && (dy == 1 || dy == 0)) ||
 				(dy == 1 && (dx == 1 || dx == 0)) {
 				// TODO - check here if the opposite exists
-				v.adjacent = append(v.adjacent, &riverConnect{point: kk})
+				v.adjacent[riverPoint{kk.x,kk.y}] = false
 			}
 		}
 	}

@@ -7,6 +7,8 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"github.com/llgcode/draw2d/draw2dimg"
@@ -202,56 +204,54 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
 		}
 		for kk, vv := range v.adjacent {
-			gc.MoveTo(fx, fy)
-			fx2 := (float64(kk.x) + 0.5) * dx
-			fy2 := (float64(kk.y) + 0.5) * dy
-			gc.LineTo(fx2, fy2)
+			spew.Dump("vv is", vv)
+			//if !vv { // vv is a bool that says whether that segment is painted or not
+				gc.MoveTo(fx, fy)
+				fx2 := (float64(kk.x) + 0.5) * dx
+				fy2 := (float64(kk.y) + 0.5) * dy
+				gc.LineTo(fx2, fy2)
+				//v.adjacent[kk] = true // todo - need a global map of x,y pairs for the river segments !
+			//}
 		}
 		gc.FillStroke()
 
 		// if we are on an edge, then complete the river
-		doneEdge := false
-		switch k.x {
-		case 0, r.m.x - 1:
+		switch {
+		case k.x == 0, k.x == r.m.x-1:
 			fx2 := 0.0
 			if k.x == r.m.x-1 {
 				fx2 = float64(r.m.x) * dx
 			}
 			bump := 0.0
-			for _, vv := range v.adjacent {
+			for kk, _ := range v.adjacent {
 				switch {
-				case vv.point.y < k.y:
+				case kk.y < k.y:
 					bump = dy / 2
-				case vv.point.y > k.y:
+				case kk.y > k.y:
 					bump = dy / -2
 				}
 				gc.MoveTo(fx, fy)
 				gc.LineTo(fx2, fy+bump)
 				gc.Stroke()
-				doneEdge = true
 				break
 			}
-		}
-		if !doneEdge {
-			switch k.y {
-			case 0, r.m.y - 1:
-				fy2 := 0.0
-				if k.y == r.m.y-1 {
-					fy2 = float64(r.m.y) * dy
+		case k.y == 0, k.y == r.m.y-1:
+			fy2 := 0.0
+			if k.y == r.m.y-1 {
+				fy2 = float64(r.m.y) * dy
+			}
+			bump := 0.0
+			for kk, _ := range v.adjacent {
+				switch {
+				case kk.x < k.x:
+					bump = dx / 2
+				case kk.x > k.x:
+					bump = dx / -2
 				}
-				bump := 0.0
-				for _, vv := range v.adjacent {
-					switch {
-					case vv.point.x < k.x:
-						bump = dx / 2
-					case vv.point.x > k.x:
-						bump = dx / -2
-					}
-					gc.MoveTo(fx, fy)
-					gc.LineTo(fx+bump, fy2)
-					gc.Stroke()
-					break
-				}
+				gc.MoveTo(fx, fy)
+				gc.LineTo(fx+bump, fy2)
+				gc.Stroke()
+				break
 			}
 		}
 	}
