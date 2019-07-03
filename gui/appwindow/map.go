@@ -114,6 +114,10 @@ func (m *MapPanel) unitInfo() {
 	}
 }
 
+func (m *MapPanel) gotoOrders() {
+	m.app.Tab(TAB_ORDERS)
+}
+
 func (m *MapPanel) setOrder(o rp.Order) {
 	if m.order == o {
 		m.order = rp.Order_RESTAGE
@@ -223,6 +227,7 @@ func newMapPanel(app *App) *MapPanel {
 	m.pursuitBtn = widget.NewButtonWithIcon("Pursuit", theme.RadioButtonIcon(), m.pursuitOrder)
 	m.hbox1 = widget.NewHBox(
 		widget.NewButtonWithIcon("Unit", theme.InfoIcon(), m.unitInfo),
+		widget.NewButtonWithIcon("Orders", theme.InfoIcon(), m.gotoOrders),
 		layout.NewSpacer(),
 		m.unitDesc,
 		layout.NewSpacer(),
@@ -345,7 +350,10 @@ func (m *MapPanel) Tap(x, y int32) {
 		}
 		path = m.command.SetObjective(x, y)
 	}
-	spew.Dump(m.command.GameState.Orders.String(), "path", path)
+	println("path redundant TODO rm me and the use of the path var", path)
+	// orders have changed, so rebuild the orders panel
+	// TODO - use databinding later when its available
+	m.app.ordersPanel.build()
 	widget.Renderer(m.mapWidget).Refresh()
 }
 
