@@ -190,44 +190,15 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 		}
 	}
 
-	// draw rivers
-	if false {
-		i = 0
-		gc.SetFillColor(map_deep_blue)
-		gc.SetStrokeColor(map_blue)
-		gc.SetLineWidth(20)
-		gc.BeginPath()
-		gotriver := false
-		for ya := 0; ya < my; ya++ {
-			for xa := 0; xa < mx; xa++ {
-				x, y := convertXY(xa, ya)
-				fx := float64(x) * dx
-				fy := float64(y) * dy
-				switch r.mw.mapData.Data[i] {
-				case 'r':
-					if !gotriver {
-						gotriver = true
-						gc.MoveTo(fx+0.5*dx, fy+0.5*dy)
-					} else {
-						gc.LineTo(fx+0.5*dx, fy+0.5*dy)
-					}
-				}
-				i++
-			}
-		}
-		if gotriver {
-			gc.FillStroke()
-		}
-	}
-
 	// do the river segments
 	gc.SetFillColor(map_deep_blue)
 	gc.SetStrokeColor(map_blue)
 	gc.SetLineWidth(20)
 	for k, v := range r.mw.rivers {
 		gc.BeginPath()
-		fx := (float64(k.x) + 0.5) * dx
-		fy := (float64(k.y) + 0.5) * dy
+		x, y := convertXY(int(k.x), int(k.y))
+		fx := (float64(x) + 0.5) * dx
+		fy := (float64(y) + 0.5) * dy
 		if len(v.adjacent) == 0 {
 			draw2dkit.Ellipse(gc, fx, fy, dx/3, dy/5)
 			gc.FillStroke()
@@ -239,8 +210,9 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 				if toMe, okk := other.adjacent[riverPoint{k.x, k.y}]; okk {
 					if !toMe {
 						gc.MoveTo(fx, fy)
-						fx2 := (float64(kk.x) + 0.5) * dx
-						fy2 := (float64(kk.y) + 0.5) * dy
+						xx, yy := convertXY(int(kk.x), int(kk.y))
+						fx2 := (float64(xx) + 0.5) * dx
+						fy2 := (float64(yy) + 0.5) * dy
 						gc.LineTo(fx2, fy2)
 						v.adjacent[kk] = true
 					}
@@ -251,17 +223,18 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 
 		// if we are on an edge, then complete the river
 		switch {
-		case k.x == 0, k.x == r.mw.grid.x-1:
+		case x == 0, x == int(r.mw.grid.x-1):
 			fx2 := 0.0
-			if k.x == r.mw.grid.x-1 {
+			if x == int(r.mw.grid.x-1) {
 				fx2 = float64(r.mw.grid.x) * dx
 			}
 			bump := dx / -4
 			for kk, _ := range v.adjacent {
+				_, yy := convertXY(int(kk.x), int(kk.y))
 				switch {
-				case kk.y < k.y:
+				case yy < y:
 					bump += dy / 2
-				case kk.y > k.y:
+				case yy > y:
 					bump += dy / -2
 				}
 				gc.MoveTo(fx, fy)
@@ -269,17 +242,18 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 				gc.Stroke()
 				break
 			}
-		case k.y == 0, k.y == r.mw.grid.y-1:
+		case y == 0, y == int(r.mw.grid.y-1):
 			fy2 := 0.0
-			if k.y == r.mw.grid.y-1 {
+			if y == int(r.mw.grid.y-1) {
 				fy2 = float64(r.mw.grid.y) * dy
 			}
 			bump := dx / -4
 			for kk, _ := range v.adjacent {
+				xx, _ := convertXY(int(kk.x), int(kk.y))
 				switch {
-				case kk.x < k.x:
+				case xx < x:
 					bump += dx / 2
-				case kk.x > k.x:
+				case xx > x:
 					bump += dx / -2
 				}
 				gc.MoveTo(fx, fy)

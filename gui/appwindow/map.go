@@ -26,6 +26,7 @@ type MapPanel struct {
 	command      *rp.Command
 	order        rp.Order
 	unitDesc     *widget.Label
+	restageBtn   *widget.Button
 	marchBtn     *widget.Button
 	defendBtn    *widget.Button
 	attackBtn    *widget.Button
@@ -56,6 +57,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 	m.unitDesc.SetText(cmd.LongDescription())
 	switch cmd.GetRank() {
 	case rp.Rank_CORPS, rp.Rank_ARMY:
+		m.restageBtn.Show()
 		m.marchBtn.Show()
 		m.defendBtn.Hide()
 		m.attackBtn.Hide()
@@ -67,6 +69,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 	default:
 		switch cmd.GetArm() {
 		case rp.Arm_INFANTRY:
+			m.restageBtn.Show()
 			m.marchBtn.Show()
 			m.defendBtn.Show()
 			m.attackBtn.Show()
@@ -76,6 +79,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 			m.rallyBtn.Hide()
 			m.pursuitBtn.Hide()
 		case rp.Arm_CAVALRY:
+			m.restageBtn.Show()
 			m.marchBtn.Show()
 			m.defendBtn.Show()
 			m.attackBtn.Hide()
@@ -85,6 +89,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 			m.rallyBtn.Hide()
 			m.pursuitBtn.Show()
 		case rp.Arm_ARTILLERY:
+			m.restageBtn.Show()
 			m.marchBtn.Show()
 			m.defendBtn.Show()
 			m.attackBtn.Hide()
@@ -94,6 +99,7 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 			m.rallyBtn.Hide()
 			m.pursuitBtn.Hide()
 		default:
+			m.restageBtn.Show()
 			m.marchBtn.Hide()
 			m.defendBtn.Hide()
 			m.attackBtn.Hide()
@@ -124,6 +130,7 @@ func (m *MapPanel) setOrder(o rp.Order) {
 	} else {
 		m.order = o
 	}
+	m.restageBtn.SetIcon(theme.RadioButtonIcon())
 	m.marchBtn.SetIcon(theme.RadioButtonIcon())
 	m.defendBtn.SetIcon(theme.RadioButtonIcon())
 	m.attackBtn.SetIcon(theme.RadioButtonIcon())
@@ -133,6 +140,8 @@ func (m *MapPanel) setOrder(o rp.Order) {
 	m.rallyBtn.SetIcon(theme.RadioButtonIcon())
 	m.pursuitBtn.SetIcon(theme.RadioButtonIcon())
 	switch m.order {
+	case rp.Order_RESTAGE:
+		m.restageBtn.SetIcon(theme.RadioButtonCheckedIcon())
 	case rp.Order_MARCH:
 		m.marchBtn.SetIcon(theme.RadioButtonCheckedIcon())
 	case rp.Order_DEFEND:
@@ -154,6 +163,11 @@ func (m *MapPanel) setOrder(o rp.Order) {
 		m.command.SetOrder(m.order)
 	}
 }
+
+func (m *MapPanel) restageOrder() {
+	m.setOrder(rp.Order_RESTAGE)
+}
+
 func (m *MapPanel) marchOrder() {
 	m.setOrder(rp.Order_MARCH)
 }
@@ -217,6 +231,7 @@ func newMapPanel(app *App) *MapPanel {
 		),
 	}
 
+	m.restageBtn = widget.NewButtonWithIcon("Restage", theme.RadioButtonIcon(), m.restageOrder)
 	m.marchBtn = widget.NewButtonWithIcon("Move", theme.RadioButtonIcon(), m.marchOrder)
 	m.defendBtn = widget.NewButtonWithIcon("Defend", theme.RadioButtonIcon(), m.defendOrder)
 	m.engageBtn = widget.NewButtonWithIcon("Engage", theme.RadioButtonIcon(), m.engageOrder)
@@ -227,7 +242,7 @@ func newMapPanel(app *App) *MapPanel {
 	m.pursuitBtn = widget.NewButtonWithIcon("Pursuit", theme.RadioButtonIcon(), m.pursuitOrder)
 	m.hbox1 = widget.NewHBox(
 		widget.NewButtonWithIcon("Unit", theme.InfoIcon(), m.unitInfo),
-		widget.NewButtonWithIcon("Orders", theme.InfoIcon(), m.gotoOrders),
+		widget.NewButtonWithIcon("Orders", theme.DocumentCreateIcon(), m.gotoOrders),
 		layout.NewSpacer(),
 		m.unitDesc,
 		layout.NewSpacer(),
@@ -235,6 +250,7 @@ func newMapPanel(app *App) *MapPanel {
 		widget.NewButtonWithIcon("Done", theme.CheckButtonCheckedIcon(), m.doneOrder),
 	)
 	m.hbox2 = widget.NewHBox(
+		m.restageBtn,
 		layout.NewSpacer(),
 		m.marchBtn,
 		m.defendBtn,
@@ -281,22 +297,15 @@ func (m *MapPanel) Tap(x, y int32) {
 
 	unitX := m.command.GameState.Grid.GetX()
 	unitY := m.command.GameState.Grid.GetY()
-	/*
-		if m.app.MapData.Side == rp.MapSide_TOP {
-			unitX = m.app.MapData.X - unitX + 1
-			unitY = m.app.MapData.Y - unitY + 1
-		}
-
-	*/
 
 	dx := (unitX - x)
 	dy := (unitY - y)
 	distance := dx*dx + dy*dy
-	path := []*rp.Grid{}
 	switch m.order {
 	case rp.Order_RESTAGE:
-		// nothing to do
-		return
+		m.app.ordersPanel.build()
+		m.command.SetObjective(x, y)
+		widget.Renderer(m.mapWidget).Refresh()
 	case rp.Order_MARCH:
 		// march to location if not too far
 		maxd := int32(9)
@@ -310,7 +319,7 @@ func (m *MapPanel) Tap(x, y int32) {
 			println("too far", distance)
 			return
 		}
-		path = m.command.AddToObjective(x, y)
+		m.command.AddToObjective(x, y)
 	case rp.Order_DEFEND:
 		// defend at current location
 		return
@@ -320,37 +329,36 @@ func (m *MapPanel) Tap(x, y int32) {
 			println("too far", distance)
 			return
 		}
-		path = m.command.AddToObjective(x, y)
+		m.command.AddToObjective(x, y)
 	case rp.Order_ATTACK:
 		// can attack out to 1 grid
 		if distance > 2 {
 			println("too far", distance)
 			return
 		}
-		path = m.command.SetObjective(x, y)
+		m.command.SetObjective(x, y)
 	case rp.Order_CHARGE:
 		// check the range
 		if distance > 9 {
 			println("too far", distance)
 			return
 		}
-		path = m.command.SetObjective(x, y)
+		m.command.SetObjective(x, y)
 	case rp.Order_PURSUIT:
 		// check the range
 		if distance > 12 {
 			println("too far", distance)
 			return
 		}
-		path = m.command.AddToObjective(x, y)
+		m.command.AddToObjective(x, y)
 	case rp.Order_FIRE:
 		// can fire out to adj grid
 		if distance > 4 {
 			println("too far", distance)
 			return
 		}
-		path = m.command.SetObjective(x, y)
+		m.command.SetObjective(x, y)
 	}
-	println("path redundant TODO rm me and the use of the path var", path)
 	// orders have changed, so rebuild the orders panel
 	// TODO - use databinding later when its available
 	m.app.ordersPanel.build()
