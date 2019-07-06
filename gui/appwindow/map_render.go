@@ -413,7 +413,7 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					if icon.cmd.GetGameState().GetCan().GetOrder() {
 						gc.SetFillColor(mapUnitCanOrder)
 						if icon.cmd.GetGameState().GetHas().GetOrder() &&
-							icon.cmd.GetGameState().GetOrders() != republique.Order_RESTAGE {
+							icon.cmd.GetGameState().GetOrders() != republique.Order_NO_ORDERS {
 							gc.SetFillColor(mapUnitHasOrder)
 						}
 						draw2dkit.Rectangle(gc,

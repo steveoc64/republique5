@@ -323,7 +323,7 @@ enum CommandRating {
 }
 
 enum Order {
-  RESTAGE = 0;
+  NO_ORDERS = 0;
   MARCH = 1;
   MOVE = 2;
   DEFEND = 3;
@@ -335,6 +335,7 @@ enum Order {
   ADVANCE = 9;
   CHARGE = 10;
   FIRE = 11;
+  RESTAGE = 12;
 }
 
 enum Nationality {

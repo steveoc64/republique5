@@ -274,7 +274,7 @@ func (c *Command) SetObjective(x, y int32) []*Grid {
 
 // ClearOrder clears the order and objective path for a command
 func (c *Command) ClearOrder() {
-	c.GameState.Orders = Order_RESTAGE
+	c.GameState.Orders = Order_NO_ORDERS
 	c.GameState.Objective = nil
 	if c.GameState.Has != nil {
 		c.GameState.Has.Order = false

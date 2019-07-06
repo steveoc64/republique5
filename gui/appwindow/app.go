@@ -23,7 +23,8 @@ import (
 
 // Enum for the Tabs in the main window
 const (
-	TabUnits = iota
+	TabBriefing = iota
+	TabUnits
 	TabOrders
 	TabActions
 	TabMap
@@ -108,7 +109,6 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 
 // Tab changes the tab on the main screen
 func (a *App) Tab(tab int) {
-	println("setting tab to", tab)
 	a.tabs.SelectTabIndex(tab)
 }
 

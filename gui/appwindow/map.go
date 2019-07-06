@@ -46,7 +46,7 @@ func (m *MapPanel) CanvasObject() fyne.CanvasObject {
 func (m *MapPanel) SetCommand(cmd *rp.Command) {
 	m.command = cmd
 	if cmd == nil {
-		m.setOrder(rp.Order_RESTAGE)
+		m.setOrder(rp.Order_NO_ORDERS)
 		m.mapWidget.grid.Select(0)
 		widget.Renderer(m.mapWidget).Refresh()
 		m.hbox2.Hide()
@@ -205,7 +205,7 @@ func (m *MapPanel) pursuitOrder() {
 }
 
 func (m *MapPanel) clearOrder() {
-	m.setOrder(rp.Order_RESTAGE)
+	m.setOrder(rp.Order_NO_ORDERS)
 	m.SetCommand(nil)
 }
 
@@ -288,7 +288,6 @@ func (m *MapPanel) Tap(x, y int32) {
 		x = m.app.MapData.X - x + 1
 		y = m.app.MapData.Y - y + 1
 	}
-	println("got a map tap at", x, y)
 	if x < 1 || x > m.app.MapData.X || y < 1 || y > m.app.MapData.Y {
 		// out of bounds
 		return
@@ -307,7 +306,7 @@ func (m *MapPanel) Tap(x, y int32) {
 	distance := dx*dx + dy*dy
 	switch m.order {
 	case rp.Order_RESTAGE:
-		m.app.ordersPanel.build()
+		//m.app.ordersPanel.build()
 		m.command.SetObjective(x, y)
 		widget.Renderer(m.mapWidget).Refresh()
 	case rp.Order_MARCH:
@@ -365,7 +364,7 @@ func (m *MapPanel) Tap(x, y int32) {
 	}
 	// orders have changed, so rebuild the orders panel
 	// TODO - use databinding later when its available
-	m.app.ordersPanel.build()
+	//m.app.ordersPanel.build()
 	widget.Renderer(m.mapWidget).Refresh()
 }
 
