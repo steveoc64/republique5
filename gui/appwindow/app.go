@@ -21,16 +21,16 @@ import (
 	"fyne.io/fyne/layout"
 )
 
+// Enum for the Tabs in the main window
 const (
-	TAB_BRIEFING = iota
-	TAB_UNITS
-	TAB_ORDERS
-	TAB_ACTIONS
-	TAB_MAP
-	TAB_FORMATION
-	TAB_ADVANCE
-	TAB_WITHDRAW
-	TAB_SURRENDER
+	TabUnits = iota
+	TabOrders
+	TabActions
+	TabMap
+	TabFormation
+	TabAdvance
+	TabWithdraw
+	TabSurrender
 )
 
 // App is the top level object to contain the application data
@@ -106,6 +106,7 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 	a.Phaser()
 }
 
+// Tab changes the tab on the main screen
 func (a *App) Tab(tab int) {
 	println("setting tab to", tab)
 	a.tabs.SelectTabIndex(tab)

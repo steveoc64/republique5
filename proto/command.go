@@ -22,7 +22,7 @@ func (c *Command) LabelString() string {
 	return s
 }
 
-// LongDoscription returns a long description string for the command
+// LongDescription returns a long description string for the command
 func (c *Command) LongDescription() string {
 	if c == nil {
 		return ""
@@ -44,6 +44,7 @@ type CommandStrength struct {
 	Guns     int32
 }
 
+// GetCommandStrength gets the strength of a command
 func (c *Command) GetCommandStrength() CommandStrength {
 	s := CommandStrength{}
 	for _, unit := range c.Units {
@@ -59,6 +60,7 @@ func (c *Command) GetCommandStrength() CommandStrength {
 	return s
 }
 
+// GetCommandStrengthLabel gets the strength of a command as a string
 func (c *Command) GetCommandStrengthLabel() string {
 	retval := []string{}
 	s := c.GetCommandStrength()

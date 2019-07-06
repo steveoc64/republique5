@@ -34,7 +34,7 @@ func (m *MapWidget) calcRiver() {
 
 	// get the adjacent points
 	for k, v := range m.rivers {
-		for kk, _ := range m.rivers {
+		for kk := range m.rivers {
 			dx := abs(k.x - kk.x)
 			dy := abs(k.y - kk.y)
 			if (dx == 1 && (dy == 1 || dy == 0)) ||

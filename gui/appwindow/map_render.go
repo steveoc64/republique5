@@ -159,7 +159,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 			case 'w', 'W':
 				// draw a little circle for woods
 				for _, v := range r.mw.grid.things[i] {
-					gc.SetFillColor(map_woods_fill)
+					gc.SetFillColor(mapWoodsFill)
 					//gc.SetStrokeColor(map_woods_stroke)
 					gc.SetLineWidth(2)
 					cx := fx + dx*float64(v.x)/100.0
@@ -174,8 +174,8 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 			case 't', 'T':
 				// draw a little boxes for towns
 				for _, v := range r.mw.grid.things[i] {
-					gc.SetFillColor(map_town_fill)
-					gc.SetStrokeColor(map_town_stroke)
+					gc.SetFillColor(mapTownFill)
+					gc.SetStrokeColor(mapTownStroke)
 					gc.SetLineWidth(1)
 					x1 := fx + dx*float64(v.x)/100.0
 					y1 := fy + dy*float64(v.y)/100.0
@@ -191,8 +191,8 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// do the river segments
-	gc.SetFillColor(map_deep_blue)
-	gc.SetStrokeColor(map_blue)
+	gc.SetFillColor(mapDeepBlue)
+	gc.SetStrokeColor(mapBlue)
 	gc.SetLineWidth(20)
 	for k, v := range r.mw.rivers {
 		gc.BeginPath()
@@ -204,7 +204,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 			gc.FillStroke()
 			continue
 		}
-		for kk, _ := range v.adjacent {
+		for kk := range v.adjacent {
 			// double check that this segment isnt already done
 			if other, ok := r.mw.rivers[riverPoint{kk.x, kk.y}]; ok {
 				if toMe, okk := other.adjacent[riverPoint{k.x, k.y}]; okk {
@@ -229,7 +229,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 				fx2 = float64(r.mw.grid.x) * dx
 			}
 			bump := dx / -4
-			for kk, _ := range v.adjacent {
+			for kk := range v.adjacent {
 				_, yy := convertXY(int(kk.x), int(kk.y))
 				switch {
 				case yy < y:
@@ -248,7 +248,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 				fy2 = float64(r.mw.grid.y) * dy
 			}
 			bump := dx / -4
-			for kk, _ := range v.adjacent {
+			for kk := range v.adjacent {
 				xx, _ := convertXY(int(kk.x), int(kk.y))
 				switch {
 				case xx < x:
@@ -265,7 +265,7 @@ func (r *mapRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// major grid lines - vertical
-	gc.SetStrokeColor(map_grid)
+	gc.SetStrokeColor(mapGrid)
 	gc.SetLineWidth(2)
 	for x := 0; x < mx; x++ {
 		gc.BeginPath()
@@ -339,7 +339,7 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 						continue
 					}
 					// draw the lines of action
-					gc.SetStrokeColor(map_unit_orders_stroke)
+					gc.SetStrokeColor(mapUnitOrdersStroke)
 					gc.SetLineWidth(18)
 					gc.SetLineJoin(draw2d.BevelJoin)
 					gc.SetLineCap(draw2d.RoundCap)
@@ -347,20 +347,20 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					doPath := true
 					switch icon.cmd.GetGameState().GetOrders() {
 					case republique.Order_MOVE, republique.Order_MARCH:
-						gc.SetStrokeColor(map_unit_orders_march)
+						gc.SetStrokeColor(mapUnitOrdersMarch)
 						//gc.SetLineDash([]float64{0.2, 0.4, 0.6, 0.8}, 0.0)
 						gc.SetLineWidth(dx / 6)
 					case republique.Order_ATTACK:
-						gc.SetStrokeColor(map_unit_orders_attack)
+						gc.SetStrokeColor(mapUnitOrdersAttack)
 						gc.SetLineWidth(dx / 3)
 					case republique.Order_ENGAGE:
-						gc.SetStrokeColor(map_unit_orders_engage)
+						gc.SetStrokeColor(mapUnitOrdersEngage)
 						gc.SetLineWidth(dx / 4)
 					case republique.Order_CHARGE:
-						gc.SetStrokeColor(map_unit_orders_charge)
+						gc.SetStrokeColor(mapUnitOrdersCharge)
 						gc.SetLineWidth(dx / 2)
 					case republique.Order_FIRE:
-						gc.SetFillColor(map_unit_orders_fire)
+						gc.SetFillColor(mapUnitOrdersFire)
 						if len(icon.cmd.GetGameState().GetObjective()) == 2 {
 							target := icon.cmd.GameState.Objective[1]
 							tx, ty := convertXY(int(target.X), int(target.Y))
@@ -371,7 +371,7 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 							doPath = false
 						}
 					case republique.Order_PURSUIT:
-						gc.SetStrokeColor(map_unit_orders_pursuit)
+						gc.SetStrokeColor(mapUnitOrdersPursuit)
 						gc.SetLineWidth(dx / 6)
 					}
 					if doPath {
@@ -390,13 +390,13 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					}
 
 					// draw the basic rect
-					gc.SetFillColor(map_unit_fill)
-					gc.SetStrokeColor(map_unit_stroke)
+					gc.SetFillColor(mapUnitFill)
+					gc.SetStrokeColor(mapUnitStroke)
 					gc.SetLineWidth(2)
 					gc.BeginPath()
 					if icon.selected {
-						gc.SetFillColor(map_unit_selected_fill)
-						gc.SetStrokeColor(map_unit_selected_stroke)
+						gc.SetFillColor(mapUnitSelectedFill)
+						gc.SetStrokeColor(mapUnitSelectedStroke)
 					}
 					forces.commands[i].rect = image.Rectangle{
 						Min: image.Point{X: int((fx + xx) / scale), Y: int((fy + yy) / scale)},
@@ -411,10 +411,10 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 
 					// denote order status
 					if icon.cmd.GetGameState().GetCan().GetOrder() {
-						gc.SetFillColor(map_unit_can_order)
+						gc.SetFillColor(mapUnitCanOrder)
 						if icon.cmd.GetGameState().GetHas().GetOrder() &&
 							icon.cmd.GetGameState().GetOrders() != republique.Order_RESTAGE {
-							gc.SetFillColor(map_unit_has_order)
+							gc.SetFillColor(mapUnitHasOrder)
 						}
 						draw2dkit.Rectangle(gc,
 							fx+xx+2, fy+yy+blocksize-10,
@@ -423,8 +423,8 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					}
 
 					// denote the type
-					gc.SetStrokeColor(denote_unit)
-					gc.SetFillColor(denote_unit)
+					gc.SetStrokeColor(denoteUnit)
+					gc.SetFillColor(denoteUnit)
 					gc.SetLineWidth(dx / 30)
 					gc.SetLineCap(draw2d.RoundCap)
 					cmd := icon.cmd
@@ -474,8 +474,8 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 					yy += blocksize
 				}
 				// draw the basic rect
-				gc.SetFillColor(map_enemy_fill)
-				gc.SetStrokeColor(map_unit_stroke)
+				gc.SetFillColor(mapEnemyFill)
+				gc.SetStrokeColor(mapUnitStroke)
 				gc.SetLineWidth(2)
 				gc.BeginPath()
 				draw2dkit.RoundedRectangle(gc,
@@ -486,8 +486,8 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 				gc.FillStroke()
 
 				// denote the type
-				gc.SetStrokeColor(denote_unit)
-				gc.SetFillColor(denote_unit)
+				gc.SetStrokeColor(denoteUnit)
+				gc.SetFillColor(denoteUnit)
 				gc.SetLineWidth(dx / 30)
 				gc.SetLineCap(draw2d.RoundCap)
 				switch enemy.Arm {
@@ -515,8 +515,8 @@ func (r *mapRender) generateForeground(w, h int) *image.RGBA {
 }
 
 func (r *mapRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, count int) {
-	gc.SetFillColor(map_hill_fill)
-	gc.SetStrokeColor(map_hill_stroke)
+	gc.SetFillColor(mapHillFill)
+	gc.SetStrokeColor(mapHillStroke)
 	gc.SetLineWidth(2)
 	switch count {
 	case 1:

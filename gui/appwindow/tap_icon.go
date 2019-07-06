@@ -55,7 +55,7 @@ func NewTapIcon(res fyne.Resource, tapped func(), secondary func()) *TapIcon {
 		OnSecondary: secondary,
 		enabled:     true,
 	}
-	t.img.SetMinSize(fyne.Size{64, 64})
+	t.img.SetMinSize(fyne.Size{Width: 64, Height: 64})
 	t.Box.Append(t.img)
 	return t
 }

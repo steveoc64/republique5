@@ -7,8 +7,8 @@ import (
 	"fyne.io/fyne/widget"
 )
 
-// MapEditorWidget is a complete map editor
-type MapEditorWidget struct {
+// Widget is a complete map editor as a widget
+type Widget struct {
 	size       fyne.Size
 	position   fyne.Position
 	hidden     bool
@@ -30,7 +30,7 @@ type river struct {
 	adjacent map[riverPoint]bool
 }
 
-func (m *MapEditorWidget) calcRiver() {
+func (m *Widget) calcRiver() {
 	m.rivers = make(map[riverPoint]*river)
 
 	abs := func(i int) int {
@@ -55,7 +55,7 @@ func (m *MapEditorWidget) calcRiver() {
 
 	// get the adjacent points
 	for k, v := range m.rivers {
-		for kk, _ := range m.rivers {
+		for kk := range m.rivers {
 			dx := abs(k.x - kk.x)
 			dy := abs(k.y - kk.y)
 			if (dx == 1 && (dy == 1 || dy == 0)) ||
@@ -67,15 +67,15 @@ func (m *MapEditorWidget) calcRiver() {
 }
 
 // NewMapEditorWidget creates and returns a new map editor widget
-func NewMapEditorWidget() *MapEditorWidget {
-	e := &MapEditorWidget{
+func NewMapEditorWidget() *Widget {
+	e := &Widget{
 		cx: 1,
 		cy: 1,
 	}
 	return e
 }
 
-func (m *MapEditorWidget) checkXY() bool {
+func (m *Widget) checkXY() bool {
 	if m.cx < 1 {
 		m.cx = 1
 		return false
@@ -95,14 +95,15 @@ func (m *MapEditorWidget) checkXY() bool {
 	return true
 }
 
-func (m *MapEditorWidget) repaint() {
+func (m *Widget) repaint() {
 	if r, ok := widget.Renderer(m).(*mapEditorRender); ok {
 		r.dirty = true
 		r.Refresh()
 	}
 }
 
-func (m *MapEditorWidget) SetMapSize(x, y int) {
+// SetMapSize sets the map size by grid units
+func (m *Widget) SetMapSize(x, y int) {
 	m.x = x
 	m.y = y
 	m.SetData(m.datastring)
@@ -110,7 +111,8 @@ func (m *MapEditorWidget) SetMapSize(x, y int) {
 	m.repaint()
 }
 
-func (m *MapEditorWidget) SetData(data string) {
+// SetData sets the contents of the map
+func (m *Widget) SetData(data string) {
 	m.datastring = data
 	m.data = make([]byte, m.x*m.y)
 	lines := strings.Split(data, "\n")
@@ -135,7 +137,7 @@ func (m *MapEditorWidget) SetData(data string) {
 	m.repaint()
 }
 
-func (m *MapEditorWidget) setChar(b rune) {
+func (m *Widget) setChar(b rune) {
 	i := (m.cy-1)*m.x + (m.cx - 1)
 	if i < 0 || i >= len(m.data) {
 		println("error", m.cx, m.cy, m.x, m.y)
@@ -167,53 +169,63 @@ func (m *MapEditorWidget) setChar(b rune) {
 	m.repaint()
 }
 
-func (m *MapEditorWidget) Hide() {
+// Hide is called to hide the widget
+func (m *Widget) Hide() {
 	m.hidden = true
 	for _, obj := range widget.Renderer(m).Objects() {
 		obj.Show()
 	}
 }
 
-func (m *MapEditorWidget) Size() fyne.Size {
+// Size returns the size of the widget
+func (m *Widget) Size() fyne.Size {
 	return m.size
 }
 
-func (m *MapEditorWidget) MinSize() fyne.Size {
+// MinSize returns the minimum size of the widget
+func (m *Widget) MinSize() fyne.Size {
 	return fyne.Size{
 		Width:  800,
 		Height: 600,
 	}
 }
 
-func (m *MapEditorWidget) Move(p fyne.Position) {
+// Move is called when the widget is to be moved
+func (m *Widget) Move(p fyne.Position) {
 	m.position = p
 }
 
-func (m *MapEditorWidget) Position() fyne.Position {
+// Position retuns the current position of the widget
+func (m *Widget) Position() fyne.Position {
 	return m.position
 }
 
-func (m *MapEditorWidget) Resize(s fyne.Size) {
+// Resize is called when the widget needs to be resized
+func (m *Widget) Resize(s fyne.Size) {
 	m.size = s
 	widget.Renderer(m).Layout(m.size)
 }
 
-func (m *MapEditorWidget) Show() {
+// Show makes the widget visible
+func (m *Widget) Show() {
 	m.hidden = false
 	for _, obj := range widget.Renderer(m).Objects() {
 		obj.Show()
 	}
 }
 
-func (m *MapEditorWidget) Visible() bool {
+// Visible returns true / false whether the widget is visible
+func (m *Widget) Visible() bool {
 	return !m.hidden
 }
 
-func (m *MapEditorWidget) CreateRenderer() fyne.WidgetRenderer {
+// CreateRenderer creates a renderer for the widget
+func (m *Widget) CreateRenderer() fyne.WidgetRenderer {
 	return newMapEditorRender(m)
 }
 
-func (m *MapEditorWidget) Key(event *fyne.KeyEvent) {
+// Key is called when a key is pressed
+func (m *Widget) Key(event *fyne.KeyEvent) {
 	switch event.Name {
 	case "Right":
 		m.cx++
@@ -238,7 +250,8 @@ func (m *MapEditorWidget) Key(event *fyne.KeyEvent) {
 	m.repaint()
 }
 
-func (m *MapEditorWidget) Rune(r rune) {
+// Rune is called when a user types a char
+func (m *Widget) Rune(r rune) {
 	switch r {
 	case 'h', 'H', ' ', 't', 'T', 'w', 'W', 'r':
 		m.setChar(r)
@@ -246,11 +259,11 @@ func (m *MapEditorWidget) Rune(r rune) {
 }
 
 // Tapped is called when the user taps the map widget
-func (m *MapEditorWidget) Tapped(event *fyne.PointEvent) {
+func (m *Widget) Tapped(event *fyne.PointEvent) {
 	m.cx, m.cy = widget.Renderer(m).(*mapEditorRender).ConvertToGrid(event)
 	m.repaint()
 }
 
 // TappedSecondary is called when the user right-taps the map widget
-func (m *MapEditorWidget) TappedSecondary(event *fyne.PointEvent) {
+func (m *Widget) TappedSecondary(event *fyne.PointEvent) {
 }

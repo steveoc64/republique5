@@ -42,6 +42,7 @@ func (m *MapPanel) CanvasObject() fyne.CanvasObject {
 	return m.content
 }
 
+// SetCommand sets the currently selected command on the map
 func (m *MapPanel) SetCommand(cmd *rp.Command) {
 	m.command = cmd
 	if cmd == nil {
@@ -116,20 +117,23 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 func (m *MapPanel) unitInfo() {
 	if m.command != nil {
 		m.app.unitsPanel.ShowCommand(m.command)
-		m.app.Tab(TAB_UNITS)
+		m.app.Tab(TabUnits)
 	}
 }
 
 func (m *MapPanel) gotoOrders() {
-	m.app.Tab(TAB_ORDERS)
+	m.app.Tab(TabOrders)
 }
 
 func (m *MapPanel) setOrder(o rp.Order) {
-	if m.order == o {
-		m.order = rp.Order_RESTAGE
-	} else {
-		m.order = o
-	}
+	m.order = o
+	/*
+		if m.order == o {
+			m.order = rp.Order_RESTAGE
+		} else {
+			m.order = o
+		}
+	*/
 	m.restageBtn.SetIcon(theme.RadioButtonIcon())
 	m.marchBtn.SetIcon(theme.RadioButtonIcon())
 	m.defendBtn.SetIcon(theme.RadioButtonIcon())

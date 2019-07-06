@@ -123,7 +123,7 @@ func (mw *MapWidget) Tapped(event *fyne.PointEvent) {
 func (mw *MapWidget) TappedSecondary(event *fyne.PointEvent) {
 	if cmd := mw.grid.CommandAt(event.Position); cmd != nil {
 		mw.app.unitsPanel.ShowCommand(cmd)
-		mw.app.Tab(TAB_UNITS)
+		mw.app.Tab(TabUnits)
 	}
 }
 

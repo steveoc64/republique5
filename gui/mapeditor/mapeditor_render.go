@@ -15,7 +15,7 @@ import (
 
 type mapEditorRender struct {
 	render     *canvas.Raster
-	m          *MapEditorWidget
+	m          *Widget
 	objects    []fyne.CanvasObject
 	background *image.RGBA
 	dirty      bool
@@ -24,7 +24,7 @@ type mapEditorRender struct {
 	y          int
 }
 
-func newMapEditorRender(m *MapEditorWidget) *mapEditorRender {
+func newMapEditorRender(m *Widget) *mapEditorRender {
 	r := &mapEditorRender{
 		m: m,
 	}
@@ -147,7 +147,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				r.hills(gc, fx, fy, dx, dy, 2)
 			case 'w':
 				for t := 0; t < 10+rand.Intn(20); t++ {
-					gc.SetFillColor(map_woods_fill)
+					gc.SetFillColor(mapWoodsFill)
 					gc.SetLineWidth(2)
 					cx := fx + dx*float64(rand.Intn(100))/100.0
 					cy := fy + dy*float64(rand.Intn(100))/100.0
@@ -161,7 +161,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				}
 			case 'W':
 				for t := 0; t < 25+rand.Intn(40); t++ {
-					gc.SetFillColor(map_woods_fill)
+					gc.SetFillColor(mapWoodsFill)
 					gc.SetLineWidth(2)
 					cx := fx + dx*float64(rand.Intn(100))/100.0
 					cy := fy + dy*float64(rand.Intn(100))/100.0
@@ -175,8 +175,8 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				}
 			case 'T':
 				for t := 0; t < 25+rand.Intn(40); t++ {
-					gc.SetFillColor(map_town_fill)
-					gc.SetStrokeColor(map_town_stroke)
+					gc.SetFillColor(mapTownFill)
+					gc.SetStrokeColor(mapTownStroke)
 					gc.SetLineWidth(2)
 					x1 := fx + dx*float64(rand.Intn(100))/100.0
 					y1 := fy + dy*float64(rand.Intn(100))/100.0
@@ -190,8 +190,8 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				}
 			case 't':
 				for t := 0; t < 10+rand.Intn(20); t++ {
-					gc.SetFillColor(map_town_fill)
-					gc.SetStrokeColor(map_town_stroke)
+					gc.SetFillColor(mapTownFill)
+					gc.SetStrokeColor(mapTownStroke)
 					gc.SetLineWidth(2)
 					x1 := fx + dx*float64(rand.Intn(100))/100.0
 					y1 := fy + dy*float64(rand.Intn(100))/100.0
@@ -209,8 +209,8 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// do the river segments
-	gc.SetFillColor(map_deep_blue)
-	gc.SetStrokeColor(map_blue)
+	gc.SetFillColor(mapDeepBlue)
+	gc.SetStrokeColor(mapBlue)
 	gc.SetLineWidth(20)
 	for k, v := range r.m.rivers {
 		gc.BeginPath()
@@ -221,7 +221,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 			gc.FillStroke()
 			continue
 		}
-		for kk, _ := range v.adjacent {
+		for kk := range v.adjacent {
 			// double check that this segment isnt already done
 			if other, ok := r.m.rivers[riverPoint{kk.x, kk.y}]; ok {
 				if toMe, okk := other.adjacent[riverPoint{k.x, k.y}]; okk {
@@ -245,7 +245,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				fx2 = float64(r.m.x) * dx
 			}
 			bump := 0.0
-			for kk, _ := range v.adjacent {
+			for kk := range v.adjacent {
 				switch {
 				case kk.y < k.y:
 					bump = dy / 2
@@ -263,7 +263,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 				fy2 = float64(r.m.y) * dy
 			}
 			bump := 0.0
-			for kk, _ := range v.adjacent {
+			for kk := range v.adjacent {
 				switch {
 				case kk.x < k.x:
 					bump = dx / 2
@@ -279,7 +279,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// major grid lines - vertical
-	gc.SetStrokeColor(map_grid)
+	gc.SetStrokeColor(mapGrid)
 	gc.SetLineWidth(2)
 	for x := 0; x < mx; x++ {
 		gc.BeginPath()
@@ -298,7 +298,7 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 	}
 
 	// highlight current grid
-	gc.SetStrokeColor(map_select)
+	gc.SetStrokeColor(mapSelect)
 	gc.SetLineWidth(8)
 	x1 := float64(r.m.cx-1) * dx
 	y1 := float64(r.m.cy-1) * dy
@@ -309,8 +309,8 @@ func (r *mapEditorRender) generateBackground(w, h int) *image.RGBA {
 }
 
 func (r *mapEditorRender) hills(gc *draw2dimg.GraphicContext, fx, fy, dx, dy float64, count int) {
-	gc.SetFillColor(map_hill_fill)
-	gc.SetStrokeColor(map_hill_stroke)
+	gc.SetFillColor(mapHillFill)
+	gc.SetStrokeColor(mapHillStroke)
 	gc.SetLineWidth(2)
 	switch count {
 	case 1:

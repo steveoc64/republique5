@@ -55,7 +55,7 @@ func newUnitDetails(app *App, panel *UnitsPanel) *UnitDetails {
 			formationLabel,
 			hbox,
 		),
-		id:   canvas.NewText("ID", unit_green),
+		id:   canvas.NewText("ID", unitGreen),
 		plot: newPlotWidget(app, "Unit History"),
 	}
 	mkbtn := func(res fyne.Resource, f func()) *TapIcon {
@@ -100,15 +100,15 @@ func (u *UnitDetails) build() {
 	u.fields = make(map[string]*canvas.Text)
 	s := fyne.TextStyle{}
 	u.form.Append("", u.id)
-	u.form.AppendItem(u.newItem("Name", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("_Grid", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("_Type", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Notes", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Strength", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Skirmishers", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Bn Guns", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Drill", unit_blue, s, 18))
-	u.form.AppendItem(u.newItem("Reserve", unit_blue, s, 18))
+	u.form.AppendItem(u.newItem("Name", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Notes", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Strength", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Skirmishers", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Bn Guns", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Drill", unitBlue, s, 18))
+	u.form.AppendItem(u.newItem("Reserve", unitBlue, s, 18))
 	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
 }
 
@@ -116,10 +116,10 @@ func (u *UnitDetails) darkTheme() {
 	for _, v := range u.form.Items {
 		if t, ok := v.Widget.(*canvas.Text); ok {
 			switch t.Color {
-			case unit_dark_blue:
-				t.Color = unit_blue
-			case unit_dark_green:
-				t.Color = unit_green
+			case unitDarkBlue:
+				t.Color = unitBlue
+			case unitDarkGreen:
+				t.Color = unitGreen
 			}
 		}
 	}
@@ -129,10 +129,10 @@ func (u *UnitDetails) lightTheme() {
 	for _, v := range u.form.Items {
 		if t, ok := v.Widget.(*canvas.Text); ok {
 			switch t.Color {
-			case unit_blue:
-				t.Color = unit_dark_blue
-			case unit_green:
-				t.Color = unit_dark_green
+			case unitBlue:
+				t.Color = unitDarkBlue
+			case unitGreen:
+				t.Color = unitDarkGreen
 			}
 		}
 	}
@@ -141,7 +141,7 @@ func (u *UnitDetails) lightTheme() {
 func (u *UnitDetails) gotoMap() {
 	c := u.app.GetUnitCommander(u.unit.GetId())
 	u.app.mapPanel.mapWidget.Select(c.Id)
-	u.app.Tab(TAB_MAP)
+	u.app.Tab(TabMap)
 }
 
 // setField sets the contents of the field given by name

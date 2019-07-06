@@ -95,7 +95,7 @@ func (r *plotRender) generateImage(w, h int) *image.RGBA {
 		chart.Style{Symbol: '#', LineColor: color.NRGBA{0x30, 0x30, 0xff, 0xff}, LineWidth: 2, FillColor: color.NRGBA{0x07, 0x71, 0x3c, 0xff}})
 	ebit.AddDataPair("Morale", []float64{0, 1, 2, 3, 4, 5, 6, 7}, []float64{100, 100, 40, 60, 65, 70, 75, 90},
 		chart.Style{Symbol: 'O', LineColor: color.NRGBA{0x44, 0x11, 0x44, 0xff}, LineWidth: 2, FillColor: color.NRGBA{0x5a, 0x22, 0x8a, 0xff}})
-	igr := imgg.AddTo(img, 0, 0, w, h, plot_background, nil, nil)
+	igr := imgg.AddTo(img, 0, 0, w, h, plotBackground, nil, nil)
 	ebit.Plot(igr)
 	r.img = img
 	return r.img

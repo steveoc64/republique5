@@ -136,11 +136,10 @@ func (o *OrdersPanel) newCommanderButton(command *rp.Command) *widget.Box {
 			y = v.Y
 		}
 	}
-
 	return box
 }
 
 func (o *OrdersPanel) commanderAction(command *rp.Command) {
 	o.app.mapPanel.mapWidget.Select(command.Id)
-	o.app.Tab(TAB_MAP)
+	o.app.Tab(TabMap)
 }

@@ -77,7 +77,7 @@ func newUnitCommand(app *App, panel *UnitsPanel) *UnitCommand {
 
 func (u *UnitCommand) gotoMap() {
 	u.app.mapPanel.mapWidget.Select(u.command.Id)
-	u.app.Tab(TAB_MAP)
+	u.app.Tab(TabMap)
 }
 
 // newItem creates a new form item
@@ -99,19 +99,19 @@ func (u *UnitCommand) newItem(label string, rgba color.RGBA, style fyne.TextStyl
 func (u *UnitCommand) build() {
 	u.fields = make(map[string]*canvas.Text)
 	s := fyne.TextStyle{}
-	u.form.AppendItem(u.newItem("_UnitID", command_green, fyne.TextStyle{Bold: true}, 48))
-	u.form.AppendItem(u.newItem("Commander", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("_Grid", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("_Type", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Name", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Notes", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Strength", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Drill", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Reserve", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Order", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Move", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Can Rally", command_blue, s, 18))
-	u.form.AppendItem(u.newItem("Panic State", command_red, s, 18))
+	u.form.AppendItem(u.newItem("_UnitID", commandGreen, fyne.TextStyle{Bold: true}, 48))
+	u.form.AppendItem(u.newItem("Commander", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("_Grid", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("_Type", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Name", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Notes", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Strength", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Drill", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Reserve", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Can Order", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Can Move", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Can Rally", commandBlue, s, 18))
+	u.form.AppendItem(u.newItem("Panic State", commandRed, s, 18))
 	u.form.Append("", widget.NewButtonWithIcon("View on Map", theme.ViewFullScreenIcon(), u.gotoMap))
 }
 
@@ -119,12 +119,12 @@ func (u *UnitCommand) darkTheme() {
 	for _, v := range u.form.Items {
 		if t, ok := v.Widget.(*canvas.Text); ok {
 			switch t.Color {
-			case command_dark_blue:
-				t.Color = command_blue
-			case command_dark_green:
-				t.Color = command_green
-			case command_dark_red:
-				t.Color = command_red
+			case commandDarkBlue:
+				t.Color = commandBlue
+			case commandDarkGreen:
+				t.Color = commandGreen
+			case commandDarkRed:
+				t.Color = commandRed
 			}
 		}
 	}
@@ -134,12 +134,12 @@ func (u *UnitCommand) lightTheme() {
 	for _, v := range u.form.Items {
 		if t, ok := v.Widget.(*canvas.Text); ok {
 			switch t.Color {
-			case command_blue:
-				t.Color = command_dark_blue
-			case command_green:
-				t.Color = command_dark_green
-			case command_red:
-				t.Color = command_dark_red
+			case commandBlue:
+				t.Color = commandDarkBlue
+			case commandGreen:
+				t.Color = commandDarkGreen
+			case commandRed:
+				t.Color = commandDarkRed
 			}
 		}
 	}

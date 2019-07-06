@@ -16,7 +16,7 @@ type mapeditor struct {
 	x    *widget.Entry
 	y    *widget.Entry
 	data *widget.Entry
-	m    *MapEditorWidget
+	m    *Widget
 }
 
 // New creates a new map editor
