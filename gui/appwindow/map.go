@@ -304,12 +304,10 @@ func (m *MapPanel) Tap(x, y int32) {
 		widget.Renderer(m.mapWidget).Refresh()
 	case rp.Order_MARCH:
 		// march to location if not too far
-		maxd := int32(9)
+		maxd := int32(10)
 		switch m.command.Arm {
-		case rp.Arm_ARTILLERY:
-			maxd = 8
 		case rp.Arm_CAVALRY:
-			maxd = 11
+			maxd = 14
 		}
 		if distance > maxd {
 			println("too far", distance)
