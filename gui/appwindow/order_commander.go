@@ -2,7 +2,6 @@ package appwindow
 
 import (
 	"fyne.io/fyne"
-	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	rp "github.com/steveoc64/republique5/proto"
@@ -49,6 +48,10 @@ func (o *commanderOrders) Show() {
 	if o.command.GameState.GetHas().GetOrder() {
 		orderButton = theme.CheckButtonCheckedIcon()
 	}
+	// TODO - remove the hide/nil/show once the button renderer is fixed
+	o.btn.Hide()
+	o.btn.SetIcon(nil)
+	o.btn.Show()
 	o.btn.SetIcon(orderButton)
 
 	// do the label
@@ -61,13 +64,15 @@ func (o *commanderOrders) Show() {
 	// add new contents
 	waypoints := o.panel.app.MapData.GetWaypoints(o.command)
 	for _, v := range waypoints {
-		println("appending", v.Path)
-		o.Append(widget.NewLabelWithStyle(v.Path, fyne.TextAlignCenter, fyne.TextStyle{Italic: true}))
+		// TODO - remove the Hide/Show when the widget lib is fixed
+		w := widget.NewLabelWithStyle(v.Path, fyne.TextAlignCenter, fyne.TextStyle{Italic: true})
+		w.Hide()
+		o.Append(w)
+		w.Show()
 	}
-
 	// paint it all
-	//canvas.Refresh(&o.Box)
-	canvas.Refresh(o)
+	//widget.Renderer(o).Layout(o.Size())
+	widget.Refresh(o)
 	o.Box.Show()
 }
 

@@ -30,6 +30,11 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 	waypoints := []Waypoint{}
 	x := command.GetGameState().GetGrid().GetX()
 	y := command.GetGameState().GetGrid().GetY()
+
+	switch command.GetGameState().GetOrders() {
+	case Order_RESTAGE, Order_FIRE, Order_NO_ORDERS, Order_RALLY:
+		return waypoints
+	}
 	for k, v := range command.GetGameState().GetObjective() {
 		if k > 0 {
 			distance := math.Sqrt(float64((v.X-x)*(v.X-x) + (v.Y-y)*(v.Y-y)))
@@ -66,6 +71,7 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 				if command.GetGameState().GetOrders() == Order_CHARGE {
 					speed *= 1.5
 				}
+				going = "at the trot"
 				switch {
 				case speed >= 2.0:
 					going = "at the gallop"

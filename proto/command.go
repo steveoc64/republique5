@@ -268,7 +268,10 @@ func (c *Command) SetObjective(x, y int32) []*Grid {
 	}
 	// add to path
 	c.GameState.Objective = c.newObjective()
-	c.GameState.Objective = append(c.GameState.Objective, &Grid{X: x, Y: y})
+	o := c.GameState.Objective[0]
+	if x != o.X || y != o.Y {
+		c.GameState.Objective = append(c.GameState.Objective, &Grid{X: x, Y: y})
+	}
 	return c.GameState.Objective
 }
 

@@ -127,13 +127,6 @@ func (m *MapPanel) gotoOrders() {
 
 func (m *MapPanel) setOrder(o rp.Order) {
 	m.order = o
-	/*
-		if m.order == o {
-			m.order = rp.Order_RESTAGE
-		} else {
-			m.order = o
-		}
-	*/
 	m.restageBtn.SetIcon(theme.RadioButtonIcon())
 	m.marchBtn.SetIcon(theme.RadioButtonIcon())
 	m.defendBtn.SetIcon(theme.RadioButtonIcon())

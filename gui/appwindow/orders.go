@@ -46,7 +46,8 @@ func newOrdersPanel(app *App) *OrdersPanel {
 	}
 	//widget.Renderer(o.ordersBox).Layout(o.ordersBox.MinSize())
 
-	o.Box.Show()
+	//o.Box.Show()
 	o.Scroll = widget.NewScrollContainer(o.Box)
+	o.Scroll.Show()
 	return o
 }
