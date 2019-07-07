@@ -1,37 +1,50 @@
 package appwindow
 
 import (
+	"strings"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"strings"
 )
 
 // ActionsPanel controls the actions
 type ActionsPanel struct {
-	app *App
-	Box *fyne.Container
+	app        *App
+	Box        *fyne.Container
+	actionsBox *widget.Box
+	Scroll     *widget.ScrollContainer
 
-	Header *widget.Label
-	Notes  *widget.Label
+	Header  *widget.Label
+	Actions []*actionWidget
 }
 
 // CanvasObject gets the top level canvas object
 func (a *ActionsPanel) CanvasObject() fyne.CanvasObject {
-	return a.Box
+	return a.Scroll
 }
 
 // newActionsPanel is a pvt function to get a new ActionsPanel
 func newActionsPanel(app *App) *ActionsPanel {
-	h := &ActionsPanel{
-		app:    app,
-		Header: widget.NewLabel("Actions for: " + strings.Join(app.Commanders, ", ")),
-		Notes:  widget.NewLabel("No Actions Yet ..."),
+	a := &ActionsPanel{
+		app:        app,
+		Header:     widget.NewLabel("Actions for: " + strings.Join(app.Commanders, ", ")),
+		actionsBox: widget.NewVBox(),
 	}
-	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
-		h.Header,
-		h.Notes,
+	a.Box = fyne.NewContainerWithLayout(layout.NewBorderLayout(a.Header, nil, nil, nil),
+		a.Header,
+		a.actionsBox,
 	)
-	h.Box.Show()
-	return h
+	for _, command := range a.app.Commands {
+		if command.Arrival.From > 0 {
+			continue
+		}
+		a.actionsBox.Append(newActionWidget(a, command))
+		for _, subCommand := range command.Subcommands {
+			a.actionsBox.Append(newActionWidget(a, subCommand))
+		}
+	}
+	a.Scroll = widget.NewScrollContainer(a.Box)
+	a.Box.Show()
+	return a
 }

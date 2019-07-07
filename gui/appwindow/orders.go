@@ -34,7 +34,6 @@ func newOrdersPanel(app *App) *OrdersPanel {
 		o.ordersBox,
 	)
 
-	// clear existing objects out
 	for _, command := range o.app.Commands {
 		if command.Arrival.From > 0 {
 			continue
@@ -44,9 +43,6 @@ func newOrdersPanel(app *App) *OrdersPanel {
 			o.ordersBox.Append(newCommanderOrders(o, subCommand))
 		}
 	}
-	//widget.Renderer(o.ordersBox).Layout(o.ordersBox.MinSize())
-
-	//o.Box.Show()
 	o.Scroll = widget.NewScrollContainer(o.Box)
 	o.Scroll.Show()
 	return o

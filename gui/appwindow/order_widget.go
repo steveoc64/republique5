@@ -71,7 +71,6 @@ func (o *commanderOrders) Show() {
 		w.Show()
 	}
 	// paint it all
-	//widget.Renderer(o).Layout(o.Size())
 	widget.Refresh(o)
 	o.Box.Show()
 }
