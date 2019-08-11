@@ -5,6 +5,7 @@ import (
 	"math"
 )
 
+// Waypoint data for each segment of a move order
 type Waypoint struct {
 	X        int32
 	Y        int32
@@ -19,6 +20,7 @@ type Waypoint struct {
 	Prep     bool
 }
 
+// GetValue gets the grid contents at x,y
 func (m *MapData) GetValue(x, y int32) byte {
 	offset := x + y*m.X
 	if offset < 0 || offset > m.X*m.Y {
@@ -27,6 +29,7 @@ func (m *MapData) GetValue(x, y int32) byte {
 	return m.Data[offset]
 }
 
+// GetWaypoints gets a slice of waypoints for a given command on this map
 func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 	waypoints := []Waypoint{}
 	x := command.GetGameState().GetGrid().GetX()

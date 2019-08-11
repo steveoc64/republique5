@@ -3,6 +3,10 @@ all:  install
 install:
 	go install ./...
 
+mobile:
+	#CGO_CFLAGS="-I/home/steve/Android/Sdk/ndk-bundle/sysroot/usr/include -I/usr/include" gomobile build -target android/arm7a .
+	gomobile build -target android .
+
 run: install
 	republique-ui
 

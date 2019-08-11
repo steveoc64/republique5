@@ -141,7 +141,6 @@ func (store *DB) Save(bucket, key string, data proto.Message) error {
 // Load loads a record from the DB
 func (store *DB) Load(bucket, key string, data proto.Message) error {
 	// retrieve the data
-	t1 := time.Now()
 	return store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		if b == nil {
@@ -149,9 +148,7 @@ func (store *DB) Load(bucket, key string, data proto.Message) error {
 		}
 
 		val := b.Get([]byte(key))
-		memdebug.Print(t1, "loaded", bucket, key)
 		err := proto.Unmarshal(val, data)
-		memdebug.Print(t1, "unmarshal")
 		return err
 	})
 }

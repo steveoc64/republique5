@@ -19,7 +19,7 @@ func serve(log *logrus.Logger, args []string) error {
 	if err != nil {
 		return err
 	}
-	if err := info(log, gamename); err != nil {
+	if err := info(log, gamename, true, false); err != nil {
 		return err
 	}
 	s, err := republique.NewServer(log, version, gamename, port, web)

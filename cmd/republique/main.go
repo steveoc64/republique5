@@ -51,7 +51,14 @@ func main() {
 			os.Exit(1)
 		}
 	case "info":
-		err := info(log, os.Args[2])
+		err := info(log, os.Args[2], true, false)
+		if err != nil {
+			println("Error:", err.Error())
+			usage()
+			os.Exit(1)
+		}
+	case "list":
+		err := list(log, os.Args[2:])
 		if err != nil {
 			println("Error:", err.Error())
 			usage()
