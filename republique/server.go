@@ -1,11 +1,16 @@
 package republique
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/steveoc64/republique5/db"
 	rp "github.com/steveoc64/republique5/proto"
-	"strings"
-	"sync"
 )
 
 // Server object stores the whole game state
@@ -62,6 +67,8 @@ func (s *Server) Serve() {
 	}).Println("Starting Republique 5.0 Server")
 	s.log.SetFormatter(&logrus.JSONFormatter{})
 
+	// Write the game state to the gamestate file
+	s.writeRunFile()
 	// Setup REST endpoints, but only if we want web with it
 	if s.web != 0 {
 		go s.rpcProxy()
@@ -79,4 +86,32 @@ func (s *Server) Save() {
 // Close closes the DB - needed when you quit
 func (s *Server) Close() {
 	s.db.Close()
+}
+
+func (s *Server) writeRunFile() error {
+	filename := s.filename
+	if strings.HasSuffix(filename, ".db") {
+		filename = filename[:len(filename)-3]
+	}
+	savename := filepath.Join(os.Getenv("HOME"), ".republique", filename+".run")
+	fp, err := os.Create(savename)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(fp, "pid:%d\nturn:%d\nphase:%d\ntime:%s\nname:%s\ntable:%dx%d\nadmin:%s\n",
+		os.Getpid(),
+		s.game.TurnNumber,
+		s.game.Phase,
+		time.Now().String(),
+		s.game.Name,
+		s.game.TableX, s.game.TableY,
+		s.game.AdminAccess,
+	)
+	for _, team := range s.game.Scenario.GetTeams() {
+		for i, player := range team.GetPlayers() {
+			fmt.Fprintf(fp, "%s-%d:%s:%s\n", team.Name, i+1, team.AccessCode, player.AccessCode)
+		}
+	}
+	fp.Close()
+	return nil
 }

@@ -2,9 +2,6 @@ SUBDIRS := gui/appwindow cmd/republique cmd/republique-ui cmd/mapedit
 
 all: protobuf $(SUBDIRS)
 
-arm:
-	$(MAKE) -C cmd/republique arm
-
 deps:
 	go get -u ./...
 
