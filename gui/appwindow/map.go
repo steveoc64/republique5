@@ -155,6 +155,8 @@ func (m *MapPanel) setOrder(o rp.Order) {
 	}
 	if m.command != nil {
 		m.command.SetOrder(m.order)
+		m.app.store.CommanderMap.Refresh(m.command)
+		widget.Renderer(m.mapWidget).Refresh()
 	}
 }
 
@@ -311,7 +313,6 @@ func (m *MapPanel) Tap(x, y int32) {
 			return
 		}
 		m.command.AddToObjective(x, y)
-		m.app.store.CommanderMap.Refresh(m.command)
 	case rp.Order_DEFEND:
 		// defend at current location
 		return
@@ -351,9 +352,8 @@ func (m *MapPanel) Tap(x, y int32) {
 		}
 		m.command.SetObjective(x, y)
 	}
-	// orders have changed, so rebuild the orders panel
-	// TODO - use databinding later when its available
-	//m.app.ordersPanel.build()
+	m.app.store.CommanderMap.Refresh(m.command)
+
 	widget.Renderer(m.mapWidget).Refresh()
 }
 

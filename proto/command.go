@@ -227,11 +227,10 @@ func (c *Command) SetOrder(order Order) {
 		c.GameState.Objective = c.newObjective()
 	}
 	c.GameState.Orders = order
-	if c.GetGameState().Has == nil {
-		c.GameState.Has = &UnitAction{
-			Order: true,
-		}
+	if c.GameState.Has == nil {
+		c.GameState.Has = &UnitAction{}
 	}
+	c.GameState.Has.Order = (order != Order_NO_ORDERS)
 }
 
 func (c *Command) newObjective() []*Grid {

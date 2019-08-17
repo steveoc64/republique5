@@ -38,6 +38,29 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 	switch command.GetGameState().GetOrders() {
 	case Order_RESTAGE, Order_NO_ORDERS, Order_RALLY:
 		return waypoints
+	case Order_DEFEND:
+		waypoint := Waypoint{
+			X:        x,
+			Y:        y,
+			X2:       x,
+			Y2:       y,
+			Speed:    1.0,
+			Elapsed:  5.0,
+			Turns:    0,
+			Going:    "ready",
+			Distance: 0.0,
+			Path:     "Deployed, Defensive Formation",
+		}
+		for _, v := range command.GetUnits() {
+			if v.Arm == Arm_ARTILLERY && !v.GetGameState().GetGunsDeployed() {
+				waypoint.Turns = 1
+				waypoint.Going = "deploying"
+				waypoint.Path = "-> Deploy guns to fire"
+				waypoint.Prep = true
+				waypoint.Elapsed = 10.0
+				break
+			}
+		}
 	case Order_FIRE:
 		// do they need to deploy ?
 		waypoint := Waypoint{
@@ -136,7 +159,6 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 				speed = 1.4
 			}
 
-			//fromGrid := o.app.mapPanel.mapWidget.grid.Value(int32(x-1), int32(y-1))
 			fromGrid := m.GetValue(x-1, y-1)
 			switch fromGrid {
 			case 't', 'w':
@@ -146,7 +168,6 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 			case 'H':
 				speed *= 0.5
 			}
-			//toGrid := o.app.mapPanel.mapWidget.grid.Value(int32(v.X-1), int32(v.Y-1))
 			toGrid := m.GetValue(v.X-1, v.Y-1)
 			switch toGrid {
 			case 't', 'w':
@@ -155,6 +176,30 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 				speed *= 0.5
 			case 'H', 'r':
 				speed *= 0.4
+			}
+			if command.GetArm() == Arm_INFANTRY {
+				switch command.GetGameState().GetFormation() {
+				case Formation_MARCH_COLUMN:
+					speed *= 1.0
+				case Formation_LINE:
+					switch command.GetDrill() {
+					case Drill_LINEAR:
+						speed *= 0.5
+					case Drill_MASSED:
+						speed *= 0.6
+					case Drill_RAPID:
+						speed *= 0.7
+					}
+				default:
+					switch command.GetDrill() {
+					case Drill_LINEAR:
+						speed *= 0.7
+					case Drill_MASSED:
+						speed *= 0.8
+					case Drill_RAPID:
+						speed *= 0.9
+					}
+				}
 			}
 			going := "at a good march"
 			if command.Arm == Arm_CAVALRY {
@@ -185,7 +230,7 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 				case speed <= 0.4:
 					going = "very slow"
 				case speed <= 0.5:
-					going = "harsh terrain"
+					going = "harsh going"
 				case speed <= 0.6:
 					going = "slow going"
 				case speed <= 0.7:
@@ -218,7 +263,7 @@ func (m *MapData) GetWaypoints(command *Command) []Waypoint {
 			y = v.Y
 		}
 	}
-	// then add a deploy option at the end
+	// then add a deploy option at the end if they are in march order
 	switch command.GetGameState().GetOrders() {
 	case Order_MARCH:
 		switch command.Arm {

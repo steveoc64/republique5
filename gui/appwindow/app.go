@@ -136,7 +136,7 @@ func (a *App) loadUI() {
 		widget.NewTabItemWithIcon("Briefing", theme.FolderOpenIcon(), a.briefingPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Units", theme.InfoIcon(), a.unitsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Orders", theme.DocumentCreateIcon(), a.ordersPanel.CanvasObject()),
-		widget.NewTabItemWithIcon("Actions", theme.ContentPasteIcon(), a.actionsPanel.CanvasObject()),
+		widget.NewTabItemWithIcon("Actions", theme.CheckButtonCheckedIcon(), a.actionsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Map", theme.ViewFullScreenIcon(), a.mapPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Formation", theme.ContentCopyIcon(), a.formationsPanel.CanvasObject()),
 		widget.NewTabItemWithIcon("Advance", theme.MailSendIcon(), a.advancePanel.CanvasObject()),

@@ -30,6 +30,7 @@ func newActionWidget(panel *ActionsPanel, command *rp.Command) *actionWidget {
 		a.btn.Style = widget.PrimaryButton
 	}
 	a.Append(a.btn)
+	a.panel.app.store.CommanderMap.AddListener(command, a.Listen)
 	return a
 }
 
@@ -38,18 +39,23 @@ func (a *actionWidget) commanderAction() {
 	a.panel.app.Tab(TabMap)
 }
 
-func (a *actionWidget) Show() {
-	// TODO - tick if all done
+func (a *actionWidget) Listen(data fyne.DataItem) {
+	if a != nil {
+		a.Show()
+	}
+}
 
+func (a *actionWidget) Show() {
+	// tick if all done
 	// do the command
 	orderButton := theme.CheckButtonIcon()
 	if a.command.GameState.GetHas().GetOrder() {
 		orderButton = theme.CheckButtonCheckedIcon()
 	}
 	// TODO - remove the hide/nil/show once the button renderer is fixed
-	a.btn.Hide()
-	a.btn.SetIcon(nil)
-	a.btn.Show()
+	//a.btn.Hide()
+	//a.btn.SetIcon(nil)
+	//a.btn.Show()
 	a.btn.SetIcon(orderButton)
 
 	// zap the contents

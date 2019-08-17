@@ -48,8 +48,9 @@ func newCommanderOrders(panel *OrdersPanel, command *rp.Command, store *store.St
 }
 
 func (o *commanderOrders) Listen(data fyne.DataItem) {
-	println("listen update")
-	o.Show()
+	if o != nil {
+		o.Show()
+	}
 }
 
 func (o *commanderOrders) Show() {
