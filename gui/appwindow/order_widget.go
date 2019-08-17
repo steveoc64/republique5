@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"github.com/steveoc64/republique5/gui/store"
 	rp "github.com/steveoc64/republique5/proto"
 )
 
@@ -13,14 +14,16 @@ type commanderOrders struct {
 	command *rp.Command
 	btn     *widget.Button
 	order   *widget.Label
+	store   *store.Store
 }
 
-func newCommanderOrders(panel *OrdersPanel, command *rp.Command) *commanderOrders {
+func newCommanderOrders(panel *OrdersPanel, command *rp.Command, store *store.Store) *commanderOrders {
 	vbox := widget.NewVBox()
 	o := &commanderOrders{
 		Box:     *vbox,
 		panel:   panel,
 		command: command,
+		store:   store,
 	}
 
 	orderButton := theme.CheckButtonIcon()
@@ -36,10 +39,17 @@ func newCommanderOrders(panel *OrdersPanel, command *rp.Command) *commanderOrder
 		o.btn.Style = widget.PrimaryButton
 	}
 	o.Append(o.btn)
-	orderName := upString(command.GetGameState().GetOrders().String())
+	orderName := upString(command.GameState.GetOrders().String())
 	o.order = widget.NewLabelWithStyle(orderName, fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 	o.Append(o.order)
+	store.CommanderMap.AddListener(command, o.Listen)
+
 	return o
+}
+
+func (o *commanderOrders) Listen(data fyne.DataItem) {
+	println("listen update")
+	o.Show()
 }
 
 func (o *commanderOrders) Show() {

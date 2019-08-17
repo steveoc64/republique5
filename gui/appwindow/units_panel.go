@@ -2,6 +2,9 @@ package appwindow
 
 import (
 	"context"
+	"time"
+
+	"github.com/steveoc64/memdebug"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
@@ -69,15 +72,19 @@ func (u *UnitsPanel) lightTheme() {
 
 // GetUnits fetches the units from the server
 func (a *App) GetUnits() error {
+	memdebug.Print(time.Now(), "fetching units")
 	u, err := a.gameServer.GetUnits(context.Background(), &a.Token)
 	if err != nil {
 		return err
 	}
 	a.Commands = u.Commands
+	a.store.CommanderMap.Load(u.Commands)
+
 	u, err = a.gameServer.GetEnemy(context.Background(), &a.Token)
 	if err != nil {
 		return err
 	}
 	a.Enemy = u.Commands
+
 	return nil
 }

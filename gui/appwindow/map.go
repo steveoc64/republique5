@@ -3,8 +3,6 @@ package appwindow
 import (
 	"context"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"fyne.io/fyne/theme"
 
 	"fyne.io/fyne/layout"
@@ -53,7 +51,6 @@ func (m *MapPanel) SetCommand(cmd *rp.Command) {
 		m.unitDesc.SetText("")
 		return
 	}
-	spew.Dump("Set command", cmd.GameState.GetOrders().String(), "path", cmd.GetGameState().GetObjective())
 	m.hbox2.Show()
 	m.unitDesc.SetText(cmd.LongDescription())
 	switch cmd.GetRank() {
@@ -314,6 +311,7 @@ func (m *MapPanel) Tap(x, y int32) {
 			return
 		}
 		m.command.AddToObjective(x, y)
+		m.app.store.CommanderMap.Refresh(m.command)
 	case rp.Order_DEFEND:
 		// defend at current location
 		return

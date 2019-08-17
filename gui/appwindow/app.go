@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/theme"
+	"github.com/steveoc64/republique5/gui/store"
 	rp "github.com/steveoc64/republique5/proto"
 
 	"google.golang.org/grpc"
@@ -50,6 +51,8 @@ type App struct {
 	Phase      string
 	MapData    *rp.MapData
 
+	store *store.Store
+
 	// comms and RPC stuff
 	conn       *grpc.ClientConn
 	gameServer rp.GameServiceClient
@@ -81,7 +84,7 @@ type App struct {
 }
 
 // Show creates the application UI
-func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, gameServer rp.GameServiceClient) {
+func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.ClientConn, gameServer rp.GameServiceClient, store *store.Store) {
 	a := &App{
 		app:         app,
 		ServerName:  servername,
@@ -96,13 +99,11 @@ func Show(app fyne.App, servername string, l *rp.LoginResponse, conn *grpc.Clien
 		conn:        conn,
 		gameServer:  gameServer,
 		isDarkTheme: true,
+		store:       store,
 	}
 	a.loadUI()
 	a.window.CenterOnScreen()
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		a.window.Show()
-	}()
+	a.window.Show()
 	a.PlayAudio("artillery")
 	a.Phaser()
 }

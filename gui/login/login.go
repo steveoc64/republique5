@@ -3,17 +3,19 @@ package login
 import (
 	"context"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	rp "github.com/steveoc64/republique5/proto"
 
 	"fyne.io/fyne/theme"
 	"github.com/steveoc64/republique5/gui/appwindow"
+	"github.com/steveoc64/republique5/gui/store"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
@@ -38,11 +40,12 @@ type login struct {
 	window    fyne.Window
 	functions map[string]func()
 	onLogin   func()
+	store     *store.Store
 }
 
 // Show creates a new Login window
-func Show(app fyne.App, servername string) {
-	c := newLogin(app, servername)
+func Show(app fyne.App, servername string, store *store.Store) {
+	c := newLogin(app, servername, store)
 	c.loadUI()
 }
 
@@ -199,7 +202,7 @@ func (c *login) login() error {
 	if err != nil {
 		return err
 	}
-	appwindow.Show(c.app, c.servername, rsp, conn, gameServer)
+	appwindow.Show(c.app, c.servername, rsp, conn, gameServer, c.store)
 	c.window.Hide()
 	// save the servername
 	savename := filepath.Join(os.Getenv("HOME"), ".republique", "server")
@@ -256,10 +259,11 @@ func (c *login) loadUI() {
 	c.failed.Hide()
 }
 
-func newLogin(app fyne.App, servername string) *login {
+func newLogin(app fyne.App, servername string, store *store.Store) *login {
 	c := &login{
 		app:        app,
 		servername: servername,
+		store:      store,
 	}
 	c.functions = make(map[string]func())
 	c.buttons = make(map[string]*widget.Button)

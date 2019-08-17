@@ -38,9 +38,9 @@ func newOrdersPanel(app *App) *OrdersPanel {
 		if command.Arrival.From > 0 {
 			continue
 		}
-		o.ordersBox.Append(newCommanderOrders(o, command))
+		o.ordersBox.Append(newCommanderOrders(o, command, app.store))
 		for _, subCommand := range command.Subcommands {
-			o.ordersBox.Append(newCommanderOrders(o, subCommand))
+			o.ordersBox.Append(newCommanderOrders(o, subCommand, app.store))
 		}
 	}
 	o.Scroll = widget.NewScrollContainer(o.Box)
