@@ -37,13 +37,13 @@ func (l *TapIcon) CreateRenderer() fyne.WidgetRenderer {
 // Disable makes it disabled
 func (l *TapIcon) Disable() {
 	l.enabled = false
-	l.img.Hide()
+	l.img.Translucency = 1.0
 }
 
 // Enable makes it enabled
 func (l *TapIcon) Enable() {
 	l.enabled = true
-	l.img.Show()
+	l.img.Translucency = 0.0
 }
 
 // NewTapIcon is a wrapper function to create a new tappable icon
