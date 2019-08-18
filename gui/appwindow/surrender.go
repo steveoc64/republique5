@@ -4,6 +4,8 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"github.com/steveoc64/memdebug"
+	"time"
 )
 
 // SurrenderPanel is the UI for editting surrender terms
@@ -29,7 +31,12 @@ func newSurrenderPanel(app *App) *SurrenderPanel {
 	h.Box = fyne.NewContainerWithLayout(layout.NewGridLayout(1),
 		h.Header,
 		h.Notes,
+		widget.NewButton("refresh units", func() {
+			memdebug.Print(time.Now(), "refresh the unit data, because we can")
+			app.GetUnits()
+		}),
 	)
 	h.Box.Show()
+
 	return h
 }

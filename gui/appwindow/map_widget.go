@@ -28,8 +28,24 @@ func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWid
 		unitDesc: unitDesc,
 	}
 
+	mw.calcRiver()
+	mw.SetCommands()
+	app.store.CommanderMap.AddListener(mw.CommandsUpdated)
+
+	// set size
+	mw.Resize(mw.MinSize())
+	return mw
+}
+
+func (mw *MapWidget) CommandsUpdated(data fyne.DataMap) {
+	mw.grid = newGridData(mw.mapData.X, mw.mapData.Y, mw.mapData.Data)
+	mw.SetCommands()
+	widget.Renderer(mw).Refresh()
+}
+
+func (mw *MapWidget) SetCommands() {
 	// generate the forces list in the grid
-	for _, c := range app.Commands {
+	for _, c := range mw.app.Commands {
 		mw.grid.addCommand(c)
 		for _, u := range c.Units {
 			mw.grid.addUnit(u)
@@ -41,11 +57,6 @@ func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWid
 			}
 		}
 	}
-	mw.calcRiver()
-
-	// set size
-	mw.Resize(mw.MinSize())
-	return mw
 }
 
 // Size returns the current size of the mapWidget

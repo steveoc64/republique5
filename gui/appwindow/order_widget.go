@@ -42,13 +42,15 @@ func newCommanderOrders(panel *OrdersPanel, command *rp.Command, store *store.St
 	orderName := upString(command.GameState.GetOrders().String())
 	o.order = widget.NewLabelWithStyle(orderName, fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 	o.Append(o.order)
-	store.CommanderMap.AddListener(command, o.Listen)
+	store.CommanderMap.AddCommandListener(command, o.Listen)
 
 	return o
 }
 
 func (o *commanderOrders) Listen(data fyne.DataItem) {
-	if o != nil {
+	cmd, ok := data.(*store.Commander)
+	if ok && o != nil {
+		o.command = cmd.Data
 		o.Show()
 	}
 }
@@ -59,10 +61,6 @@ func (o *commanderOrders) Show() {
 	if o.command.GameState.GetHas().GetOrder() {
 		orderButton = theme.CheckButtonCheckedIcon()
 	}
-	// TODO - remove the hide/nil/show once the button renderer is fixed
-	o.btn.Hide()
-	o.btn.SetIcon(nil)
-	o.btn.Show()
 	o.btn.SetIcon(orderButton)
 
 	// do the label
@@ -75,11 +73,8 @@ func (o *commanderOrders) Show() {
 	// add new contents
 	waypoints := o.panel.app.MapData.GetWaypoints(o.command)
 	for _, v := range waypoints {
-		// TODO - remove the Hide/Show when the widget lib is fixed
 		w := widget.NewLabelWithStyle(v.Path, fyne.TextAlignCenter, fyne.TextStyle{Italic: true})
-		w.Hide()
 		o.Append(w)
-		w.Show()
 	}
 	// paint it all
 	widget.Refresh(o)

@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"github.com/steveoc64/republique5/gui/store"
 	rp "github.com/steveoc64/republique5/proto"
 )
 
@@ -30,7 +31,7 @@ func newActionWidget(panel *ActionsPanel, command *rp.Command) *actionWidget {
 		a.btn.Style = widget.PrimaryButton
 	}
 	a.Append(a.btn)
-	a.panel.app.store.CommanderMap.AddListener(command, a.Listen)
+	a.panel.app.store.CommanderMap.AddCommandListener(command, a.Listen)
 	return a
 }
 
@@ -40,31 +41,91 @@ func (a *actionWidget) commanderAction() {
 }
 
 func (a *actionWidget) Listen(data fyne.DataItem) {
-	if a != nil {
+	cmd, ok := data.(*store.Commander)
+	if ok && a != nil {
+		a.command = cmd.Data
 		a.Show()
 	}
 }
 
 func (a *actionWidget) Show() {
-	// tick if all done
-	// do the command
-	orderButton := theme.CheckButtonIcon()
-	if a.command.GameState.GetHas().GetOrder() {
-		orderButton = theme.CheckButtonCheckedIcon()
-	}
-	// TODO - remove the hide/nil/show once the button renderer is fixed
-	//a.btn.Hide()
-	//a.btn.SetIcon(nil)
-	//a.btn.Show()
-	a.btn.SetIcon(orderButton)
+	allDone := false
 
 	// zap the contents
 	a.Children = a.Children[:1]
 
 	// Does it need an order ?
 	if a.command.GetGameState().GetOrders() == rp.Order_NO_ORDERS {
-		a.addItem("Currently has No Orders")
+		a.addItem("Currently has No Orders", false, rp.ActionType_COMMENT)
 	}
+
+	has := a.command.GetGameState().GetHas()
+	if has == nil {
+		has = &rp.UnitAction{}
+	}
+	can := a.command.GetGameState().GetCan()
+	if can == nil {
+		can = &rp.UnitAction{}
+	}
+	must := a.command.GetGameState().GetMust()
+
+	// Add all the must orders
+	action := must
+	if action != nil {
+		if action.Assault {
+			a.addItem("Assault", has.Assault, action_)
+
+		}
+		if action.ChangeFormation {
+
+		}
+		if action.Fallback {
+
+		}
+		if action.GunDeploy {
+
+		}
+		if action.GunFire {
+
+		}
+		if action.GunLimber {
+
+		}
+		if action.GunMove {
+
+		}
+		if action.Move {
+
+		}
+		if action.Order {
+
+		}
+		if action.Rally {
+
+		}
+		if action.Rout {
+
+		}
+		if action.SkAttack {
+
+		}
+		if action.SkDeploy {
+
+		}
+		if action.SkRetire {
+
+		}
+		if action.Withdraw {
+
+		}
+	}
+
+	// tick if all done
+	orderButton := theme.CheckButtonIcon()
+	if allDone {
+		orderButton = theme.CheckButtonCheckedIcon()
+	}
+	a.btn.SetIcon(orderButton)
 
 	// does it need figure changes on the table ?
 	figs := ""
@@ -77,7 +138,7 @@ func (a *actionWidget) Show() {
 		figs = a.getInfantryFigures()
 	}
 	if figs != "" {
-		a.addItem(figs)
+		a.addItem(figs, true)
 	}
 
 	// draw it all up
@@ -85,9 +146,8 @@ func (a *actionWidget) Show() {
 	a.Box.Show()
 }
 
-func (a *actionWidget) addItem(s string) {
+func (a *actionWidget) addItem(s string, done bool, t rp.ActionType) {
 	w := widget.NewLabelWithStyle(s, fyne.TextAlignCenter, fyne.TextStyle{Italic: true})
-	w.Hide()
 	a.Append(w)
 	w.Show()
 }

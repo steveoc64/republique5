@@ -168,9 +168,22 @@ message CommandGameState {
   repeated Grid objective = 9;;
   string attachedTo = 10;
   google.protobuf.Timestamp timestamp = 11;
-  UnitAction can = 12;
-  UnitAction has = 13;
-  UnitAction must = 14;
+  repeated Action actions = 12;
+  UnitAction can = 13;
+  UnitAction has = 14;
+  UnitAction must = 15;
+}
+
+message Action {
+  bool done = 1;
+  string description = 2;
+  ActionType type = 3;
+}
+
+enum ActionType {
+  COMMENT = 0;
+  OPTIONAL = 1;
+  MUST_TICK = 2;
 }
 
 message Arrival {

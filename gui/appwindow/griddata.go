@@ -137,6 +137,10 @@ func (g *gridData) Units(x, y int32) gridForces {
 	return g.units[i]
 }
 
+func (g *gridData) clear() {
+	g.units = make([]gridForces, g.x*g.y)
+}
+
 func (g *gridData) addCommand(c *rp.Command) {
 	x := c.GetGameState().GetGrid().GetX() - 1
 	y := c.GetGameState().GetGrid().GetY() - 1

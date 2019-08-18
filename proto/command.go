@@ -217,20 +217,23 @@ func (c *Command) initState(parent *Command, standDown bool, side MapSide, mx, m
 	}
 }
 
-// SetOrder sets the order for the command
-func (c *Command) SetOrder(order Order) {
+// SetOrder sets the order for the command, returns true if changed
+func (c *Command) SetOrder(order Order) bool {
 	if !c.GetGameState().GetCan().GetOrder() {
-		return // cant set order
+		return false // cant set order
 	}
+	hasChanged := false
 	if c.GameState.GetOrders() != order {
 		// is a change of orders, so set new objective path
 		c.GameState.Objective = c.newObjective()
+		hasChanged = true
 	}
 	c.GameState.Orders = order
 	if c.GameState.Has == nil {
 		c.GameState.Has = &UnitAction{}
 	}
 	c.GameState.Has.Order = (order != Order_NO_ORDERS)
+	return hasChanged
 }
 
 func (c *Command) newObjective() []*Grid {
@@ -282,3 +285,26 @@ func (c *Command) ClearOrder() {
 		c.GameState.Has.Order = false
 	}
 }
+
+func (c *Command) ClearActions() {
+	c.GameState.Actions = nil
+}
+
+func (c *Command) AddAction(s string, done bool, t ActionType) {
+	c.GameState.Actions = append(c.GameState.Actions, &Action{
+		Done: done,,
+		Description: s,
+		Type: t,
+	})
+}
+
+func (c *Command) SetAction(s string, done bool) {
+	for _,v := range c.GameState.Actions {
+		if v.Description == s {
+			v.Done = done
+		}
+	}
+
+
+}
+

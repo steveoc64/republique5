@@ -78,7 +78,7 @@ func (a *App) GetUnits() error {
 		return err
 	}
 	a.Commands = u.Commands
-	a.store.CommanderMap.Load(u.Commands)
+	a.store.CommanderMap.Reload(u.Commands)
 
 	u, err = a.gameServer.GetEnemy(context.Background(), &a.Token)
 	if err != nil {

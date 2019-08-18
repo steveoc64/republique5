@@ -154,8 +154,9 @@ func (m *MapPanel) setOrder(o rp.Order) {
 		m.pursuitBtn.SetIcon(theme.RadioButtonCheckedIcon())
 	}
 	if m.command != nil {
-		m.command.SetOrder(m.order)
-		m.app.store.CommanderMap.Refresh(m.command)
+		if m.command.SetOrder(m.order) {
+			m.app.store.CommanderMap.Refresh(m.command)
+		}
 		widget.Renderer(m.mapWidget).Refresh()
 	}
 }
