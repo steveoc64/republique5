@@ -24,7 +24,7 @@ func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWid
 	mw := &MapWidget{
 		app:      app,
 		mapData:  mapData,
-		grid:     newGridData(mapData.X, mapData.Y, mapData.Data),
+		grid:     nil,
 		unitDesc: unitDesc,
 	}
 
@@ -37,13 +37,15 @@ func newMapWidget(app *App, mapData *rp.MapData, unitDesc *widget.Label) *MapWid
 	return mw
 }
 
+// CommandsUpdated is a dataAPI listener for the map
 func (mw *MapWidget) CommandsUpdated(data fyne.DataMap) {
-	mw.grid = newGridData(mw.mapData.X, mw.mapData.Y, mw.mapData.Data)
 	mw.SetCommands()
 	widget.Renderer(mw).Refresh()
 }
 
+// SetCommands rebuilds a new set of gridCommands for this map
 func (mw *MapWidget) SetCommands() {
+	mw.grid = newGridData(mw.mapData.X, mw.mapData.Y, mw.mapData.Data)
 	// generate the forces list in the grid
 	for _, c := range mw.app.Commands {
 		mw.grid.addCommand(c)
