@@ -40,6 +40,7 @@ func (a *actionWidget) commanderAction() {
 	a.panel.app.Tab(TabMap)
 }
 
+// Listen is the subscription callback when the data the actionWidget is interested in changes
 func (a *actionWidget) Listen(data fyne.DataItem) {
 	cmd, ok := data.(*store.Commander)
 	if ok && a != nil {
@@ -48,6 +49,7 @@ func (a *actionWidget) Listen(data fyne.DataItem) {
 	}
 }
 
+// Show builds / refreshes the actionWidget
 func (a *actionWidget) Show() {
 	allDone := false
 
@@ -69,56 +71,7 @@ func (a *actionWidget) Show() {
 	}
 	must := a.command.GetGameState().GetMust()
 
-	// Add all the must orders
-	action := must
-	if action != nil {
-		if action.Assault {
-			a.addItem("Assault", has.Assault, action_)
-
-		}
-		if action.ChangeFormation {
-
-		}
-		if action.Fallback {
-
-		}
-		if action.GunDeploy {
-
-		}
-		if action.GunFire {
-
-		}
-		if action.GunLimber {
-
-		}
-		if action.GunMove {
-
-		}
-		if action.Move {
-
-		}
-		if action.Order {
-
-		}
-		if action.Rally {
-
-		}
-		if action.Rout {
-
-		}
-		if action.SkAttack {
-
-		}
-		if action.SkDeploy {
-
-		}
-		if action.SkRetire {
-
-		}
-		if action.Withdraw {
-
-		}
-	}
+	// TODO - go through the list of actions attached to this commander, and add widgets for them all
 
 	// tick if all done
 	orderButton := theme.CheckButtonIcon()

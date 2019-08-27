@@ -286,25 +286,25 @@ func (c *Command) ClearOrder() {
 	}
 }
 
+// ClearActions clears the actions for a command
 func (c *Command) ClearActions() {
 	c.GameState.Actions = nil
 }
 
+// AddAction adds an action to a command
 func (c *Command) AddAction(s string, done bool, t ActionType) {
 	c.GameState.Actions = append(c.GameState.Actions, &Action{
-		Done: done,,
+		Done:        done,
 		Description: s,
-		Type: t,
+		Type:        t,
 	})
 }
 
+// SetAction sets the action for a command
 func (c *Command) SetAction(s string, done bool) {
-	for _,v := range c.GameState.Actions {
+	for _, v := range c.GameState.Actions {
 		if v.Description == s {
 			v.Done = done
 		}
 	}
-
-
 }
-
