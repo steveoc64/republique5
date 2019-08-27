@@ -7,7 +7,7 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
-// commander must implement a DataItem
+// Commander must implement a DataItem
 type Commander struct {
 	sync.Mutex
 	Data    *rp.Command

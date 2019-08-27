@@ -8,7 +8,8 @@ import (
 	rp "github.com/steveoc64/republique5/proto"
 )
 
-// CommanderOrdersMap map by commanderID of commanderOrder listeners
+// CommanderMap map by commanderID of commanderOrder listeners
+// implements fyne.DataMap
 type CommanderMap struct {
 	sync.RWMutex
 	commanders map[int32]*Commander
@@ -55,6 +56,7 @@ func (c *CommanderMap) Reload(data []*rp.Command) {
 	}
 }
 
+// AddCommandListener gets the commnand out of the map, and attaches the listener
 func (c *CommanderMap) AddCommandListener(command *rp.Command, fn fyne.DataItemFunc) fyne.ListenerHandle {
 	c.RLock()
 	defer c.RUnlock()
@@ -70,6 +72,7 @@ func (c *CommanderMap) AddCommandListener(command *rp.Command, fn fyne.DataItemF
 	return cmd.AddListener(fn)
 }
 
+// AddListener adds a listener for the whole commanderMap
 func (c *CommanderMap) AddListener(fn fyne.DataMapFunc) fyne.ListenerHandle {
 	c.Lock()
 	defer c.Unlock()
@@ -82,12 +85,14 @@ func (c *CommanderMap) AddListener(fn fyne.DataMapFunc) fyne.ListenerHandle {
 	return subID
 }
 
+// DeleteListener removes a commanderMap listener
 func (c *CommanderMap) DeleteListener(handle fyne.ListenerHandle) {
 	c.Lock()
 	defer c.Unlock()
 	delete(c.subs, handle)
 }
 
+// Get gets an item out of the commanderMap
 func (c *CommanderMap) Get(s string) (fyne.DataItem, bool) {
 	c.RLock()
 	defer c.RUnlock()
@@ -99,6 +104,7 @@ func (c *CommanderMap) Get(s string) (fyne.DataItem, bool) {
 	return cmd, ok
 }
 
+// Refresh on the commanderMap calls refresh on each current entry
 func (c *CommanderMap) Refresh(command *rp.Command) {
 	c.RLock()
 	defer c.RUnlock()
