@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/steveoc64/republique5/gui/store"
 	rp "github.com/steveoc64/republique5/proto"
 )
@@ -70,6 +71,7 @@ func (a *actionWidget) Show() {
 		can = &rp.UnitAction{}
 	}
 	must := a.command.GetGameState().GetMust()
+	spew.Dump("must", must)
 
 	// TODO - go through the list of actions attached to this commander, and add widgets for them all
 
@@ -91,7 +93,7 @@ func (a *actionWidget) Show() {
 		figs = a.getInfantryFigures()
 	}
 	if figs != "" {
-		a.addItem(figs, true)
+		a.addItem(figs, true, rp.ActionType_COMMENT)
 	}
 
 	// draw it all up
